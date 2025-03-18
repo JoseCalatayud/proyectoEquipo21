@@ -1,7 +1,6 @@
 package es.santander.ascender.proyectoFinal2.model;
 
 import jakarta.persistence.*;
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;

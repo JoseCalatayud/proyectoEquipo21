@@ -3,7 +3,6 @@ package es.santander.ascender.proyectoFinal2.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
-import java.math.BigDecimal;
 
 @Entity
 @Table(name = "detalles_compra")
@@ -27,21 +26,21 @@ public class DetalleCompra {
 
     @NotNull(message = "El precio unitario es obligatorio")
     @Column(nullable = false)
-    private BigDecimal precioUnitario;
+    private Double precioUnitario;
 
     @Column(nullable = false)
-    private BigDecimal subtotal;
+    private Double subtotal;
 
     // Constructor vacío
     public DetalleCompra() {
     }
 
     // Constructor con parámetros
-    public DetalleCompra(Articulo articulo, Integer cantidad, BigDecimal precioUnitario) {
+    public DetalleCompra(Articulo articulo, Integer cantidad, Double precioUnitario) {
         this.articulo = articulo;
         this.cantidad = cantidad;
         this.precioUnitario = precioUnitario;
-        this.subtotal = precioUnitario.multiply(new BigDecimal(cantidad));
+        this.subtotal = precioUnitario * cantidad;
     }
 
     // Getters y setters
@@ -77,27 +76,27 @@ public class DetalleCompra {
         this.cantidad = cantidad;
         // Recalcular el subtotal
         if (this.precioUnitario != null) {
-            this.subtotal = this.precioUnitario.multiply(new BigDecimal(cantidad));
+            this.subtotal = this.precioUnitario * cantidad ;
         }
     }
 
-    public BigDecimal getPrecioUnitario() {
+    public Double getPrecioUnitario() {
         return precioUnitario;
     }
 
-    public void setPrecioUnitario(BigDecimal precioUnitario) {
+    public void setPrecioUnitario(Double precioUnitario) {
         this.precioUnitario = precioUnitario;
         // Recalcular el subtotal
         if (this.cantidad != null) {
-            this.subtotal = precioUnitario.multiply(new BigDecimal(cantidad));
+            this.subtotal = precioUnitario*cantidad;
         }
     }
 
-    public BigDecimal getSubtotal() {
+    public Double getSubtotal() {
         return subtotal;
     }
 
-    public void setSubtotal(BigDecimal subtotal) {
+    public void setSubtotal(Double subtotal) {
         this.subtotal = subtotal;
     }
 }

@@ -9,7 +9,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -56,7 +55,7 @@ public class DataInitializer {
                 a1.setDescripcion("Teléfono inteligente de última generación");
                 a1.setCodigoBarras("8400000001");
                 a1.setFamilia("Electrónica");
-                a1.setPrecioVenta(new BigDecimal("599.99"));
+                a1.setPrecioVenta((599.99));
                 a1.setStock(20);
                 articulos.add(a1);
 
@@ -65,7 +64,7 @@ public class DataInitializer {
                 a2.setDescripcion("Tablet de 10 pulgadas con 128GB");
                 a2.setCodigoBarras("8400000002");
                 a2.setFamilia("Electrónica");
-                a2.setPrecioVenta(new BigDecimal("399.99"));
+                a2.setPrecioVenta((399.99));
                 a2.setStock(15);
                 articulos.add(a2);
 
@@ -75,7 +74,7 @@ public class DataInitializer {
                 a3.setDescripcion("Aceite de oliva virgen extra 1L");
                 a3.setCodigoBarras("8400000003");
                 a3.setFamilia("Alimentación");
-                a3.setPrecioVenta(new BigDecimal("7.99"));
+                a3.setPrecioVenta(7.99);
                 a3.setStock(50);
                 articulos.add(a3);
 
@@ -84,7 +83,7 @@ public class DataInitializer {
                 a4.setDescripcion("Leche desnatada 1L");
                 a4.setCodigoBarras("8400000004");
                 a4.setFamilia("Alimentación");
-                a4.setPrecioVenta(new BigDecimal("0.99"));
+                a4.setPrecioVenta(0.99);
                 a4.setStock(100);
                 articulos.add(a4);
 
@@ -94,7 +93,7 @@ public class DataInitializer {
                 a5.setDescripcion("Camiseta 100% algodón, talla M");
                 a5.setCodigoBarras("8400000005");
                 a5.setFamilia("Ropa");
-                a5.setPrecioVenta(new BigDecimal("19.99"));
+                a5.setPrecioVenta(19.99);
                 a5.setStock(30);
                 articulos.add(a5);
 
@@ -104,7 +103,7 @@ public class DataInitializer {
                 a6.setDescripcion("Sartén antiadherente 24cm");
                 a6.setCodigoBarras("8400000006");
                 a6.setFamilia("Hogar");
-                a6.setPrecioVenta(new BigDecimal("24.99"));
+                a6.setPrecioVenta(24.99);
                 a6.setStock(25);
                 articulos.add(a6);
 
@@ -114,7 +113,7 @@ public class DataInitializer {
                 a7.setDescripcion("Modelo descatalogado");
                 a7.setCodigoBarras("8400000007");
                 a7.setFamilia("Electrónica");
-                a7.setPrecioVenta(new BigDecimal("99.99"));
+                a7.setPrecioVenta(99.99);
                 a7.setStock(5);
                 a7.setBorrado(true);
                 articulos.add(a7);
@@ -142,14 +141,14 @@ public class DataInitializer {
                 detalle2.setArticulo(a3);
                 detalle2.setCantidad(2);
                 detalle2.setPrecioUnitario(a3.getPrecioVenta());
-                detalle2.setSubtotal(a3.getPrecioVenta().multiply(new BigDecimal("2")));
+                detalle2.setSubtotal(a3.getPrecioVenta()*(2));
                 detalle2.setVenta(venta);
 
                 List<DetalleVenta> detalles = new ArrayList<>();
                 detalles.add(detalle1);
                 detalles.add(detalle2);
                 venta.setDetalles(detalles);
-                venta.setTotal(detalle1.getSubtotal().add(detalle2.getSubtotal()));
+                venta.setTotal(detalle1.getSubtotal()+(detalle2.getSubtotal()));
 
                 ventaRepository.save(venta);
                 System.out.println("Se ha creado una venta de ejemplo");
@@ -162,8 +161,8 @@ public class DataInitializer {
                 DetalleCompra detalleCompra1 = new DetalleCompra();
                 detalleCompra1.setArticulo(a2);
                 detalleCompra1.setCantidad(5);
-                detalleCompra1.setPrecioUnitario(new BigDecimal("300.00"));
-                detalleCompra1.setSubtotal(new BigDecimal("1500.00"));
+                detalleCompra1.setPrecioUnitario(300.00);
+                detalleCompra1.setSubtotal(1500.00);
                 detalleCompra1.setCompra(compra);
 
                 List<DetalleCompra> detallesCompra = new ArrayList<>();

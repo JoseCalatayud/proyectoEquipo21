@@ -17,7 +17,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -70,7 +69,7 @@ public class CompraControllerIntegrationTest {
         articulo.setNombre("Test Articulo");
         articulo.setCodigoBarras("1234567890123");
         articulo.setFamilia("Electrónica");
-        articulo.setPrecioVenta(new BigDecimal("99.99"));
+        articulo.setPrecioVenta(99.99);
         articulo.setStock(10);
         articuloRepository.save(articulo);
     }
@@ -84,8 +83,8 @@ public class CompraControllerIntegrationTest {
         DetalleCompra detalle = new DetalleCompra();
         detalle.setArticulo(articulo);
         detalle.setCantidad(5);
-        detalle.setPrecioUnitario(new BigDecimal("80.00")); // precio de compra
-        detalle.setSubtotal(new BigDecimal("80.00").multiply(new BigDecimal(5)));
+        detalle.setPrecioUnitario(99.99); // precio de compra
+        detalle.setSubtotal(80.00 * 5);
 
         List<DetalleCompra> detalles = new ArrayList<>();
         detalles.add(detalle);
@@ -118,8 +117,8 @@ public class CompraControllerIntegrationTest {
         DetalleCompra detalle = new DetalleCompra();
         detalle.setArticulo(articulo);
         detalle.setCantidad(5);
-        detalle.setPrecioUnitario(new BigDecimal("80.00"));
-        detalle.setSubtotal(new BigDecimal("80.00").multiply(new BigDecimal(5)));
+        detalle.setPrecioUnitario(80.00);
+        detalle.setSubtotal(80.00*5);
 
         List<DetalleCompra> detalles = new ArrayList<>();
         detalles.add(detalle);
@@ -147,8 +146,8 @@ public class CompraControllerIntegrationTest {
         DetalleCompra detalle = new DetalleCompra();
         detalle.setArticulo(articulo);
         detalle.setCantidad(5);
-        detalle.setPrecioUnitario(new BigDecimal("80.00"));
-        detalle.setSubtotal(new BigDecimal("80.00").multiply(new BigDecimal(5)));
+        detalle.setPrecioUnitario(80.00);
+        detalle.setSubtotal(80.00*5);
 
         List<DetalleCompra> detalles = new ArrayList<>();
         detalles.add(detalle);

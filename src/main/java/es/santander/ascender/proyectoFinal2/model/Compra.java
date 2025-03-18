@@ -1,7 +1,6 @@
 package es.santander.ascender.proyectoFinal2.model;
 
 import jakarta.persistence.*;
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +20,7 @@ public class Compra {
     private Usuario usuario;
 
     @Column(nullable = false)
-    private BigDecimal total;
+    private Double total;
 
     @OneToMany(mappedBy = "compra", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<DetalleCompra> detalles = new ArrayList<>();
@@ -29,14 +28,14 @@ public class Compra {
     // Constructor vacío
     public Compra() {
         this.fecha = LocalDateTime.now();
-        this.total = BigDecimal.ZERO;
+        this.total = 0.0;
     }
 
     // Constructor con parámetros
     public Compra(Usuario usuario) {
         this.fecha = LocalDateTime.now();
         this.usuario = usuario;
-        this.total = BigDecimal.ZERO;
+        this.total = 0.0;
     }
 
     // Método para agregar un detalle
@@ -44,7 +43,7 @@ public class Compra {
         detalles.add(detalle);
         detalle.setCompra(this);
         // Actualizar el total
-        this.total = this.total.add(detalle.getSubtotal());
+        this.total = this.total+(detalle.getSubtotal());
     }
 
     // Método para eliminar un detalle
@@ -52,7 +51,7 @@ public class Compra {
         detalles.remove(detalle);
         detalle.setCompra(null);
         // Actualizar el total
-        this.total = this.total.subtract(detalle.getSubtotal());
+        this.total = this.total-(detalle.getSubtotal());
     }
 
     // Getters y setters
@@ -80,11 +79,11 @@ public class Compra {
         this.usuario = usuario;
     }
 
-    public BigDecimal getTotal() {
+    public Double getTotal() {
         return total;
     }
 
-    public void setTotal(BigDecimal total) {
+    public void setTotal(Double total) {
         this.total = total;
     }
 

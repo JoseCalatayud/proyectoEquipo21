@@ -2,7 +2,6 @@ package es.santander.ascender.proyectoFinal2.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
-import java.math.BigDecimal;
 
 @Entity
 

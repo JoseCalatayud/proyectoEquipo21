@@ -14,8 +14,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.math.BigDecimal;
-
 import static org.hamcrest.Matchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -47,7 +45,7 @@ public class ArticuloControllerIntegrationTest {
         articulo.setNombre("Test Articulo");
         articulo.setCodigoBarras("1234567890123");
         articulo.setFamilia("Electrónica");
-        articulo.setPrecioVenta(new BigDecimal("99.99"));
+        articulo.setPrecioVenta(99.99);
         articulo.setStock(10);
 
         // Crear artículo
@@ -78,7 +76,7 @@ public class ArticuloControllerIntegrationTest {
         articulo1.setNombre("Test Articulo 1");
         articulo1.setCodigoBarras("1234567890123");
         articulo1.setFamilia("Electrónica");
-        articulo1.setPrecioVenta(new BigDecimal("99.99"));
+        articulo1.setPrecioVenta(99.99);
         articulo1.setStock(10);
 
         // Crear primer artículo
@@ -92,7 +90,7 @@ public class ArticuloControllerIntegrationTest {
         articulo2.setNombre("Test Articulo 2");
         articulo2.setCodigoBarras("1234567890123");
         articulo2.setFamilia("Ropa");
-        articulo2.setPrecioVenta(new BigDecimal("49.99"));
+        articulo2.setPrecioVenta(99.99);
         articulo2.setStock(20);
 
         mockMvc.perform(post("/api/articulos")
@@ -109,7 +107,7 @@ public class ArticuloControllerIntegrationTest {
         articulo.setNombre("Test Articulo");
         articulo.setCodigoBarras("1234567890123");
         articulo.setFamilia("Electrónica");
-        articulo.setPrecioVenta(new BigDecimal("99.99"));
+        articulo.setPrecioVenta(99.99);
         articulo.setStock(10);
 
         // Crear artículo
@@ -124,7 +122,7 @@ public class ArticuloControllerIntegrationTest {
 
         // Actualizar artículo
         articuloCreado.setNombre("Test Articulo Actualizado");
-        articuloCreado.setPrecioVenta(new BigDecimal("129.99"));
+        articuloCreado.setPrecioVenta(99.99);
 
         mockMvc.perform(put("/api/articulos/" + id)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -141,7 +139,7 @@ public class ArticuloControllerIntegrationTest {
         articulo.setNombre("Test Articulo");
         articulo.setCodigoBarras("1234567890123");
         articulo.setFamilia("Electrónica");
-        articulo.setPrecioVenta(new BigDecimal("99.99"));
+        articulo.setPrecioVenta(99.99);
         articulo.setStock(10);
 
         // Crear artículo

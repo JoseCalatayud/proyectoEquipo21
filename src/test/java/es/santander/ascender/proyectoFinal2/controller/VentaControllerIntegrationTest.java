@@ -17,7 +17,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -70,7 +69,7 @@ public class VentaControllerIntegrationTest {
         articulo.setNombre("Test Articulo");
         articulo.setCodigoBarras("1234567890123");
         articulo.setFamilia("Electrónica");
-        articulo.setPrecioVenta(new BigDecimal("99.99"));
+        articulo.setPrecioVenta(99.99);
         articulo.setStock(10);
         articuloRepository.save(articulo);
     }
@@ -85,7 +84,7 @@ public class VentaControllerIntegrationTest {
         detalle.setArticulo(articulo);
         detalle.setCantidad(2);
         detalle.setPrecioUnitario(articulo.getPrecioVenta());
-        detalle.setSubtotal(articulo.getPrecioVenta().multiply(new BigDecimal(2)));
+        detalle.setSubtotal(articulo.getPrecioVenta()*2);
 
         List<DetalleVenta> detalles = new ArrayList<>();
         detalles.add(detalle);
@@ -115,7 +114,7 @@ public class VentaControllerIntegrationTest {
         detalle.setArticulo(articulo);
         detalle.setCantidad(20); // stock es solo 10
         detalle.setPrecioUnitario(articulo.getPrecioVenta());
-        detalle.setSubtotal(articulo.getPrecioVenta().multiply(new BigDecimal(20)));
+        detalle.setSubtotal(articulo.getPrecioVenta()*(20));
 
         List<DetalleVenta> detalles = new ArrayList<>();
         detalles.add(detalle);
@@ -144,7 +143,7 @@ public class VentaControllerIntegrationTest {
         detalle.setArticulo(articulo);
         detalle.setCantidad(2);
         detalle.setPrecioUnitario(articulo.getPrecioVenta());
-        detalle.setSubtotal(articulo.getPrecioVenta().multiply(new BigDecimal(2)));
+        detalle.setSubtotal(articulo.getPrecioVenta()* 2);
 
         List<DetalleVenta> detalles = new ArrayList<>();
         detalles.add(detalle);
