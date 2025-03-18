@@ -5,6 +5,9 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 @Entity
 @Table(name = "ventas")
 public class Venta {
@@ -16,14 +19,16 @@ public class Venta {
     @Column(nullable = false)
     private LocalDateTime fecha;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "usuario_id", nullable = false)
+    @JsonIgnore // No queremos serializar el usuario en la venta
     private Usuario usuario;
 
     @Column(nullable = false)
     private Double total;
 
     @OneToMany(mappedBy = "venta", cascade = CascadeType.ALL, orphanRemoval = true)
+   @JsonManagedReference
     private List<DetalleVenta> detalles = new ArrayList<>();
 
     // Constructor vacío
@@ -44,7 +49,7 @@ public class Venta {
         detalles.add(detalle);
         detalle.setVenta(this);
         // Actualizar el total
-        this.total = this.total+(detalle.getSubtotal());
+        this.total += detalle.getSubtotal();
     }
 
     // Método para eliminar un detalle
@@ -52,7 +57,7 @@ public class Venta {
         detalles.remove(detalle);
         detalle.setVenta(null);
         // Actualizar el total
-        this.total = this.total-(detalle.getSubtotal());
+        this.total -= detalle.getSubtotal();
     }
 
     // Getters y setters
