@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@Transactional
 public class CompraService {
     
     @Autowired
@@ -47,11 +48,12 @@ public class CompraService {
         return compraRepository.findByUsuarioAndFechaBetween(usuario, fechaInicio, fechaFin);
     }
 
-    @Transactional
+    
     public Compra realizarCompra(Compra compra) {
         // Verificar que los artículos existen y no están borrados
         for (DetalleCompra detalle : compra.getDetalles()) {
-            Articulo articulo = detalle.getArticulo();
+            Articulo articulo = articuloService.buscarPorId(detalle.getArticulo().getId()).get();
+            
             Optional<Articulo> articuloOpt = articuloService.buscarPorId(articulo.getId());
             
             if (articuloOpt.isEmpty()) {
@@ -62,18 +64,29 @@ public class CompraService {
             if (articuloOpt.get().isBorrado()) {
                 throw new IllegalStateException("No se puede comprar el artículo porque está descatalogado: " + articulo.getNombre());
             }
-        }
-        
-        // Actualizar stock para cada línea
-        for (DetalleCompra detalle : compra.getDetalles()) {
+            detalle.setArticulo(articulo);
+            detalle.setCompra(compra);
+            detalle.setPrecioUnitario(articuloOpt.get().getPrecioCompra());
+            detalle.setSubtotal(detalle.getCantidad()*detalle.getPrecioUnitario());
             articuloService.actualizarStock(detalle.getArticulo().getId(), detalle.getCantidad());
         }
+        compra.setFecha(LocalDateTime.now());
+        
+
+
+
+        
+        // Actualizar stock para cada línea
+        // for (DetalleCompra detalle : compra.getDetalles()) {
+            
+        // }
+        
         
         // Guardar la compra
         return compraRepository.save(compra);
     }
 
-    @Transactional
+    
     public void anularCompra(Long id) {
         Optional<Compra> compraOpt = compraRepository.findById(id);
         if (compraOpt.isEmpty()) {

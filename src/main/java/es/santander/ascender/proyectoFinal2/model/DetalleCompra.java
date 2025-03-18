@@ -1,5 +1,7 @@
 package es.santander.ascender.proyectoFinal2.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
@@ -12,11 +14,12 @@ public class DetalleCompra {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "compra_id", nullable = false)
+    @JsonBackReference
     private Compra compra;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "articulo_id", nullable = false)
     private Articulo articulo;
 
@@ -39,8 +42,18 @@ public class DetalleCompra {
     public DetalleCompra(Articulo articulo, Integer cantidad, Double precioUnitario) {
         this.articulo = articulo;
         this.cantidad = cantidad;
-        this.precioUnitario = precioUnitario;
+        this.precioUnitario = articulo.getPrecioCompra();
         this.subtotal = precioUnitario * cantidad;
+    }
+    
+    // Constructor con todos los parámetros
+    public DetalleCompra(Long id, Compra compra, Articulo articulo, Integer cantidad, Double precioUnitario) {
+        this.id = id;
+        this.compra = compra;
+        this.articulo = articulo;
+        this.cantidad = cantidad;
+        this.precioUnitario = articulo.getPrecioCompra();
+        this.subtotal = cantidad * precioUnitario;
     }
 
     // Getters y setters
