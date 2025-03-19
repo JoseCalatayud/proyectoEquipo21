@@ -1,7 +1,6 @@
 package es.santander.ascender.proyectoFinal2.dto;
 
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 
 import java.util.List;

@@ -1,4 +1,4 @@
-package es.santander.ascender.individual_final.Config;
+package es.santander.ascender.proyectoFinal2.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

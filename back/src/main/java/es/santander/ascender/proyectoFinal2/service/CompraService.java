@@ -1,6 +1,5 @@
 package es.santander.ascender.proyectoFinal2.service;
 
-import es.santander.ascender.proyectoFinal2.model.Articulo;
 import es.santander.ascender.proyectoFinal2.model.Compra;
 import es.santander.ascender.proyectoFinal2.model.DetalleCompra;
 import es.santander.ascender.proyectoFinal2.model.Usuario;
@@ -49,42 +48,42 @@ public class CompraService {
     }
 
     
-    public Compra realizarCompra(CompraRequestDTO compraRequestDTO) {
-        // Verificar que los artículos existen y no están borrados
-        for (DetalleCompra detalle : compraRequestDTO.getDetalles()) {
-            Articulo articulo = articuloService.buscarPorId(detalle.getArticulo().getId()).get();
+    // public Compra realizarCompra(CompraRequestDTO compraRequestDTO) {
+    //     // Verificar que los artículos existen y no están borrados
+    //     for (DetalleCompra detalle : compraRequestDTO.getDetalles()) {
+    //         Articulo articulo = articuloService.buscarPorId(detalle.getArticulo().getId()).get();
             
-            Optional<Articulo> articuloOpt = articuloService.buscarPorId(articulo.getId());
+    //         Optional<Articulo> articuloOpt = articuloService.buscarPorId(articulo.getId());
             
-            if (articuloOpt.isEmpty()) {
-                throw new IllegalArgumentException("No existe el artículo con ID: " + articulo.getId());
-            }
+    //         if (articuloOpt.isEmpty()) {
+    //             throw new IllegalArgumentException("No existe el artículo con ID: " + articulo.getId());
+    //         }
             
-            // Verificar que el artículo no está borrado
-            if (articuloOpt.get().isBorrado()) {
-                throw new IllegalStateException("No se puede comprar el artículo porque está descatalogado: " + articulo.getNombre());
-            }
-            detalle.setArticulo(articulo);
-            detalle.setCompra(compra);
-            detalle.setPrecioUnitario(articuloOpt.get().getPrecioCompra());
-            detalle.setSubtotal(detalle.getCantidad()*detalle.getPrecioUnitario());
-            articuloService.actualizarStock(detalle.getArticulo().getId(), detalle.getCantidad());
-        }
-        compra.setFecha(LocalDateTime.now());
+    //         // Verificar que el artículo no está borrado
+    //         if (articuloOpt.get().isBorrado()) {
+    //             throw new IllegalStateException("No se puede comprar el artículo porque está descatalogado: " + articulo.getNombre());
+    //         }
+    //         detalle.setArticulo(articulo);
+    //         detalle.setCompra(compra);
+    //         detalle.setPrecioUnitario(articuloOpt.get().getPrecioCompra());
+    //         detalle.setSubtotal(detalle.getCantidad()*detalle.getPrecioUnitario());
+    //         articuloService.actualizarStock(detalle.getArticulo().getId(), detalle.getCantidad());
+    //     }
+    //     compra.setFecha(LocalDateTime.now());
         
 
 
 
         
-        // Actualizar stock para cada línea
-        // for (DetalleCompra detalle : compra.getDetalles()) {
+    //     // Actualizar stock para cada línea
+    //     // for (DetalleCompra detalle : compra.getDetalles()) {
             
-        // }
+    //     // }
         
         
-        // Guardar la compra
-        return compraRepository.save(compra);
-    }
+    //     // Guardar la compra
+    //     return compraRepository.save(compra);
+    // }
 
     
     public void anularCompra(Long id) {
