@@ -1,6 +1,8 @@
 package es.santander.ascender.proyectoFinal2.controller;
 
+import es.santander.ascender.proyectoFinal2.dto.VentaListDTO;
 import es.santander.ascender.proyectoFinal2.dto.VentaRequestDTO;
+import es.santander.ascender.proyectoFinal2.dto.VentaResponseDTO;
 import es.santander.ascender.proyectoFinal2.model.Usuario;
 import es.santander.ascender.proyectoFinal2.model.Venta;
 import es.santander.ascender.proyectoFinal2.service.UsuarioService;
@@ -31,8 +33,8 @@ public class VentaController {
 
     @GetMapping("/listar")
     @PreAuthorize("hasRole('ADMIN')") // Only ADMIN can list all sales
-    public ResponseEntity<List<Venta>> listarVentas() {
-        List<Venta> ventas = ventaService.listarVentas();
+    public ResponseEntity<List<VentaListDTO>> listarVentas() {
+        List<VentaListDTO> ventas = ventaService.listarVentas();
         return ResponseEntity.ok(ventas);
     }
 
@@ -47,12 +49,12 @@ public class VentaController {
             if (usuario.isEmpty()) {
                 return ResponseEntity.status(401).body(null);
             }
-            
+
             // Verificar que el usuario puede realizar ventas
             if (!usuarioService.puedeRealizarVenta(usuario.get())) {
                 return ResponseEntity.status(403).body(null);
             }
-            
+
             Venta nuevaVenta = ventaService.crearVenta(ventaRequestDTO);
             return ResponseEntity.ok(nuevaVenta);
         } catch (Exception e) {
@@ -71,15 +73,15 @@ public class VentaController {
         if (usuario.isEmpty()) {
             return ResponseEntity.status(401).body(null);
         }
-        
-        Optional<Venta> venta = ventaService.buscarPorId(id);
-        
-        if (venta.isPresent()) {
+
+        Optional<VentaResponseDTO> ventaOptional = ventaService.buscarPorId(id);
+
+        if (ventaOptional.isPresent()) {
             // Si el usuario no es admin, solo puede ver sus propias ventas
-            if (!usuarioService.esAdmin(usuario.get()) && !venta.get().getUsuario().getId().equals(usuario.get().getId())) {
+            if (!usuarioService.esAdmin(usuario.get()) && !ventaOptional.get().getUsuario().getId().equals(usuario.get().getId())) {
                 return ResponseEntity.status(403).body(Map.of("mensaje", "No tiene permisos para ver esta venta"));
             }
-            return ResponseEntity.ok(venta.get());
+            return ResponseEntity.ok(ventaOptional.get());
         } else {
             return ResponseEntity.notFound().build();
         }
@@ -95,7 +97,7 @@ public class VentaController {
         if (usuario.isEmpty()) {
             return ResponseEntity.status(401).body(null);
         }
-        
+
         try {
             List<Venta> ventas;
             // Si el usuario no es admin, solo puede ver sus propias ventas
@@ -108,7 +110,7 @@ public class VentaController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
-    
+
     @GetMapping("/fechas")
     @PreAuthorize("hasRole('ADMIN')") // Only ADMIN can search sales by date range
     public ResponseEntity<List<Venta>> buscarPorFechas(
@@ -130,17 +132,17 @@ public class VentaController {
         if (usuario.isEmpty()) {
             return ResponseEntity.status(401).body(null);
         }
-        
+
         // Si el usuario no es admin, solo puede ver sus propias ventas
         if (!usuarioService.esAdmin(usuario.get()) && !usuario.get().getId().equals(idUsuario)) {
             return ResponseEntity.status(403).body(Map.of("mensaje", "No tiene permisos para ver las ventas de este usuario"));
         }
-        
+
         return ResponseEntity.ok(ventaService.buscarPorUsuarioYFechas(idUsuario, fechaInicio, fechaFin));
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')") // Both ADMIN and USER can cancel a sale
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')") // Both ADMIN and USER can cancel a sale
     public ResponseEntity<?> anularVenta(@PathVariable Long id) {
         // Obtener el usuario autenticado
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -149,12 +151,12 @@ public class VentaController {
         if (usuario.isEmpty()) {
             return ResponseEntity.status(401).body(null);
         }
-        
-        Optional<Venta> venta = ventaService.buscarPorId(id);
-        
-        if (venta.isPresent()) {
+
+        Optional<VentaResponseDTO> ventaOptional = ventaService.buscarPorId(id);
+
+        if (ventaOptional.isPresent()) {
             // Si el usuario no es admin, solo puede anular sus propias ventas
-            if (!usuarioService.esAdmin(usuario.get()) && !venta.get().getUsuario().getId().equals(usuario.get().getId())) {
+            if (!usuarioService.esAdmin(usuario.get()) && !ventaOptional.get().getUsuario().getId().equals(usuario.get().getId())) {
                 return ResponseEntity.status(403).body(Map.of("mensaje", "No tiene permisos para anular esta venta"));
             }
             ventaService.anularVenta(id);

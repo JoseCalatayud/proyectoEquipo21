@@ -1,7 +1,6 @@
 package es.santander.ascender.proyectoFinal2.service;
 
-import es.santander.ascender.proyectoFinal2.dto.DetalleVentaDTO;
-import es.santander.ascender.proyectoFinal2.dto.VentaRequestDTO;
+import es.santander.ascender.proyectoFinal2.dto.*;
 import es.santander.ascender.proyectoFinal2.exception.StockInsuficienteException;
 import es.santander.ascender.proyectoFinal2.model.Articulo;
 import es.santander.ascender.proyectoFinal2.model.DetalleVenta;
@@ -15,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,8 +32,35 @@ public class VentaService {
     private UsuarioService usuarioService;
 
     @Transactional(readOnly = true)
-    public List<Venta> listarVentas() {
-        return ventaRepository.findAll();
+    public List<VentaListDTO> listarVentas() {
+        List<Venta> ventas = ventaRepository.findAll();
+        List<VentaListDTO> ventaListDTOS = new ArrayList<>();
+
+        for (Venta venta : ventas) {
+            List<DetalleVentaListDTO> detalleVentaListDTOS = new ArrayList<>();
+            for (DetalleVenta detalleVenta : venta.getDetalles()) {
+                DetalleVentaListDTO detalleVentaListDTO = new DetalleVentaListDTO(
+                        detalleVenta.getArticulo().getId(),
+                        detalleVenta.getArticulo().getNombre(),
+                        detalleVenta.getArticulo().getDescripcion(),
+                        detalleVenta.getArticulo().getCodigoBarras(),
+                        detalleVenta.getArticulo().getFamilia(),
+                        detalleVenta.getCantidad(),
+                        detalleVenta.getSubtotal()
+                );
+                detalleVentaListDTOS.add(detalleVentaListDTO);
+            }
+            UsuarioVentaDTO usuarioVentaDTO = new UsuarioVentaDTO(venta.getUsuario().getId(), venta.getUsuario().getUsername());
+            VentaListDTO ventaListDTO = new VentaListDTO(
+                    venta.getId(),
+                    venta.getFecha(),
+                    venta.getTotal(),
+                    usuarioVentaDTO,
+                    detalleVentaListDTOS
+            );
+            ventaListDTOS.add(ventaListDTO);
+        }
+        return ventaListDTOS;
     }
 
     @Transactional
@@ -74,8 +101,35 @@ public class VentaService {
     }
 
     @Transactional(readOnly = true)
-    public Optional<Venta> buscarPorId(Long id) {
-        return ventaRepository.findById(id);
+    public Optional<VentaResponseDTO> buscarPorId(Long id) {
+        Optional<Venta> ventaOptional = ventaRepository.findById(id);
+        if (ventaOptional.isEmpty()) {
+            return Optional.empty();
+        }
+        Venta venta = ventaOptional.get();
+
+        List<DetalleVentaListDTO> detalleVentaListDTOS = new ArrayList<>();
+        for (DetalleVenta detalleVenta : venta.getDetalles()) {
+            DetalleVentaListDTO detalleVentaListDTO = new DetalleVentaListDTO(
+                    detalleVenta.getArticulo().getId(),
+                    detalleVenta.getArticulo().getNombre(),
+                    detalleVenta.getArticulo().getDescripcion(),
+                    detalleVenta.getArticulo().getCodigoBarras(),
+                    detalleVenta.getArticulo().getFamilia(),
+                    detalleVenta.getCantidad(),
+                    detalleVenta.getSubtotal()
+            );
+            detalleVentaListDTOS.add(detalleVentaListDTO);
+        }
+        UsuarioVentaDTO usuarioVentaDTO = new UsuarioVentaDTO(venta.getUsuario().getId(), venta.getUsuario().getUsername());
+        VentaResponseDTO ventaResponseDTO = new VentaResponseDTO(
+                venta.getId(),
+                venta.getFecha(),
+                venta.getTotal(),
+                usuarioVentaDTO,
+                detalleVentaListDTOS
+        );
+        return Optional.of(ventaResponseDTO);
     }
 
     @Transactional(readOnly = true)
