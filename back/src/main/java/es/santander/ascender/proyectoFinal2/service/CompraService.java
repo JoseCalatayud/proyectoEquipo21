@@ -49,9 +49,9 @@ public class CompraService {
     }
 
     
-    public Compra realizarCompra(Compra compra) {
+    public Compra realizarCompra(CompraRequestDTO compraRequestDTO) {
         // Verificar que los artículos existen y no están borrados
-        for (DetalleCompra detalle : compra.getDetalles()) {
+        for (DetalleCompra detalle : compraRequestDTO.getDetalles()) {
             Articulo articulo = articuloService.buscarPorId(detalle.getArticulo().getId()).get();
             
             Optional<Articulo> articuloOpt = articuloService.buscarPorId(articulo.getId());

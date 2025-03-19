@@ -51,7 +51,7 @@ public class CompraController {
     }
 
     @PostMapping
-    public ResponseEntity<?> realizarCompra(@Valid @RequestBody Compra compra) {
+    public ResponseEntity<?> realizarCompra(@Valid @RequestBody CompraRequestDTO compraRequestDTO) {
         try {
             // Obtener el usuario autenticado
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -66,8 +66,8 @@ public class CompraController {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("mensaje", "No tiene permisos para realizar compras"));
             }
 
-            compra.setUsuario(usuario.get());
-            Compra nuevaCompra = compraService.realizarCompra(compra);
+            compraDto.setUsuario(usuario.get());
+            Compra nuevaCompra = compraService.realizarCompra(compraRequestDTO);
             return ResponseEntity.status(HttpStatus.CREATED).body(nuevaCompra);
         } catch (IllegalArgumentException | IllegalStateException e) {
             Map<String, Object> response = new HashMap<>();
