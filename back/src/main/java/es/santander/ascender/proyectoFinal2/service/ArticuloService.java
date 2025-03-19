@@ -105,4 +105,15 @@ public class ArticuloService {
         Optional<Articulo> articuloOptional = articuloRepository.findById(id);
         return articuloOptional.isPresent() && articuloOptional.get().getStock() >= cantidad;
     }
+
+    @Transactional
+    public void actualizarPrecioPromedioPonderado(Articulo articulo, int cantidadComprada, double precioUnitarioCompra) {
+        //Calculamos el precio promedio ponderado
+        double valorTotalInventario = articulo.getStock() * articulo.getPrecioPromedioPonderado();
+        double valorTotalCompra = cantidadComprada * precioUnitarioCompra;
+        double nuevoStock = articulo.getStock() + cantidadComprada;
+        double nuevoPrecioPromedioPonderado = (valorTotalInventario + valorTotalCompra) / nuevoStock;
+        articulo.setPrecioPromedioPonderado(nuevoPrecioPromedioPonderado);
+        articuloRepository.save(articulo);
+    }
 }
