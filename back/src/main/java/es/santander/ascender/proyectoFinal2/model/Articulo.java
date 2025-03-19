@@ -40,6 +40,10 @@ public class Articulo {
     // Flag para borrado lógico
     private boolean borrado = false;
 
+    @NotNull(message = "El precio promedio ponderado es obligatorio")
+    @DecimalMin(value = "0.0", inclusive = false)
+    private Double precioPromedioPonderado;
+
     // Constructor vacío
     public Articulo() {
     }
@@ -136,5 +140,13 @@ public class Articulo {
 
     public void setBorrado(boolean borrado) {
         this.borrado = borrado;
+    }
+
+    public Double getPrecioPromedioPonderado() {
+        return precioPromedioPonderado;
+    }
+
+    public void setPrecioPromedioPonderado(Double precioPromedioPonderado) {
+        this.precioPromedioPonderado = precioPromedioPonderado;
     }
 }

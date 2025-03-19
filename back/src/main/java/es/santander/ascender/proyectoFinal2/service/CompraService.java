@@ -83,13 +83,19 @@ public class CompraService {
             }
 
             // 3.4. Crear detalle compra
-            DetalleCompra detalleCompra = new DetalleCompra(articulo, detalleDTO.getCantidad(), articulo.getPrecioCompra());
+            // Usar el precio de compra del DTO
+            DetalleCompra detalleCompra = new DetalleCompra(articulo, detalleDTO.getCantidad(), detalleDTO.getPrecioUnitario());
 
             // 3.5. Agregar detalle a compra
             compra.agregarDetalle(detalleCompra);
 
             // 3.6. Actualizar stock
-            articuloService.actualizarStock(detalleDTO.getIdArticulo(), detalleDTO.getCantidad());
+            //Usamos synchronized para evitar condiciones de carrera
+            synchronized (articulo) {
+                articuloService.actualizarStock(detalleDTO.getIdArticulo(), detalleDTO.getCantidad());
+                //Calculamos el nuevo precio promedio ponderado
+                articuloService.actualizarPrecioPromedioPonderado(articulo, detalleDTO.getCantidad(), detalleDTO.getPrecioUnitario());
+            }
         }
 
         // 4. Guardar la compra
@@ -101,7 +107,10 @@ public class CompraService {
 
         // Restar el stock que se había añadido
         for (DetalleCompra detalle : compra.getDetalles()) {
-            articuloService.actualizarStock(detalle.getArticulo().getId(), -detalle.getCantidad());
+            //Usamos synchronized para evitar condiciones de carrera
+            synchronized (detalle.getArticulo()) {
+                articuloService.actualizarStock(detalle.getArticulo().getId(), -detalle.getCantidad());
+            }
         }
 
         // Eliminar la compra
