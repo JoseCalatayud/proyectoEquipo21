@@ -53,43 +53,27 @@ public class ArticuloController {
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> crearArticulo(@Valid @RequestBody Articulo articulo) {
-        try {
-            Articulo nuevoArticulo = articuloService.crear(articulo);
-            return ResponseEntity.status(HttpStatus.CREATED).body(nuevoArticulo);
-        } catch (IllegalArgumentException e) {
-            Map<String, Object> response = new HashMap<>();
-            response.put("mensaje", e.getMessage());
-            return ResponseEntity.badRequest().body(response);
-        }
+        Articulo nuevoArticulo = articuloService.crear(articulo);
+        return ResponseEntity.status(HttpStatus.CREATED).body(nuevoArticulo);
+
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> actualizarArticulo(@PathVariable Long id, @Valid @RequestBody Articulo articulo) {
-        try {
-            articulo.setId(id); // Asegurar que el ID coincida con el de la ruta
-            Articulo actualizadoArticulo = articuloService.actualizar(articulo);
-            return ResponseEntity.ok(actualizadoArticulo);
-        } catch (IllegalArgumentException e) {
-            Map<String, Object> response = new HashMap<>();
-            response.put("mensaje", e.getMessage());
-            return ResponseEntity.badRequest().body(response);
-        }
+        articulo.setId(id); // Asegurar que el ID coincida con el de la ruta
+        Articulo actualizadoArticulo = articuloService.actualizar(articulo);
+        return ResponseEntity.ok(actualizadoArticulo);
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> borrarArticulo(@PathVariable Long id) {
-        try {
-            articuloService.borradoLogico(id);
-            Map<String, Object> response = new HashMap<>();
-            response.put("mensaje", "Artículo eliminado correctamente");
-            return ResponseEntity.ok(response);
-        } catch (IllegalArgumentException e) {
-            Map<String, Object> response = new HashMap<>();
-            response.put("mensaje", e.getMessage());
-            return ResponseEntity.badRequest().body(response);
-        }
+        articuloService.borradoLogico(id);
+        Map<String, Object> response = new HashMap<>();
+        response.put("mensaje", "Artículo eliminado correctamente");
+        return ResponseEntity.ok(response);
+
     }
 
     @GetMapping("/verificar/{codigoBarras}")

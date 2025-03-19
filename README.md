@@ -36,3 +36,36 @@ El cliente nos pide la posibilidad de tener un pequeño sistema de business Inte
 el stock actual de productos, las ventas y compras totales (en unidades y en euros) y la evolución de las ventas y del stock a lo largo del tiempo.
 
 Consejo: A la hora de diseñar el sistema, sobre todo a nivel del modelo de datos, tener esta parte presente desde el comienzo (si consideráis que la vais a abordar) puede ser interesante para no tener que rehacer partes a posteriori.
+
+# Descripcion de los endpoints
+
+
+/api/auth
+  - /login → Autenticación de usuarios
+  - /registro → Registro de nuevos usuarios
+
+/api/usuarios (ADMIN)
+  - GET / → Listar todos los usuarios
+  - GET /{id} → Obtener usuario por ID
+  - POST / → Crear usuario
+  - PUT /{id} → Actualizar usuario
+  - DELETE /{id} → Eliminar usuario
+
+/api/articulos
+  - GET / → Listar todos los artículos (PUBLIC)
+  - GET /{id} → Obtener artículo por ID (PUBLIC)
+  - POST / → Crear artículo (ADMIN)
+  - PUT /{id} → Actualizar artículo (ADMIN)
+  - DELETE /{id} → Eliminar artículo (ADMIN)
+
+/api/ventas
+  - GET /listar → Listar todas las ventas (ADMIN)
+  - GET /{id} → Obtener venta por ID (ADMIN, USER)
+  - POST / → Realizar venta (ADMIN, USER)
+  - DELETE /{id} → Anular venta (ADMIN)
+
+/api/compras (ADMIN)
+  - GET / → Listar todas las compras
+  - GET /{id} → Obtener compra por ID
+  - POST / → Realizar compra
+  - DELETE /{id} → Anular compra
