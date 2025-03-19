@@ -42,18 +42,8 @@ public class DetalleCompra {
     public DetalleCompra(Articulo articulo, Integer cantidad, Double precioUnitario) {
         this.articulo = articulo;
         this.cantidad = cantidad;
-        this.precioUnitario = articulo.getPrecioCompra();
+        this.precioUnitario = precioUnitario;
         this.subtotal = precioUnitario * cantidad;
-    }
-    
-    // Constructor con todos los parámetros
-    public DetalleCompra(Long id, Compra compra, Articulo articulo, Integer cantidad, Double precioUnitario) {
-        this.id = id;
-        this.compra = compra;
-        this.articulo = articulo;
-        this.cantidad = cantidad;
-        this.precioUnitario = articulo.getPrecioCompra();
-        this.subtotal = cantidad * precioUnitario;
     }
 
     // Getters y setters
@@ -89,7 +79,7 @@ public class DetalleCompra {
         this.cantidad = cantidad;
         // Recalcular el subtotal
         if (this.precioUnitario != null) {
-            this.subtotal = this.precioUnitario * cantidad ;
+            this.subtotal = this.precioUnitario * cantidad;
         }
     }
 
@@ -101,7 +91,7 @@ public class DetalleCompra {
         this.precioUnitario = precioUnitario;
         // Recalcular el subtotal
         if (this.cantidad != null) {
-            this.subtotal = precioUnitario*cantidad;
+            this.subtotal = this.precioUnitario * cantidad;
         }
     }
 
