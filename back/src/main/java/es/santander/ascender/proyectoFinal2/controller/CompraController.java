@@ -1,8 +1,10 @@
 package es.santander.ascender.proyectoFinal2.controller;
 
+import es.santander.ascender.proyectoFinal2.dto.CompraRequestDTO;
 import es.santander.ascender.proyectoFinal2.model.Compra;
 import es.santander.ascender.proyectoFinal2.service.CompraService;
 import es.santander.ascender.proyectoFinal2.service.UsuarioService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
@@ -10,10 +12,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/compras")
@@ -33,9 +33,8 @@ public class CompraController {
 
     @GetMapping("/{id}")
     public ResponseEntity<?> buscarPorId(@PathVariable Long id) {
-        Optional<Compra> compra = compraService.buscarPorId(id);
-        return compra.map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        Compra compra = compraService.buscarPorId(id).orElseThrow(() -> new IllegalArgumentException("No existe la compra con ID: " + id));
+        return ResponseEntity.ok(compra);
     }
 
     @GetMapping("/fechas")
@@ -45,43 +44,19 @@ public class CompraController {
         return ResponseEntity.ok(compraService.buscarPorFechas(fechaInicio, fechaFin));
     }
 
-    // @PostMapping
-    // public ResponseEntity<?> realizarCompra(@Valid @RequestBody CompraRequestDTO compraRequestDTO) {
-    //     try {
-    //         // Obtener el usuario autenticado
-    //         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-    //         Optional<Usuario> usuario = usuarioService.buscarPorUsername(auth.getName());
-
-    //         if (usuario.isEmpty()) {
-    //             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("mensaje", "Usuario no autenticado"));
-    //         }
-
-    //         // Verificar que es administrador
-    //         if (!usuarioService.esAdmin(usuario.get())) {
-    //             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("mensaje", "No tiene permisos para realizar compras"));
-    //         }
-
-    //         //compraRequestDTO.(usuario.get());
-    //         Compra nuevaCompra = compraService.
-    //         return ResponseEntity.status(HttpStatus.CREATED).body(nuevaCompra);
-    //     } catch (IllegalArgumentException | IllegalStateException e) {
-    //         Map<String, Object> response = new HashMap<>();
-    //         response.put("mensaje", e.getMessage());
-    //         return ResponseEntity.badRequest().body(response);
-    //     }
-    // }
+    @PostMapping
+    public ResponseEntity<?> realizarCompra(@Valid @RequestBody CompraRequestDTO compraRequestDTO) {
+        try {
+            Compra nuevaCompra = compraService.crearCompra(compraRequestDTO);
+            return ResponseEntity.status(HttpStatus.CREATED).body(nuevaCompra);
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            return ResponseEntity.badRequest().body(Map.of("mensaje", e.getMessage()));
+        }
+    }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> anularCompra(@PathVariable Long id) {
-        try {
-            compraService.anularCompra(id);
-            Map<String, Object> response = new HashMap<>();
-            response.put("mensaje", "Compra anulada correctamente");
-            return ResponseEntity.ok(response);
-        } catch (IllegalArgumentException e) {
-            Map<String, Object> response = new HashMap<>();
-            response.put("mensaje", e.getMessage());
-            return ResponseEntity.badRequest().body(response);
-        }
+        compraService.anularCompra(id);
+        return ResponseEntity.ok(Map.of("mensaje", "Compra anulada correctamente"));
     }
 }

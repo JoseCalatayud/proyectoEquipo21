@@ -1,28 +1,17 @@
 package es.santander.ascender.proyectoFinal2.dto;
 
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotEmpty;
 
 import java.util.List;
 
 public class VentaRequestDTO {
 
-    @NotNull(message = "El ID del usuario es obligatorio")
-    private Long idUsuario;
-
-    @Valid // Valida cada elemento de la lista
-    @NotNull(message = "La lista de detalles no puede ser nula")
+    @Valid
+    @NotEmpty(message = "Debe tener detalles de venta")
     private List<DetalleVentaDTO> detalles;
 
-    // Getters y setters
-    public Long getIdUsuario() {
-        return idUsuario;
-    }
-
-    public void setIdUsuario(Long idUsuario) {
-        this.idUsuario = idUsuario;
-    }
-
+    // Getters y Setters
     public List<DetalleVentaDTO> getDetalles() {
         return detalles;
     }

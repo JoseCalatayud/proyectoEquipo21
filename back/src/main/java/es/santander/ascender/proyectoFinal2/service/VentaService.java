@@ -9,9 +9,12 @@ import es.santander.ascender.proyectoFinal2.model.Usuario;
 import es.santander.ascender.proyectoFinal2.model.Venta;
 import es.santander.ascender.proyectoFinal2.repository.VentaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,8 +36,9 @@ public class VentaService {
     }
 
     public Venta crearVenta(VentaRequestDTO ventaRequestDTO) {
-        // 1. Buscar usuario.
-        Optional<Usuario> usuarioOptional = usuarioService.buscarPorId(ventaRequestDTO.getIdUsuario());
+        // 1. Obtener el usuario autenticado
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        Optional<Usuario> usuarioOptional = usuarioService.buscarPorUsername(auth.getName());
         if (usuarioOptional.isEmpty()) {
             throw new IllegalArgumentException("No existe el usuario");
         }
@@ -82,5 +86,34 @@ public class VentaService {
         }
         Usuario usuario = usuarioOptional.get();
         return ventaRepository.findByUsuario(usuario);
+    }
+    
+    public List<Venta> buscarPorFechas(LocalDateTime fechaInicio, LocalDateTime fechaFin) {
+        return ventaRepository.findByFechaBetween(fechaInicio, fechaFin);
+    }
+
+    public List<Venta> buscarPorUsuarioYFechas(Long idUsuario, LocalDateTime fechaInicio, LocalDateTime fechaFin) {
+        Optional<Usuario> usuarioOptional = usuarioService.buscarPorId(idUsuario);
+        if (usuarioOptional.isEmpty()){
+            throw new IllegalArgumentException("No existe el usuario");
+        }
+        Usuario usuario = usuarioOptional.get();
+        return ventaRepository.findByUsuarioAndFechaBetween(usuario, fechaInicio, fechaFin);
+    }
+
+    public void anularVenta(Long id) {
+        Optional<Venta> ventaOptional = ventaRepository.findById(id);
+        if (ventaOptional.isEmpty()) {
+            throw new IllegalArgumentException("No existe la venta con ID: " + id);
+        }
+
+        Venta venta = ventaOptional.get();
+        // Devolver el stock que se había restado
+        for (DetalleVenta detalle : venta.getDetalles()) {
+            articuloService.actualizarStock(detalle.getArticulo().getId(), detalle.getCantidad());
+        }
+
+        // Eliminar la venta
+        ventaRepository.deleteById(id);
     }
 }

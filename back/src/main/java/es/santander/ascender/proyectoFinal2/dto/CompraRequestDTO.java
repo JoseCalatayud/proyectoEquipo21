@@ -1,35 +1,30 @@
 package es.santander.ascender.proyectoFinal2.dto;
 
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotEmpty;
 
 import java.util.List;
 
-
 public class CompraRequestDTO {
+    @NotEmpty(message = "La compra debe tener al menos un detalle")
+    @Valid
+    private List<DetalleCompraDTO> detalles;
 
-    @NotNull(message = "El ID del usuario es obligatorio")
-    private Long idUsuario;
+    // Constructor vacío
+    public CompraRequestDTO() {
+    }
 
-    @Valid // Valida cada elemento de la lista
-    @NotNull(message = "La lista de detalles no puede ser nula")
-    private List<DetalleVentaDTO> detalles;
+    // Constructor con parámetros
+    public CompraRequestDTO(List<DetalleCompraDTO> detalles) {
+        this.detalles = detalles;
+    }
 
     // Getters y setters
-    public Long getIdUsuario() {
-        return idUsuario;
-    }
-
-    public void setIdUsuario(Long idUsuario) {
-        this.idUsuario = idUsuario;
-    }
-
-    public List<DetalleVentaDTO> getDetalles() {
+    public List<DetalleCompraDTO> getDetalles() {
         return detalles;
     }
 
-    public void setDetalles(List<DetalleVentaDTO> detalles) {
+    public void setDetalles(List<DetalleCompraDTO> detalles) {
         this.detalles = detalles;
     }
 }
-
