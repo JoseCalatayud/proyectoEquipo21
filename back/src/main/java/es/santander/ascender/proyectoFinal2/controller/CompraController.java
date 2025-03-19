@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import es.santander.ascender.proyectoFinal2.dto.CompraListDTO;
 import es.santander.ascender.proyectoFinal2.dto.CompraRequestDTO;
 import es.santander.ascender.proyectoFinal2.model.Compra;
 import es.santander.ascender.proyectoFinal2.service.CompraService;
@@ -36,7 +37,7 @@ public class CompraController {
     private UsuarioService usuarioService;
 
     @GetMapping
-    public ResponseEntity<List<Compra>> listarCompras() {
+    public ResponseEntity<List<CompraListDTO>> listarCompras() {
         return ResponseEntity.ok(compraService.listarTodas());
     }
 

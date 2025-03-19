@@ -29,10 +29,6 @@ public class Articulo {
     @DecimalMin(value = "0.0", inclusive = false)
     private Double precioVenta;
 
-    @NotNull(message = "El precio de compra es obligatorio")
-    @DecimalMin(value = "0.0", inclusive = false)
-    private Double precioCompra;
-
     @NotNull(message = "El stock es obligatorio")
     @Min(value = 0, message = "El stock debe ser mayor o igual a cero")
     private Integer stock;
@@ -49,16 +45,16 @@ public class Articulo {
     }
 
     // Constructor con parámetros
-    public Articulo(String nombre, String descripcion, String codigoBarras, String familia, 
-                   String fotografia, Double precioVenta,Double precioCompra, Integer stock) {
+    public Articulo(String nombre, String descripcion, String codigoBarras, String familia,
+                    String fotografia, Double precioVenta, Integer stock) {
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.codigoBarras = codigoBarras;
         this.familia = familia;
         this.fotografia = fotografia;
         this.precioVenta = precioVenta;
-        this.precioCompra = precioCompra;
         this.stock = stock;
+        this.precioPromedioPonderado = 0.0; // Valor por defecto
     }
 
     // Getters y setters
@@ -109,14 +105,7 @@ public class Articulo {
     public void setFotografia(String fotografia) {
         this.fotografia = fotografia;
     }
-
-    public double getPrecioCompra() {
-        return precioCompra;
-    }
-
-    public void setPrecioCompra(Double precioCompra) {
-        this.precioCompra = precioCompra;
-    }    
+ 
 
     public double getPrecioVenta() {
         return precioVenta;

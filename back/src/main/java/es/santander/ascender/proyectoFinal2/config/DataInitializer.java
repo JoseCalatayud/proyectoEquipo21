@@ -56,7 +56,6 @@ public class DataInitializer {
                 a1.setCodigoBarras("8400000001");
                 a1.setFamilia("Electrónica");
                 a1.setPrecioVenta(599.99);
-                a1.setPrecioCompra(450.00);
                 a1.setStock(20);
                 a1.setPrecioPromedioPonderado(450.00); // Inicializar el precio promedio ponderado
                 articulos.add(a1);
@@ -67,7 +66,6 @@ public class DataInitializer {
                 a2.setCodigoBarras("8400000002");
                 a2.setFamilia("Electrónica");
                 a2.setPrecioVenta(399.99);
-                a2.setPrecioCompra(300.00);
                 a2.setStock(15);
                 a2.setPrecioPromedioPonderado(300.00); // Inicializar el precio promedio ponderado
                 articulos.add(a2);
@@ -79,7 +77,6 @@ public class DataInitializer {
                 a3.setCodigoBarras("8400000003");
                 a3.setFamilia("Alimentación");
                 a3.setPrecioVenta(7.99);
-                a3.setPrecioCompra(5.00);
                 a3.setStock(50);
                 a3.setPrecioPromedioPonderado(5.00); // Inicializar el precio promedio ponderado
                 articulos.add(a3);
@@ -90,7 +87,6 @@ public class DataInitializer {
                 a4.setCodigoBarras("8400000004");
                 a4.setFamilia("Alimentación");
                 a4.setPrecioVenta(0.99);
-                a4.setPrecioCompra(0.50);
                 a4.setStock(100);
                 a4.setPrecioPromedioPonderado(0.50); // Inicializar el precio promedio ponderado
                 articulos.add(a4);
@@ -102,7 +98,6 @@ public class DataInitializer {
                 a5.setCodigoBarras("8400000005");
                 a5.setFamilia("Ropa");
                 a5.setPrecioVenta(19.99);
-                a5.setPrecioCompra(15.00);
                 a5.setStock(30);
                 a5.setPrecioPromedioPonderado(15.00); // Inicializar el precio promedio ponderado
                 articulos.add(a5);
@@ -114,7 +109,6 @@ public class DataInitializer {
                 a6.setCodigoBarras("8400000006");
                 a6.setFamilia("Hogar");
                 a6.setPrecioVenta(24.99);
-                a6.setPrecioCompra(20.00);
                 a6.setStock(25);
                 a6.setPrecioPromedioPonderado(20.00); // Inicializar el precio promedio ponderado
                 articulos.add(a6);
@@ -126,7 +120,6 @@ public class DataInitializer {
                 a7.setCodigoBarras("8400000007");
                 a7.setFamilia("Electrónica");
                 a7.setPrecioVenta(99.99);
-                a7.setPrecioCompra(75.00);
                 a7.setStock(5);
                 a7.setBorrado(true);
                 a7.setPrecioPromedioPonderado(75.00); // Inicializar el precio promedio ponderado
