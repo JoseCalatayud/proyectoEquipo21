@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import es.santander.ascender.proyectoFinal2.dto.CompraRequestDTO;
 import es.santander.ascender.proyectoFinal2.dto.DetalleCompraDTO;
 import es.santander.ascender.proyectoFinal2.model.Articulo;
+import es.santander.ascender.proyectoFinal2.model.Compra;
+import es.santander.ascender.proyectoFinal2.model.DetalleCompra;
 import es.santander.ascender.proyectoFinal2.model.RolUsuario;
 import es.santander.ascender.proyectoFinal2.model.Usuario;
 import es.santander.ascender.proyectoFinal2.repository.ArticuloRepository;
@@ -101,7 +103,7 @@ public class CompraControllerIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = "admin_test", roles = {"ADMIN"})
+    @WithMockUser(username = "admin_test", roles = { "ADMIN" })
     public void listarCompras_conAdmin_deberiaRetornarTodasLasCompras() throws Exception {
         // Primero creamos una compra para tener datos que listar
         crearCompraDePrueba();
@@ -114,14 +116,14 @@ public class CompraControllerIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = "user_test", roles = {"USER"})
+    @WithMockUser(username = "user_test", roles = { "USER" })
     public void listarCompras_conUser_deberiaRetornarForbidden() throws Exception {
         mockMvc.perform(get("/api/compras"))
                 .andExpect(status().isForbidden());
     }
 
     @Test
-    @WithMockUser(username = "admin_test", roles = {"ADMIN"})
+    @WithMockUser(username = "admin_test", roles = { "ADMIN" })
     public void buscarPorId_conIdExistente_deberiaRetornarCompra() throws Exception {
         // Crear compra
         crearCompraDePrueba();
@@ -133,21 +135,21 @@ public class CompraControllerIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = "admin_test", roles = {"ADMIN"})
+    @WithMockUser(username = "admin_test", roles = { "ADMIN" })
     public void buscarPorId_conIdInexistente_deberiaRetornarBadRequest() throws Exception {
         mockMvc.perform(get("/api/compras/999"))
                 .andExpect(status().isBadRequest());
     }
 
     @Test
-    @WithMockUser(username = "user_test", roles = {"USER"})
+    @WithMockUser(username = "user_test", roles = { "USER" })
     public void buscarPorId_conUser_deberiaRetornarForbidden() throws Exception {
         mockMvc.perform(get("/api/compras/1"))
                 .andExpect(status().isForbidden());
     }
 
     @Test
-    @WithMockUser(username = "admin_test", roles = {"ADMIN"})
+    @WithMockUser(username = "admin_test", roles = { "ADMIN" })
     public void buscarPorFechas_conAdmin_deberiaRetornarCompras() throws Exception {
         // Crear compra
         crearCompraDePrueba();
@@ -161,7 +163,7 @@ public class CompraControllerIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = "user_test", roles = {"USER"})
+    @WithMockUser(username = "user_test", roles = { "USER" })
     public void buscarPorFechas_conUser_deberiaRetornarForbidden() throws Exception {
         mockMvc.perform(get("/api/compras/fechas")
                 .param("fechaInicio", "2020-01-01T00:00:00")
@@ -170,18 +172,18 @@ public class CompraControllerIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = "admin_test", roles = {"ADMIN"})
+    @WithMockUser(username = "admin_test", roles = { "ADMIN" })
     public void realizarCompra_conAdmin_deberiaCrearCompra() throws Exception {
         // Crear DTO para la compra
         CompraRequestDTO compraRequestDTO = new CompraRequestDTO();
         List<DetalleCompraDTO> detalles = new ArrayList<>();
-        
+
         DetalleCompraDTO detalle = new DetalleCompraDTO();
         detalle.setIdArticulo(articulo1.getId());
         detalle.setCantidad(5);
         detalle.setPrecioUnitario(12.0);
         detalles.add(detalle);
-        
+
         compraRequestDTO.setDetalles(detalles);
 
         // Realizar la petición
@@ -191,24 +193,24 @@ public class CompraControllerIntegrationTest {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id", notNullValue()))
                 .andExpect(jsonPath("$.detalles", hasSize(1)));
-                
+
         // Verificar que el stock fue actualizado
         Articulo articuloActualizado = articuloRepository.findById(articulo1.getId()).orElse(null);
-        assert(articuloActualizado != null && articuloActualizado.getStock() == 105); // 100 inicial + 5 comprados
+        assert (articuloActualizado != null && articuloActualizado.getStock() == 105); // 100 inicial + 5 comprados
     }
 
     @Test
-    @WithMockUser(username = "user_test", roles = {"USER"})
+    @WithMockUser(username = "user_test", roles = { "USER" })
     public void realizarCompra_conUser_deberiaRetornarForbidden() throws Exception {
         CompraRequestDTO compraRequestDTO = new CompraRequestDTO();
         List<DetalleCompraDTO> detalles = new ArrayList<>();
-        
+
         DetalleCompraDTO detalle = new DetalleCompraDTO();
         detalle.setIdArticulo(articulo1.getId());
         detalle.setCantidad(5);
         detalle.setPrecioUnitario(12.0);
         detalles.add(detalle);
-        
+
         compraRequestDTO.setDetalles(detalles);
 
         mockMvc.perform(post("/api/compras")
@@ -218,11 +220,11 @@ public class CompraControllerIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = "admin_test", roles = {"ADMIN"})
+    @WithMockUser(username = "admin_test", roles = { "ADMIN" })
     public void anularCompra_conAdmin_deberiaAnularCompra() throws Exception {
         // Crear compra
         crearCompraDePrueba();
-        
+
         // Obtener stock antes de anular
         int stockAntes = articuloRepository.findById(articulo1.getId()).map(Articulo::getStock).orElse(0);
 
@@ -234,20 +236,23 @@ public class CompraControllerIntegrationTest {
         // Verificar que la compra ya no existe
         mockMvc.perform(get("/api/compras/" + compraId))
                 .andExpect(status().isBadRequest());
-                
+
         // Verificar que el stock fue restaurado
         int stockDespues = articuloRepository.findById(articulo1.getId()).map(Articulo::getStock).orElse(0);
-        assert(stockDespues == stockAntes - 3); // Se habían comprado 3 unidades
+        assert (stockDespues == stockAntes - 3); // Se habían comprado 3 unidades
     }
 
     @Test
-    @WithMockUser(username = "user_test", roles = {"USER"})
+    @WithMockUser(username = "user_test", roles = { "USER" })
     public void anularCompra_conUser_deberiaRetornarForbidden() throws Exception {
-        // Crear compra como admin
-        crearCompraDePrueba();
+        // Crear compra
+        Compra compra = new Compra(admin);
+        DetalleCompra detalle = new DetalleCompra(articulo1, 3, 9.0);
+        compra.agregarDetalle(detalle);
+        compra = compraRepository.save(compra);
 
         // Intentar anular como user
-        mockMvc.perform(delete("/api/compras/" + compraId))
+        mockMvc.perform(delete("/api/compras/" + compra.getId()))
                 .andExpect(status().isForbidden());
     }
 
@@ -255,13 +260,13 @@ public class CompraControllerIntegrationTest {
         // Crear DTO para la compra
         CompraRequestDTO compraRequestDTO = new CompraRequestDTO();
         List<DetalleCompraDTO> detalles = new ArrayList<>();
-        
+
         DetalleCompraDTO detalle = new DetalleCompraDTO();
         detalle.setIdArticulo(articulo1.getId());
         detalle.setCantidad(3);
         detalle.setPrecioUnitario(9.0);
         detalles.add(detalle);
-        
+
         compraRequestDTO.setDetalles(detalles);
 
         // Realizar la petición
@@ -270,7 +275,7 @@ public class CompraControllerIntegrationTest {
                 .content(objectMapper.writeValueAsString(compraRequestDTO)))
                 .andExpect(status().isCreated())
                 .andReturn().getResponse().getContentAsString();
-        
+
         // Extraer el ID de la compra creada
         compraId = objectMapper.readTree(response).get("id").asLong();
     }

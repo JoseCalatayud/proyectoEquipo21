@@ -1,5 +1,6 @@
 package es.santander.ascender.proyectoFinal2.controller;
 
+import es.santander.ascender.proyectoFinal2.model.RolUsuario;
 import es.santander.ascender.proyectoFinal2.model.Usuario;
 import es.santander.ascender.proyectoFinal2.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,7 +43,7 @@ public class UsuarioController {
     }
 
     @GetMapping("/rol/{rol}")
-    public ResponseEntity<List<Usuario>> buscarPorRol(@PathVariable String rol) {
+    public ResponseEntity<List<Usuario>> buscarPorRol(@PathVariable RolUsuario rol) {
         return ResponseEntity.ok(usuarioService.buscarPorRol(rol));
     }
 

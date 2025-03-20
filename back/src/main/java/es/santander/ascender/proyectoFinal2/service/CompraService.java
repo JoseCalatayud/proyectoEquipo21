@@ -2,8 +2,10 @@ package es.santander.ascender.proyectoFinal2.service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -51,20 +53,19 @@ public class CompraService {
                         articulo.getFamilia(),
                         detalleCompra.getCantidad(),
                         detalleCompra.getPrecioUnitario(),
-                        detalleCompra.getSubtotal()
-                );
+                        detalleCompra.getSubtotal());
                 detalleCompraListDTOS.add(detalleCompraListDTO);
             }
             CompraListDTO compraListDTO = new CompraListDTO(
                     compra.getId(),
                     compra.getFecha(),
                     compra.getTotal(),
-                    detalleCompraListDTOS
-            );
+                    detalleCompraListDTOS);
             compraListDTOS.add(compraListDTO);
         }
         return compraListDTOS;
     }
+
     @Transactional(readOnly = true)
     public Optional<Compra> buscarPorId(Long id) {
         return compraRepository.findById(id);
@@ -94,16 +95,23 @@ public class CompraService {
         }
         Usuario usuario = usuarioService.obtenerUsuarioPorUsername(auth.getName());
 
-        // 2. Crear compra
+        // 2. Validar que no hay artículos duplicados
+        Set<Long> articulosIds = new HashSet<>();
+        for (DetalleCompraDTO detalleDTO : compraRequestDTO.getDetalles()) {
+            if (!articulosIds.add(detalleDTO.getIdArticulo())) {
+                throw new IllegalArgumentException("No se permite duplicar artículos en la misma compra");
+            }
+        }
+        // 3. Crear compra
         Compra compra = new Compra(usuario);
 
-        // 3. Procesar cada detalle de compra
+        // 4. Procesar cada detalle de compra
         for (DetalleCompraDTO detalleDTO : compraRequestDTO.getDetalles()) {
             // 3.1. Buscar articulo.
             Articulo articulo = articuloService.buscarPorId(detalleDTO.getIdArticulo())
                     .orElseThrow(() -> new IllegalArgumentException("No existe el articulo"));
 
-            // 3.2. Verificar que el artículo no está borrado
+            // 4.2. Verificar que el artículo no está borrado
             if (articulo.isBorrado()) {
                 throw new IllegalStateException(
                         "No se puede comprar el artículo porque está descatalogado: " + articulo.getNombre());
@@ -130,6 +138,7 @@ public class CompraService {
         // 4. Guardar la compra
         return compraRepository.save(compra);
     }
+
     @Transactional
     public void anularCompra(Long id) {
         Compra compra = compraRepository.findById(id)

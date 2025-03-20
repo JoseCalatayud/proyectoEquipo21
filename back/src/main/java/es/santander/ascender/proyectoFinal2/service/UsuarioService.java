@@ -1,5 +1,6 @@
 package es.santander.ascender.proyectoFinal2.service;
 
+import es.santander.ascender.proyectoFinal2.model.RolUsuario;
 import es.santander.ascender.proyectoFinal2.model.Usuario;
 import es.santander.ascender.proyectoFinal2.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,7 +42,7 @@ public class UsuarioService {
     }
 
     @Transactional(readOnly = true)
-    public List<Usuario> buscarPorRol(String rol) {
+    public List<Usuario> buscarPorRol(RolUsuario rol) {
         return usuarioRepository.findByRol(rol);
     }
 

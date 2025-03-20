@@ -1,5 +1,6 @@
 package es.santander.ascender.proyectoFinal2.repository;
 
+import es.santander.ascender.proyectoFinal2.model.RolUsuario;
 import es.santander.ascender.proyectoFinal2.model.Usuario;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -14,5 +15,5 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
     
     boolean existsByUsername(String username);
     
-    List<Usuario> findByRol(String rol);
+    List<Usuario> findByRol(RolUsuario rol);
 }

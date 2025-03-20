@@ -15,8 +15,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 @Transactional
@@ -46,24 +48,22 @@ public class VentaService {
                         detalleVenta.getArticulo().getCodigoBarras(),
                         detalleVenta.getArticulo().getFamilia(),
                         detalleVenta.getCantidad(),
-                        detalleVenta.getSubtotal()
-                );
+                        detalleVenta.getSubtotal());
                 detalleVentaListDTOS.add(detalleVentaListDTO);
             }
-            UsuarioVentaDTO usuarioVentaDTO = new UsuarioVentaDTO(venta.getUsuario().getId(), venta.getUsuario().getUsername());
+            UsuarioVentaDTO usuarioVentaDTO = new UsuarioVentaDTO(venta.getUsuario().getId(),
+                    venta.getUsuario().getUsername());
             VentaListDTO ventaListDTO = new VentaListDTO(
                     venta.getId(),
                     venta.getFecha(),
                     venta.getTotal(),
                     usuarioVentaDTO,
-                    detalleVentaListDTOS
-            );
+                    detalleVentaListDTOS);
             ventaListDTOS.add(ventaListDTO);
         }
         return ventaListDTOS;
     }
 
-    
     public Venta crearVenta(VentaRequestDTO ventaRequestDTO) {
         // 1. Obtener el usuario autenticado
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -71,6 +71,13 @@ public class VentaService {
             throw new IllegalArgumentException("Usuario no autenticado");
         }
         Usuario usuario = usuarioService.obtenerUsuarioPorUsername(auth.getName());
+
+        Set<Long> articulosIds = new HashSet<>();
+        for (DetalleVentaDTO detalleDTO : ventaRequestDTO.getDetalles()) {
+            if (!articulosIds.add(detalleDTO.getIdArticulo())) {
+                throw new IllegalArgumentException("No se permite duplicar artículos en la misma venta");
+            }
+        }
 
         // 2. Crear venta
         Venta venta = new Venta(usuario);
@@ -83,7 +90,8 @@ public class VentaService {
 
             // 3.2. Comprobar stock.
             if (!articuloService.hayStockSuficiente(detalleDTO.getIdArticulo(), detalleDTO.getCantidad())) {
-                throw new StockInsuficienteException(articulo.getNombre(), articulo.getStock(), detalleDTO.getCantidad());
+                throw new StockInsuficienteException(articulo.getNombre(), articulo.getStock(),
+                        detalleDTO.getCantidad());
             }
 
             // 3.3. Crear detalle venta
@@ -93,7 +101,7 @@ public class VentaService {
             venta.agregarDetalle(detalleVenta);
 
             // 3.5. Actualizar stock
-            //Usamos synchronized para evitar condiciones de carrera
+            // Usamos synchronized para evitar condiciones de carrera
             synchronized (articulo) {
                 articuloService.actualizarStock(detalleDTO.getIdArticulo(), -detalleDTO.getCantidad());
             }
@@ -124,18 +132,17 @@ public class VentaService {
                     detalleVenta.getArticulo().getCodigoBarras(),
                     detalleVenta.getArticulo().getFamilia(),
                     detalleVenta.getCantidad(),
-                    detalleVenta.getSubtotal()
-            );
+                    detalleVenta.getSubtotal());
             detalleVentaListDTOS.add(detalleVentaListDTO);
         }
-        UsuarioVentaDTO usuarioVentaDTO = new UsuarioVentaDTO(venta.getUsuario().getId(), venta.getUsuario().getUsername());
+        UsuarioVentaDTO usuarioVentaDTO = new UsuarioVentaDTO(venta.getUsuario().getId(),
+                venta.getUsuario().getUsername());
         VentaResponseDTO ventaResponseDTO = new VentaResponseDTO(
                 venta.getId(),
                 venta.getFecha(),
                 venta.getTotal(),
                 usuarioVentaDTO,
-                detalleVentaListDTOS
-        );
+                detalleVentaListDTOS);
         return Optional.of(ventaResponseDTO);
     }
 
@@ -158,14 +165,13 @@ public class VentaService {
         return ventaRepository.findByUsuarioAndFechaBetween(usuario, fechaInicio, fechaFin);
     }
 
-    
     public void anularVenta(Long id) {
         Venta venta = ventaRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("No existe la venta con ID: " + id));
 
         // Devolver el stock que se había restado
         for (DetalleVenta detalle : venta.getDetalles()) {
-            //Usamos synchronized para evitar condiciones de carrera
+            // Usamos synchronized para evitar condiciones de carrera
             synchronized (detalle.getArticulo()) {
                 articuloService.actualizarStock(detalle.getArticulo().getId(), detalle.getCantidad());
             }
