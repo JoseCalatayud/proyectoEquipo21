@@ -16,7 +16,7 @@ public class ArticuloService {
 
     @Transactional(readOnly = true)
     public List<Articulo> listarTodos() {
-        return articuloRepository.findByBorradoFalse();
+        return articuloRepository.findAll(); // Devolver todos los artículos
     }
 
     @Transactional(readOnly = true)
