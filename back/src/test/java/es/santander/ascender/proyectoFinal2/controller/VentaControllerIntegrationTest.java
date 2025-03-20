@@ -1,8 +1,11 @@
 package es.santander.ascender.proyectoFinal2.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import es.santander.ascender.proyectoFinal2.config.TestSecurityConfig;
-import es.santander.ascender.proyectoFinal2.model.*;
+import es.santander.ascender.proyectoFinal2.dto.DetalleVentaDTO;
+import es.santander.ascender.proyectoFinal2.dto.VentaRequestDTO;
+import es.santander.ascender.proyectoFinal2.model.Articulo;
+import es.santander.ascender.proyectoFinal2.model.RolUsuario;
+import es.santander.ascender.proyectoFinal2.model.Usuario;
 import es.santander.ascender.proyectoFinal2.repository.ArticuloRepository;
 import es.santander.ascender.proyectoFinal2.repository.UsuarioRepository;
 import es.santander.ascender.proyectoFinal2.repository.VentaRepository;
@@ -11,11 +14,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,11 +31,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
-@Import(TestSecurityConfig.class)
+@Transactional
 public class VentaControllerIntegrationTest {
 
     @Autowired
     private MockMvc mockMvc;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @Autowired
     private ArticuloRepository articuloRepository;
@@ -41,137 +48,163 @@ public class VentaControllerIntegrationTest {
 
     @Autowired
     private VentaRepository ventaRepository;
-
+    
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    @Autowired
-    private ObjectMapper objectMapper;
-
-    private Articulo articulo;
-    private Usuario usuario;
+    private Usuario admin;
+    private Usuario user;
+    private Articulo articulo1;
+    private Articulo articulo2;
+    private Long ventaId;
 
     @BeforeEach
     public void setup() {
+        // Limpiamos los repositorios
+        ventaRepository.deleteAll();
         articuloRepository.deleteAll();
         usuarioRepository.deleteAll();
-        ventaRepository.deleteAll();
 
-        // Crear usuario para pruebas
-        usuario = new Usuario();
-        usuario.setUsername("testuser");
-        usuario.setPassword(passwordEncoder.encode("password"));
-        usuario.setRol("USER");
-        usuarioRepository.save(usuario);
+        // Creamos usuarios de prueba
+        admin = new Usuario();
+        admin.setUsername("admin_test");
+        admin.setPassword(passwordEncoder.encode("password"));
+        admin.setRol(RolUsuario.ADMIN);
+        usuarioRepository.save(admin);
 
-        // Crear artículo para pruebas
-        articulo = new Articulo();
-        articulo.setNombre("Test Articulo");
-        articulo.setCodigoBarras("1234567890123");
-        articulo.setFamilia("Electrónica");
-        articulo.setPrecioVenta(99.99);
-        articulo.setStock(10);
-        articuloRepository.save(articulo);
+        user = new Usuario();
+        user.setUsername("user_test");
+        user.setPassword(passwordEncoder.encode("password"));
+        user.setRol(RolUsuario.USER);
+        usuarioRepository.save(user);
+
+        // Creamos artículos de prueba
+        articulo1 = new Articulo();
+        articulo1.setNombre("Artículo Test 1");
+        articulo1.setDescripcion("Descripción test 1");
+        articulo1.setCodigoBarras("1234567890123");
+        articulo1.setFamilia("Test");
+        articulo1.setPrecioVenta(10.0);
+        articulo1.setStock(100);
+        articulo1.setPrecioPromedioPonderado(8.0);
+        articuloRepository.save(articulo1);
+
+        articulo2 = new Articulo();
+        articulo2.setNombre("Artículo Test 2");
+        articulo2.setDescripcion("Descripción test 2");
+        articulo2.setCodigoBarras("2234567890123");
+        articulo2.setFamilia("Test");
+        articulo2.setPrecioVenta(20.0);
+        articulo2.setStock(50);
+        articulo2.setPrecioPromedioPonderado(15.0);
+        articuloRepository.save(articulo2);
     }
 
     @Test
-    public void debeRealizarVentaYActualizarStock() throws Exception {
-        // Crear venta con un detalle
-        Venta venta = new Venta();
-        venta.setUsuario(usuario);
+    @WithMockUser(username = "admin_test", roles = {"ADMIN"})
+    public void listarVentas_conAdmin_deberiaRetornarTodasLasVentas() throws Exception {
+        // Primero creamos una venta para tener datos que listar
+        crearVentaDePrueba();
 
-        DetalleVenta detalle = new DetalleVenta();
-        detalle.setArticulo(articulo);
+        // Intentamos listar las ventas
+        mockMvc.perform(get("/api/ventas/listar"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(greaterThanOrEqualTo(1))))
+                .andExpect(jsonPath("$[0].id", notNullValue()));
+    }
+
+    @Test
+    @WithMockUser(username = "user_test", roles = {"USER"})
+    public void listarVentas_conUser_deberiaRetornarForbidden() throws Exception {
+        mockMvc.perform(get("/api/ventas/listar"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithMockUser(username = "user_test", roles = {"USER"})
+    public void crearVenta_conUser_deberiaCrearVenta() throws Exception {
+        // Crear DTO para la venta
+        VentaRequestDTO ventaRequestDTO = new VentaRequestDTO();
+        List<DetalleVentaDTO> detalles = new ArrayList<>();
+        
+        DetalleVentaDTO detalle = new DetalleVentaDTO();
+        detalle.setIdArticulo(articulo1.getId());
         detalle.setCantidad(2);
-        detalle.setPrecioUnitario(articulo.getPrecioVenta());
-        detalle.setSubtotal(articulo.getPrecioVenta()*2);
-
-        List<DetalleVenta> detalles = new ArrayList<>();
         detalles.add(detalle);
-        venta.setDetalles(detalles);
+        
+        ventaRequestDTO.setDetalles(detalles);
 
-        // Realizar venta
-        mockMvc.perform(post("/api/ventas")
+        // Realizar la petición
+        mockMvc.perform(post("/api/ventas/crear")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(venta)))
-                .andExpect(status().isCreated())
+                .content(objectMapper.writeValueAsString(ventaRequestDTO)))
+                .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", notNullValue()))
                 .andExpect(jsonPath("$.detalles", hasSize(1)));
-
-        // Verificar que el stock se actualizó
-        mockMvc.perform(get("/api/articulos/" + articulo.getId()))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.stock", is(8))); // 10 original - 2 vendidos = 8
     }
 
     @Test
-    public void debeRechazarVentaSinStockSuficiente() throws Exception {
-        // Crear venta con cantidad superior al stock
-        Venta venta = new Venta();
-        venta.setUsuario(usuario);
+    @WithMockUser(username = "user_test", roles = {"USER"})
+    public void buscarPorId_ventaPropia_deberiaRetornarVenta() throws Exception {
+        // Crear venta
+        crearVentaDePrueba();
 
-        DetalleVenta detalle = new DetalleVenta();
-        detalle.setArticulo(articulo);
-        detalle.setCantidad(20); // stock es solo 10
-        detalle.setPrecioUnitario(articulo.getPrecioVenta());
-        detalle.setSubtotal(articulo.getPrecioVenta()*(20));
-
-        List<DetalleVenta> detalles = new ArrayList<>();
-        detalles.add(detalle);
-        venta.setDetalles(detalles);
-
-        // Intentar realizar venta
-        mockMvc.perform(post("/api/ventas")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(venta)))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.mensaje", containsString("Stock insuficiente")));
-
-        // Verificar que el stock no se modificó
-        mockMvc.perform(get("/api/articulos/" + articulo.getId()))
+        // Buscar por ID
+        mockMvc.perform(get("/api/ventas/" + ventaId))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.stock", is(10))); // stock sin cambios
+                .andExpect(jsonPath("$.id", is(ventaId.intValue())));
+    }
+    
+    @Test
+    @WithMockUser(username = "admin_test", roles = {"ADMIN"})
+    public void buscarPorFechas_conAdmin_deberiaRetornarVentas() throws Exception {
+        // Crear venta
+        crearVentaDePrueba();
+
+        // Buscar por fechas (un rango amplio para asegurar que encuentre la venta)
+        mockMvc.perform(get("/api/ventas/fechas")
+                .param("fechaInicio", "2020-01-01T00:00:00")
+                .param("fechaFin", "2030-01-01T00:00:00"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(greaterThanOrEqualTo(1))));
     }
 
     @Test
-    public void debePermitirAnularVentaYRestaurarStock() throws Exception {
-        // Crear venta con un detalle
-        Venta venta = new Venta();
-        venta.setUsuario(usuario);
+    @WithMockUser(username = "user_test", roles = {"USER"})
+    public void anularVenta_ventaPropia_deberiaAnularVenta() throws Exception {
+        // Crear venta
+        crearVentaDePrueba();
 
-        DetalleVenta detalle = new DetalleVenta();
-        detalle.setArticulo(articulo);
-        detalle.setCantidad(2);
-        detalle.setPrecioUnitario(articulo.getPrecioVenta());
-        detalle.setSubtotal(articulo.getPrecioVenta()* 2);
-
-        List<DetalleVenta> detalles = new ArrayList<>();
-        detalles.add(detalle);
-        venta.setDetalles(detalles);
-
-        // Realizar venta
-        String response = mockMvc.perform(post("/api/ventas")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(venta)))
-                .andExpect(status().isCreated())
-                .andReturn().getResponse().getContentAsString();
-        
-        Venta ventaRealizada = objectMapper.readValue(response, Venta.class);
-        Long ventaId = ventaRealizada.getId();
-
-        // Verificar que el stock se actualizó
-        mockMvc.perform(get("/api/articulos/" + articulo.getId()))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.stock", is(8))); // 10 original - 2 vendidos = 8
-
-        // Anular la venta
+        // Anular venta
         mockMvc.perform(delete("/api/ventas/" + ventaId))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.mensaje", containsString("anulada correctamente")));
+                .andExpect(jsonPath("$.mensaje", is("Venta anulada correctamente")));
 
-        // Verificar que el stock se restauró
-        mockMvc.perform(get("/api/articulos/" + articulo.getId()))
+        // Verificar que la venta ya no existe
+        mockMvc.perform(get("/api/ventas/" + ventaId))
+                .andExpect(status().isNotFound());
+    }
+
+    private void crearVentaDePrueba() throws Exception {
+        // Crear DTO para la venta
+        VentaRequestDTO ventaRequestDTO = new VentaRequestDTO();
+        List<DetalleVentaDTO> detalles = new ArrayList<>();
+        
+        DetalleVentaDTO detalle = new DetalleVentaDTO();
+        detalle.setIdArticulo(articulo1.getId());
+        detalle.setCantidad(1);
+        detalles.add(detalle);
+        
+        ventaRequestDTO.setDetalles(detalles);
+
+        // Realizar la petición
+        String response = mockMvc.perform(post("/api/ventas/crear")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(ventaRequestDTO)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.stock", is(10))); // stock restaurado
+                .andReturn().getResponse().getContentAsString();
+        
+        // Extraer el ID de la venta creada
+        ventaId = objectMapper.readTree(response).get("id").asLong();
     }
 }

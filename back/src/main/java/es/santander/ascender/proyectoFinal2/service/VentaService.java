@@ -63,10 +63,13 @@ public class VentaService {
         return ventaListDTOS;
     }
 
-    @Transactional
+    
     public Venta crearVenta(VentaRequestDTO ventaRequestDTO) {
         // 1. Obtener el usuario autenticado
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || auth.getName() == null) {
+            throw new IllegalArgumentException("Usuario no autenticado");
+        }
         Usuario usuario = usuarioService.obtenerUsuarioPorUsername(auth.getName());
 
         // 2. Crear venta
@@ -95,8 +98,12 @@ public class VentaService {
                 articuloService.actualizarStock(detalleDTO.getIdArticulo(), -detalleDTO.getCantidad());
             }
         }
+        // 4. Comprobar que la venta tiene detalles
+        if (venta.getDetalles().isEmpty()) {
+            throw new IllegalArgumentException("La venta debe tener al menos un detalle");
+        }
 
-        // 4. Guardar la venta
+        // 5. Guardar la venta
         return ventaRepository.save(venta);
     }
 
@@ -151,7 +158,7 @@ public class VentaService {
         return ventaRepository.findByUsuarioAndFechaBetween(usuario, fechaInicio, fechaFin);
     }
 
-    @Transactional
+    
     public void anularVenta(Long id) {
         Venta venta = ventaRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("No existe la venta con ID: " + id));

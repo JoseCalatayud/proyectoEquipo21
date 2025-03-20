@@ -15,7 +15,6 @@ import es.santander.ascender.proyectoFinal2.dto.CompraListDTO;
 import es.santander.ascender.proyectoFinal2.dto.CompraRequestDTO;
 import es.santander.ascender.proyectoFinal2.dto.DetalleCompraDTO;
 import es.santander.ascender.proyectoFinal2.dto.DetalleCompraListDTO;
-import es.santander.ascender.proyectoFinal2.exception.StockInsuficienteException;
 import es.santander.ascender.proyectoFinal2.model.Articulo;
 import es.santander.ascender.proyectoFinal2.model.Compra;
 import es.santander.ascender.proyectoFinal2.model.DetalleCompra;

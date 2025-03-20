@@ -33,13 +33,13 @@ public class DataInitializer {
                 Usuario admin = new Usuario();
                 admin.setUsername("admin");
                 admin.setPassword(passwordEncoder.encode("admin123"));
-                admin.setRol("ADMIN");
+                admin.setRol(RolUsuario.ADMIN);
                 usuarioRepository.save(admin);
 
                 Usuario user = new Usuario();
                 user.setUsername("user");
                 user.setPassword(passwordEncoder.encode("user123"));
-                user.setRol("USER");
+                user.setRol(RolUsuario.USER);
                 usuarioRepository.save(user);
 
                 System.out.println("Usuarios creados: admin/admin123 y user/user123");

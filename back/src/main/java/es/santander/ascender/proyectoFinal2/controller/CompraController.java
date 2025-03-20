@@ -22,7 +22,6 @@ import es.santander.ascender.proyectoFinal2.dto.CompraListDTO;
 import es.santander.ascender.proyectoFinal2.dto.CompraRequestDTO;
 import es.santander.ascender.proyectoFinal2.model.Compra;
 import es.santander.ascender.proyectoFinal2.service.CompraService;
-import es.santander.ascender.proyectoFinal2.service.UsuarioService;
 import jakarta.validation.Valid;
 
 @RestController
@@ -33,9 +32,7 @@ public class CompraController {
     @Autowired
     private CompraService compraService;
 
-    @Autowired
-    private UsuarioService usuarioService;
-
+    
     @GetMapping
     public ResponseEntity<List<CompraListDTO>> listarCompras() {
         return ResponseEntity.ok(compraService.listarTodas());

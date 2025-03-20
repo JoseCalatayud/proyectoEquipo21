@@ -1,14 +1,14 @@
 package es.santander.ascender.proyectoFinal2.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 @Entity
 @Table(name = "usuarios", uniqueConstraints = @UniqueConstraint(columnNames = "username"))
-@JsonIgnoreProperties({"password"})
+
 public class Usuario {
 
     @Id
@@ -22,18 +22,21 @@ public class Usuario {
 
     @NotBlank(message = "La contraseña es obligatoria")
     @Column(nullable = false)
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+
     private String password;
 
-    @NotBlank(message = "El rol es obligatorio")
+    @NotNull(message = "El rol es obligatorio")
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String rol; // ADMIN o USER
+    private RolUsuario rol; // ADMIN o USER
 
     // Constructor vacío
     public Usuario() {
     }
 
     // Constructor con parámetros
-    public Usuario(String username, String password, String rol) {
+    public Usuario(String username, String password, RolUsuario rol) {
         this.username = username;
         this.password = password;
         this.rol = rol;
@@ -64,11 +67,11 @@ public class Usuario {
         this.password = password;
     }
 
-    public String getRol() {
+    public RolUsuario getRol() {
         return rol;
     }
 
-    public void setRol(String rol) {
+    public void setRol(RolUsuario rol) {
         this.rol = rol;
     }
 }
