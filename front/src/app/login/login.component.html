@@ -1,0 +1,16 @@
+<div>
+    <h2>Iniciar Sesión</h2>
+    <form action="login.php" method="POST">
+        <label for="usuario">Usuario</label>
+        <input type="text" id="usuario" name="usuario" [(ngModel)]="usuario"  placeholder="Ingrese su usuario">
+
+        <br>
+
+        <label for="contraseña">Contraseña</label>
+        <input type="password" id="clave" name="clave" [(ngModel)]="clave" placeholder="Ingrese su contraseña">
+
+        <br><br>
+
+        <input  type="button" (click)="validar()" value="enviar"/>
+    </form>
+</div>
