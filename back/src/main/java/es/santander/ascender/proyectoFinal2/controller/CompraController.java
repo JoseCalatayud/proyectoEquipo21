@@ -39,26 +39,25 @@ public class CompraController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> buscarPorId(@PathVariable Long id) {
-        Compra compra = compraService.buscarPorId(id).orElseThrow(() -> new IllegalArgumentException("No existe la compra con ID: " + id));
-        return ResponseEntity.ok(compra);
+    public ResponseEntity<CompraListDTO> buscarPorId(@PathVariable Long id) {
+        compraService.buscarPorId(id);
+        return ResponseEntity.ok(compraService.buscarPorId(id));
+        
     }
 
     @GetMapping("/fechas")
-    public ResponseEntity<List<Compra>> buscarPorFechas(
+    public ResponseEntity<List<CompraListDTO>> buscarPorFechas(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fechaInicio,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fechaFin) {
         return ResponseEntity.ok(compraService.buscarPorFechas(fechaInicio, fechaFin));
     }
 
     @PostMapping
-    public ResponseEntity<?> realizarCompra(@Valid @RequestBody CompraRequestDTO compraRequestDTO) {
-        try {
-            Compra nuevaCompra = compraService.crearCompra(compraRequestDTO);
-            return ResponseEntity.status(HttpStatus.CREATED).body(nuevaCompra);
-        } catch (IllegalArgumentException | IllegalStateException e) {
-            return ResponseEntity.badRequest().body(Map.of("mensaje", e.getMessage()));
-        }
+    public ResponseEntity<CompraListDTO> realizarCompra(@Valid @RequestBody CompraRequestDTO compraRequestDTO) {
+        CompraListDTO compraCreada = compraService.crearCompra(compraRequestDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(compraCreada);
+                
+                
     }
 
     @DeleteMapping("/{id}")

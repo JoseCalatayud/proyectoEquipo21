@@ -39,37 +39,21 @@ public class CompraService {
     @Transactional(readOnly = true)
     public List<CompraListDTO> listarTodas() {
         List<Compra> compras = compraRepository.findAll();
-        List<CompraListDTO> compraListDTOS = new ArrayList<>();
-
-        for (Compra compra : compras) {
-            List<DetalleCompraListDTO> detalleCompraListDTOS = new ArrayList<>();
-            for (DetalleCompra detalleCompra : compra.getDetalles()) {
-                Articulo articulo = detalleCompra.getArticulo();
-                DetalleCompraListDTO detalleCompraListDTO = new DetalleCompraListDTO(
-                        articulo.getId(),
-                        articulo.getNombre(),
-                        articulo.getDescripcion(),
-                        articulo.getCodigoBarras(),
-                        articulo.getFamilia(),
-                        detalleCompra.getCantidad(),
-                        detalleCompra.getPrecioUnitario(),
-                        detalleCompra.getSubtotal());
-                detalleCompraListDTOS.add(detalleCompraListDTO);
-            }
-            CompraListDTO compraListDTO = new CompraListDTO(
-                    compra.getId(),
-                    compra.getFecha(),
-                    compra.getTotal(),
-                    detalleCompraListDTOS);
-            compraListDTOS.add(compraListDTO);
-        }
-        return compraListDTOS;
+        return convertirCompraToCompraListDTOs(compras);
     }
 
     @Transactional(readOnly = true)
-    public Optional<Compra> buscarPorId(Long id) {
-        return compraRepository.findById(id);
+    public CompraListDTO buscarPorId(Long id) {
+        Optional<Compra> compraOpt = compraRepository.findById(id);
+        if (compraOpt.isPresent()) {
+            Compra compra = compraOpt.get();
+            return convertCompraToCompraListDTO(compra);
+        } else {
+            throw new IllegalArgumentException("No existe la compra con ID: " + id);
+        }
     }
+
+    
 
     @Transactional(readOnly = true)
     public List<Compra> buscarPorUsuario(Usuario usuario) {
@@ -77,22 +61,40 @@ public class CompraService {
     }
 
     @Transactional(readOnly = true)
-    public List<Compra> buscarPorFechas(LocalDateTime fechaInicio, LocalDateTime fechaFin) {
-        return compraRepository.findByFechaBetween(fechaInicio, fechaFin);
+    public List<CompraListDTO> buscarPorFechas(LocalDateTime fechaInicio, LocalDateTime fechaFin) {
+
+        List<Compra> compras = compraRepository.findByFechaBetween(fechaInicio, fechaFin);
+        // 1. Validar que las fechas no son nulas
+        validarFechas(fechaInicio, fechaFin);
+        return convertirCompraToCompraListDTOs(compras);
     }
 
     @Transactional(readOnly = true)
-    public List<Compra> buscarPorUsuarioYFechas(Usuario usuario, LocalDateTime fechaInicio, LocalDateTime fechaFin) {
-        return compraRepository.findByUsuarioAndFechaBetween(usuario, fechaInicio, fechaFin);
+    public List<CompraListDTO> buscarPorUsuarioYFechas(Usuario usuario, LocalDateTime fechaInicio,
+            LocalDateTime fechaFin) {
+        // 1. Validar que el usuario no es nulo
+        if (usuario == null) {
+            throw new IllegalArgumentException("El usuario no puede ser nulo");
+        }
+        validarFechas(fechaInicio, fechaFin);
+        // 4. Buscar compras por usuario y fechas
+        List<Compra> compras = compraRepository.findByUsuarioAndFechaBetween(usuario, fechaInicio, fechaFin);
+
+        return convertirCompraToCompraListDTOs(compras);
+
     }
 
-    @Transactional
-    public Compra crearCompra(CompraRequestDTO compraRequestDTO) {
+    public CompraListDTO crearCompra(CompraRequestDTO compraRequestDTO) {
         // 1. Obtener el usuario autenticado
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth == null || !auth.isAuthenticated()) {
             throw new IllegalArgumentException("Usuario no autenticado");
         }
+        // 1.1. Comprobar rol usuario
+        if (!auth.getAuthorities().stream().anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_ADMIN"))) {
+            throw new IllegalArgumentException("El usuario no tiene permisos para realizar compras");
+        }
+        
         Usuario usuario = usuarioService.obtenerUsuarioPorUsername(auth.getName());
 
         // 2. Validar que no hay artículos duplicados
@@ -126,17 +128,20 @@ public class CompraService {
             compra.agregarDetalle(detalleCompra);
 
             // 3.6. Actualizar stock
-            
+
             articuloService.actualizarStock(detalleDTO.getIdArticulo(), detalleDTO.getCantidad());
             // Calculamos el nuevo precio promedio ponderado
             articuloService.actualizarPrecioPromedioPonderado(articulo, detalleDTO.getCantidad(),
                     detalleDTO.getPrecioUnitario());
 
         }
-
-        // 4. Guardar la compra
-        return compraRepository.save(compra);
+               
+        compraRepository.save(compra);
+        return convertCompraToCompraListDTO(compra);
+        
     }
+
+    // 4. Guardar la compra
 
     @Transactional
     public void anularCompra(Long id) {
@@ -153,5 +158,59 @@ public class CompraService {
 
         // Eliminar la compra
         compraRepository.deleteById(id);
+    }
+
+    private List<CompraListDTO> convertirCompraToCompraListDTOs(List<Compra> compras) {
+        List<CompraListDTO> compraListDTOS = new ArrayList<>();
+        for (Compra compra : compras) {
+            List<DetalleCompraListDTO> detalleCompraListDTOS = new ArrayList<>();
+            for (DetalleCompra detalleCompra : compra.getDetalles()) {
+                Articulo articulo = detalleCompra.getArticulo();
+                DetalleCompraListDTO detalleCompraListDTO = new DetalleCompraListDTO(
+                        articulo.getId(),
+                        articulo.getNombre(),
+                        articulo.getDescripcion(),
+                        articulo.getCodigoBarras(),
+                        articulo.getFamilia(),
+                        detalleCompra.getCantidad(),
+                        detalleCompra.getPrecioUnitario(),
+                        detalleCompra.getSubtotal());
+                detalleCompraListDTOS.add(detalleCompraListDTO);
+            }
+            CompraListDTO compraListDTO = new CompraListDTO(
+                    compra.getId(),
+                    compra.getFecha(),
+                    compra.getTotal(),
+                    compra.getUsuario().getUsername(),
+                    detalleCompraListDTOS);
+            compraListDTOS.add(compraListDTO);
+        }
+        return compraListDTOS;
+    }
+    private void validarFechas(LocalDateTime fechaInicio, LocalDateTime fechaFin) {
+        if (fechaInicio == null || fechaFin == null) {
+            throw new IllegalArgumentException("Las fechas no pueden ser nulas");
+        }
+        // 2. Validar que la fecha de inicio no es posterior a la fecha de fin
+        if (fechaInicio.isAfter(fechaFin)) {
+            throw new IllegalArgumentException("La fecha de inicio no puede ser posterior a la fecha de fin");
+        }
+    }
+    private CompraListDTO convertCompraToCompraListDTO(Compra compra) {
+        List<DetalleCompraListDTO> detalleCompraListDTOS = new ArrayList<>();
+        for (DetalleCompra detalleCompra : compra.getDetalles()) {
+            Articulo articulo = detalleCompra.getArticulo();
+            DetalleCompraListDTO detalleCompraListDTO = new DetalleCompraListDTO(
+                    articulo.getId(),
+                    articulo.getNombre(),
+                    articulo.getDescripcion(),
+                    articulo.getCodigoBarras(),
+                    articulo.getFamilia(),
+                    detalleCompra.getCantidad(),
+                    detalleCompra.getPrecioUnitario(),
+                    detalleCompra.getSubtotal());
+            detalleCompraListDTOS.add(detalleCompraListDTO);
+        }
+        return new CompraListDTO(compra.getId(), compra.getFecha(), compra.getTotal(), compra.getUsuario().getUsername(), detalleCompraListDTOS);
     }
 }
