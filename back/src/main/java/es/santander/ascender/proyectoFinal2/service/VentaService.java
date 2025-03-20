@@ -101,10 +101,9 @@ public class VentaService {
             venta.agregarDetalle(detalleVenta);
 
             // 3.5. Actualizar stock
-            // Usamos synchronized para evitar condiciones de carrera
-            synchronized (articulo) {
-                articuloService.actualizarStock(detalleDTO.getIdArticulo(), -detalleDTO.getCantidad());
-            }
+            
+            articuloService.actualizarStock(detalleDTO.getIdArticulo(), -detalleDTO.getCantidad());
+
         }
         // 4. Comprobar que la venta tiene detalles
         if (venta.getDetalles().isEmpty()) {

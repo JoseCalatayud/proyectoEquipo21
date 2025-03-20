@@ -126,13 +126,12 @@ public class CompraService {
             compra.agregarDetalle(detalleCompra);
 
             // 3.6. Actualizar stock
-            // Usamos synchronized para evitar condiciones de carrera
-            synchronized (articulo) {
-                articuloService.actualizarStock(detalleDTO.getIdArticulo(), detalleDTO.getCantidad());
-                // Calculamos el nuevo precio promedio ponderado
-                articuloService.actualizarPrecioPromedioPonderado(articulo, detalleDTO.getCantidad(),
-                        detalleDTO.getPrecioUnitario());
-            }
+            
+            articuloService.actualizarStock(detalleDTO.getIdArticulo(), detalleDTO.getCantidad());
+            // Calculamos el nuevo precio promedio ponderado
+            articuloService.actualizarPrecioPromedioPonderado(articulo, detalleDTO.getCantidad(),
+                    detalleDTO.getPrecioUnitario());
+
         }
 
         // 4. Guardar la compra

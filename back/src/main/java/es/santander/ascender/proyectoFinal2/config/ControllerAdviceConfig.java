@@ -1,6 +1,8 @@
 package es.santander.ascender.proyectoFinal2.config;
 
 import jakarta.validation.ConstraintViolationException;
+
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -84,5 +86,10 @@ public class ControllerAdviceConfig {
     public ResponseEntity<ErronInfo> handleException(Exception ex) {
         ErronInfo errorResponse = new ErronInfo("Se ha producido un error inesperado");
         return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+    @ExceptionHandler(OptimisticLockingFailureException.class)
+    public ResponseEntity<ErronInfo> handleOptimisticLockingFailureException(OptimisticLockingFailureException ex) {
+        ErronInfo errorResponse = new ErronInfo("Error de concurrencia al actualizar el stock. Por favor, intente nuevamente.");
+        return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
     }
 }

@@ -11,6 +11,10 @@ public class Articulo {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
+    @Version
+    private Long version;
+    
+
     @NotBlank(message = "El nombre es obligatorio")
     private String nombre;
 
@@ -137,5 +141,11 @@ public class Articulo {
 
     public void setPrecioPromedioPonderado(Double precioPromedioPonderado) {
         this.precioPromedioPonderado = precioPromedioPonderado;
+    }
+    public Long getVersion() {
+        return version;
+    }
+    public void setVersion(Long version) {
+        this.version = version;
     }
 }
