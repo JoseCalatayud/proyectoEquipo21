@@ -91,7 +91,7 @@ public class UsuarioService {
 
     @Transactional(readOnly = true)
     public boolean esAdmin(Usuario usuario) {
-        return usuario != null && "ADMIN".equals(usuario.getRol());
+        return usuario != null && "ADMIN".equals(usuario.getRol().name());
     }
 
     @Transactional(readOnly = true)

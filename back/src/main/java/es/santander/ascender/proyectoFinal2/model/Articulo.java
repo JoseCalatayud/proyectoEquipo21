@@ -111,8 +111,8 @@ public class Articulo {
     }
  
 
-    public double getPrecioVenta() {
-        return precioVenta;
+    public Double getPrecioVenta() {
+        return Math.round(precioVenta * 100.0) / 100.0;
     }
 
     public void setPrecioVenta(Double precioVenta) {
@@ -136,7 +136,7 @@ public class Articulo {
     }
 
     public Double getPrecioPromedioPonderado() {
-        return precioPromedioPonderado;
+        return Math.round(precioPromedioPonderado * 100.0) / 100.0;
     }
 
     public void setPrecioPromedioPonderado(Double precioPromedioPonderado) {
