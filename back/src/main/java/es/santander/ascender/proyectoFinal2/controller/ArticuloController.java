@@ -1,6 +1,8 @@
 package es.santander.ascender.proyectoFinal2.controller;
 
+import es.santander.ascender.proyectoFinal2.dto.ArticuloActualizacionDTO;
 import es.santander.ascender.proyectoFinal2.dto.ArticuloDTO;
+import es.santander.ascender.proyectoFinal2.dto.ArticuloRespuestaDTO;
 import es.santander.ascender.proyectoFinal2.model.Articulo;
 import es.santander.ascender.proyectoFinal2.service.ArticuloService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,14 +30,14 @@ public class ArticuloController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> buscarPorId(@PathVariable Long id) {
+    public ResponseEntity<Articulo> buscarPorId(@PathVariable Long id) {
         Optional<Articulo> articulo = articuloService.buscarPorId(id);
         return articulo.map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @GetMapping("/codigo/{codigoBarras}")
-    public ResponseEntity<?> buscarPorCodigoBarras(@PathVariable String codigoBarras) {
+    public ResponseEntity<Articulo> buscarPorCodigoBarras(@PathVariable String codigoBarras) {
         Optional<Articulo> articulo = articuloService.buscarPorCodigoBarras(codigoBarras);
         return articulo.map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
@@ -53,16 +55,24 @@ public class ArticuloController {
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Articulo> crearArticulo(@Valid @RequestBody ArticuloDTO articuloDTO) {
+    public ResponseEntity<ArticuloRespuestaDTO> crearArticulo(@Valid @RequestBody ArticuloDTO articuloDTO) {
         Articulo nuevoArticulo = articuloService.crear(articuloDTO);
-        return new ResponseEntity<>(nuevoArticulo, HttpStatus.CREATED);
+        ArticuloRespuestaDTO articuloRespuestaDTO = new ArticuloRespuestaDTO(
+                nuevoArticulo.getId(),
+                nuevoArticulo.getNombre(),
+                nuevoArticulo.getDescripcion(),
+                nuevoArticulo.getCodigoBarras(),
+                nuevoArticulo.getFamilia(),
+                nuevoArticulo.getFotografia(),
+                nuevoArticulo.getPrecioVenta()
+        );
+        return new ResponseEntity<>(articuloRespuestaDTO, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<?> actualizarArticulo(@PathVariable Long id, @Valid @RequestBody Articulo articulo) {
-        articulo.setId(id); // Asegurar que el ID coincida con el de la ruta
-        Articulo actualizadoArticulo = articuloService.actualizar(articulo);
+    public ResponseEntity<Articulo> actualizarArticulo(@PathVariable Long id, @Valid @RequestBody ArticuloActualizacionDTO articuloActualizacionDTO) {
+        Articulo actualizadoArticulo = articuloService.actualizar(id, articuloActualizacionDTO);
         return ResponseEntity.ok(actualizadoArticulo);
     }
 

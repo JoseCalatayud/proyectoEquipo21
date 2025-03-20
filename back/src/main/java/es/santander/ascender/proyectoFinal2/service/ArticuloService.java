@@ -1,5 +1,6 @@
 package es.santander.ascender.proyectoFinal2.service;
 
+import es.santander.ascender.proyectoFinal2.dto.ArticuloActualizacionDTO;
 import es.santander.ascender.proyectoFinal2.dto.ArticuloDTO;
 import es.santander.ascender.proyectoFinal2.model.Articulo;
 import es.santander.ascender.proyectoFinal2.repository.ArticuloRepository;
@@ -61,19 +62,23 @@ public class ArticuloService {
     }
 
     @Transactional
-    public Articulo actualizar(Articulo articulo) {
-        Optional<Articulo> articuloExistente = articuloRepository.findById(articulo.getId());
+    public Articulo actualizar(Long id, ArticuloActualizacionDTO articuloActualizacionDTO) {
+        Optional<Articulo> articuloExistenteOptional = articuloRepository.findById(id);
 
-        if (articuloExistente.isEmpty()) {
-            throw new IllegalArgumentException("No existe el artículo con ID: " + articulo.getId());
+        if (articuloExistenteOptional.isEmpty()) {
+            throw new IllegalArgumentException("No existe el artículo con ID: " + id);
         }
 
-        // No permitir cambiar el código de barras
-        if (!articuloExistente.get().getCodigoBarras().equals(articulo.getCodigoBarras())) {
-            throw new IllegalArgumentException("No se puede modificar el código de barras de un artículo existente");
-        }
+        Articulo articuloExistente = articuloExistenteOptional.get();
 
-        return articuloRepository.save(articulo);
+        // Actualizar los campos permitidos
+        articuloExistente.setNombre(articuloActualizacionDTO.getNombre());
+        articuloExistente.setDescripcion(articuloActualizacionDTO.getDescripcion());
+        articuloExistente.setFamilia(articuloActualizacionDTO.getFamilia());
+        articuloExistente.setFotografia(articuloActualizacionDTO.getFotografia());
+        articuloExistente.setPrecioVenta(articuloActualizacionDTO.getPrecioVenta());
+
+        return articuloRepository.save(articuloExistente);
     }
 
     @Transactional
@@ -116,7 +121,10 @@ public class ArticuloService {
     @Transactional(readOnly = true)
     public boolean hayStockSuficiente(Long id, int cantidad) {
         Optional<Articulo> articuloOptional = articuloRepository.findById(id);
-        return articuloOptional.isPresent() && articuloOptional.get().getStock() >= cantidad;
+        if(articuloOptional.isEmpty()){
+            throw new IllegalArgumentException("No existe el artículo con ID: " + id);
+        }
+        return articuloOptional.get().getStock() >= cantidad;
     }
 
     @Transactional

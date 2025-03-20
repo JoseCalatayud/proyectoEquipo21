@@ -1,10 +1,11 @@
 package es.santander.ascender.proyectoFinal2.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 
 @Entity
-
 public class Articulo {
 
     @Id
@@ -12,6 +13,7 @@ public class Articulo {
     private Long id;
 
     @Version
+    @JsonIgnore
     private Long version;
     
 
