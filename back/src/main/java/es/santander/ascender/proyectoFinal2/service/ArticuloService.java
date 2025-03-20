@@ -1,5 +1,6 @@
 package es.santander.ascender.proyectoFinal2.service;
 
+import es.santander.ascender.proyectoFinal2.dto.ArticuloDTO;
 import es.santander.ascender.proyectoFinal2.model.Articulo;
 import es.santander.ascender.proyectoFinal2.repository.ArticuloRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,11 +40,23 @@ public class ArticuloService {
         return articuloRepository.findByNombreContainingIgnoreCaseAndBorradoFalse(nombre);
     }
 
-    @Transactional
-    public Articulo crear(Articulo articulo) {
-        if (articuloRepository.existsByCodigoBarras(articulo.getCodigoBarras())) {
+   @Transactional
+    public Articulo crear(ArticuloDTO articuloDTO) {
+        if (articuloRepository.existsByCodigoBarras(articuloDTO.getCodigoBarras())) {
             throw new IllegalArgumentException("Ya existe un artículo con ese código de barras");
         }
+
+        Articulo articulo = new Articulo(
+                articuloDTO.getNombre(),
+                articuloDTO.getDescripcion(),
+                articuloDTO.getCodigoBarras(),
+                articuloDTO.getFamilia(),
+                articuloDTO.getFotografia(),
+                articuloDTO.getPrecioVenta(),
+                0 // Stock inicial en 0
+        );
+        articulo.setPrecioPromedioPonderado(articuloDTO.getPrecioVenta());
+
         return articuloRepository.save(articulo);
     }
 

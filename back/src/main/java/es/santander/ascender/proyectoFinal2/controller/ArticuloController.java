@@ -1,5 +1,6 @@
 package es.santander.ascender.proyectoFinal2.controller;
 
+import es.santander.ascender.proyectoFinal2.dto.ArticuloDTO;
 import es.santander.ascender.proyectoFinal2.model.Articulo;
 import es.santander.ascender.proyectoFinal2.service.ArticuloService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,10 +53,9 @@ public class ArticuloController {
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<?> crearArticulo(@Valid @RequestBody Articulo articulo) {
-        Articulo nuevoArticulo = articuloService.crear(articulo);
-        return ResponseEntity.status(HttpStatus.CREATED).body(nuevoArticulo);
-
+    public ResponseEntity<Articulo> crearArticulo(@Valid @RequestBody ArticuloDTO articuloDTO) {
+        Articulo nuevoArticulo = articuloService.crear(articuloDTO);
+        return new ResponseEntity<>(nuevoArticulo, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
