@@ -42,8 +42,10 @@ public class SecurityConfig {
                 // API Auth
                 .requestMatchers("/api/auth/**").permitAll()
                 // Otras rutas...
+                .requestMatchers("/api/dummy").permitAll()
                 .anyRequest().authenticated()
             )
+            
             // Reemplazar formLogin con httpBasic para API REST
             .httpBasic(withDefaults())
             // Establecer la política de sesiones como STATELESS (API REST)
