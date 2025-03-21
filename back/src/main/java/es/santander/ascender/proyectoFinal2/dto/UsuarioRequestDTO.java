@@ -5,16 +5,16 @@ public class UsuarioRequestDTO {
     private String username;
     private String password;
     private String rol; // ADMIN o USER
-    private boolean activo;
+    
 
     public UsuarioRequestDTO() {
     }
 
-    public UsuarioRequestDTO(String username, String password, String rol, boolean activo) {
+    public UsuarioRequestDTO(String username, String password, String rol) {
         this.username = username;
         this.password = password;
         this.rol = rol;
-        this.activo = activo;
+       
     }
 
     public String getUsername() {
@@ -41,11 +41,5 @@ public class UsuarioRequestDTO {
         this.rol = rol;
     }
 
-    public boolean isActivo() {
-        return activo;
-    }
-
-    public void setActivo(boolean activo) {
-        this.activo = activo;
-    }
+    
 }

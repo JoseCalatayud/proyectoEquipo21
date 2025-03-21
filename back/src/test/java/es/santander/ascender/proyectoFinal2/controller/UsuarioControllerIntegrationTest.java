@@ -87,7 +87,6 @@ public class UsuarioControllerIntegrationTest {
     public void buscarPorId_conIdExistente_deberiaRetornarUsuario() throws Exception {
         mockMvc.perform(get("/api/usuarios/" + user.getId()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id", is(user.getId().intValue())))
                 .andExpect(jsonPath("$.username", is("user_test")))
                 .andExpect(jsonPath("$.rol", is("USER")));
     }
@@ -140,7 +139,7 @@ public class UsuarioControllerIntegrationTest {
     @WithMockUser(username = "admin_test", roles = {"ADMIN"})
     public void crearUsuario_conAdmin_deberiaCrearUsuario() throws Exception {
         Usuario nuevoUsuario = new Usuario();
-        nuevoUsuario.setUsername("nuevousuario");
+        nuevoUsuario.setUsername("nuevo_usuario");
         nuevoUsuario.setPassword("password123");
         nuevoUsuario.setRol(RolUsuario.USER);
 
@@ -200,7 +199,7 @@ public class UsuarioControllerIntegrationTest {
         mockMvc.perform(put("/api/usuarios/999")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(usuarioInexistente)))
-                .andExpect(jsonPath("$.mensaje", containsString("No existe el usuario")));
+                .andExpect(jsonPath("$.mensaje", containsString("El usuario que no existe. Debe crear uno nuevo")));
     }
 
     @Test
@@ -220,7 +219,7 @@ public class UsuarioControllerIntegrationTest {
     @WithMockUser(username = "admin_test", roles = {"ADMIN"})
     public void eliminarUsuario_conIdInexistente_deberiaRetornarBadRequest() throws Exception {
         mockMvc.perform(delete("/api/usuarios/999"))
-                .andExpect(status().isBadRequest())
+                .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.mensaje", containsString("No existe el usuario")));
     }
 

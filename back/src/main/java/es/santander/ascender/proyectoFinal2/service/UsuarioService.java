@@ -40,7 +40,7 @@ public class UsuarioService {
         if (usuario.isEmpty()) {
             throw new NoSuchElementException("No existe el usuario con ID: " + id);
         }
-        return new UsuarioResponseDTO(usuario.get().getUsername(), usuario.get().getRol());
+        return new UsuarioResponseDTO(usuario.get().getUsername(), usuario.get().getRol(), usuario.get().isActivo()); // Se incluye el estado activo
     }
 
     @Transactional(readOnly = true)
@@ -49,7 +49,7 @@ public class UsuarioService {
         if (usuario.isEmpty()) {
             throw new NoSuchElementException("No existe el usuario con username: " + username);
         }
-        return new UsuarioResponseDTO(usuario.get().getUsername(), usuario.get().getRol());
+        return new UsuarioResponseDTO(usuario.get().getUsername(), usuario.get().getRol(), usuario.get().isActivo()); // Se incluye el estado activo
     }
 
     @Transactional(readOnly = true)
@@ -74,17 +74,39 @@ public class UsuarioService {
 
         usuarioRepository.save(usuario);
 
-        return new UsuarioResponseDTO(usuario.getUsername(), usuario.getRol());
+        return new UsuarioResponseDTO(usuario.getUsername(), usuario.getRol(), usuario.isActivo()); // Se establece el estado activo por defecto
     }
 
     @Transactional
-    public UsuarioResponseDTO actualizar(UsuarioRequestDTO usuarioRequest) {
+    public UsuarioResponseDTO actualizar(Long id,UsuarioRequestDTO usuarioRequest) {
         Optional<Usuario> usuarioExistente = usuarioRepository
-                .findByUsernameAndActivoTrue(usuarioRequest.getUsername());
+                .findById(id);
         if (usuarioExistente.isEmpty()) {
-            throw new NoSuchElementException("No existe el usuario con username: " + usuarioRequest.getUsername());
+            throw new NoSuchElementException("El usuario que no existe. Debe crear uno nuevo");
         }
         Usuario usuario = usuarioExistente.get();
+        if(usuarioRequest.getUsername() == null || usuarioRequest.getUsername().isEmpty()) {
+            throw new IllegalArgumentException("El nombre de usuario no puede estar vacío");
+        }
+        if(usuarioRequest.getPassword() == null || usuarioRequest.getPassword().isEmpty()) {
+            throw new IllegalArgumentException("La contraseña no puede estar vacía");
+        }
+        if(usuarioRequest.getRol() == null || usuarioRequest.getRol().isEmpty()) {
+            throw new IllegalArgumentException("El rol no puede estar vacío");
+        }
+        //Verificar que el rol es válido
+        try {
+            RolUsuario.valueOf(usuarioRequest.getRol().toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("El rol no es válido. Debe ser ADMIN o USER");
+        }
+        
+        usuario.setUsername(usuarioRequest.getUsername());
+        usuario.setRol(RolUsuario.valueOf(usuarioRequest.getRol().toUpperCase()));        
+        usuario.setPassword(passwordEncoder.encode(usuarioRequest.getPassword()));
+        usuario.setActivo(true); // No se encripta aquí, se hace en el repositorio
+
+
         // Si se está cambiando el username, verificar que no exista otro usuario con
         // ese username
         if (!usuarioExistente.get().getUsername().equals(usuario.getUsername()) &&
@@ -96,7 +118,7 @@ public class UsuarioService {
             usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
         }
         usuarioRepository.save(usuario);
-        return new UsuarioResponseDTO(usuario.getUsername(), usuario.getRol());
+        return new UsuarioResponseDTO(usuario.getUsername(), usuario.getRol(), usuario.isActivo()); 
     }
 
     @Transactional
@@ -111,7 +133,7 @@ public class UsuarioService {
         Usuario usuario = usuarioOptional.get();
         usuario.setActivo(false); // Borrado lógico: se desactiva el usuario
         usuarioRepository.save(usuario);
-        return new UsuarioResponseDTO(usuario.getUsername(), usuario.getRol());
+        return new UsuarioResponseDTO(usuario.getUsername(), usuario.getRol(), usuario.isActivo()); 
     }
 
     @Transactional
@@ -126,7 +148,7 @@ public class UsuarioService {
         Usuario usuario = usuarioOptional.get();
         usuario.setActivo(true); // Reactivar el usuario
         usuarioRepository.save(usuario);
-        return new UsuarioResponseDTO(usuario.getUsername(), usuario.getRol());
+        return new UsuarioResponseDTO(usuario.getUsername(), usuario.getRol(), usuario.isActivo()); 
     }
 
     @Transactional(readOnly = true)
@@ -151,7 +173,7 @@ public class UsuarioService {
 
     private List<UsuarioResponseDTO> convertToUsuarioResponseDTOList(List<Usuario> listaUsuarios) {
         List<UsuarioResponseDTO> listaUsuariosDTO = listaUsuarios.stream()
-                .map(usuario -> new UsuarioResponseDTO(usuario.getUsername(), usuario.getRol()))
+                .map(usuario -> new UsuarioResponseDTO(usuario.getUsername(), usuario.getRol(), usuario.isActivo())) // Se incluye el estado activo
                 .toList();
         return listaUsuariosDTO;
     }

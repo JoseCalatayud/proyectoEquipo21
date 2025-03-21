@@ -6,13 +6,15 @@ public class UsuarioResponseDTO {
 
     private String username;
     private RolUsuario rol;
+    private boolean activo; // Nuevo campo para el estado del usuario
 
     public UsuarioResponseDTO() {
     }
 
-    public UsuarioResponseDTO(String username, RolUsuario rol) {
+    public UsuarioResponseDTO(String username, RolUsuario rol, boolean activo) {
         this.username = username;
         this.rol = rol;
+        this.activo = activo; 
     }
     public String getUsername() {
         return username;
@@ -25,5 +27,11 @@ public class UsuarioResponseDTO {
     }
     public void setRol(RolUsuario rol) {
         this.rol = rol;
+    }
+    public boolean isActivo() {
+        return activo;
+    }
+    public void setActivo(boolean activo) {
+        this.activo = activo;
     }
 }
