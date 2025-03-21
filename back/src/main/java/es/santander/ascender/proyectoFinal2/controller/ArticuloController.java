@@ -56,23 +56,14 @@ public class ArticuloController {
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ArticuloRespuestaDTO> crearArticulo(@Valid @RequestBody ArticuloDTO articuloDTO) {
-        Articulo nuevoArticulo = articuloService.crear(articuloDTO);
-        ArticuloRespuestaDTO articuloRespuestaDTO = new ArticuloRespuestaDTO(
-                nuevoArticulo.getId(),
-                nuevoArticulo.getNombre(),
-                nuevoArticulo.getDescripcion(),
-                nuevoArticulo.getCodigoBarras(),
-                nuevoArticulo.getFamilia(),
-                nuevoArticulo.getFotografia(),
-                nuevoArticulo.getPrecioVenta()
-        );
+        ArticuloRespuestaDTO articuloRespuestaDTO = articuloService.crear(articuloDTO);
         return new ResponseEntity<>(articuloRespuestaDTO, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Articulo> actualizarArticulo(@PathVariable Long id, @Valid @RequestBody ArticuloActualizacionDTO articuloActualizacionDTO) {
-        Articulo actualizadoArticulo = articuloService.actualizar(id, articuloActualizacionDTO);
+    public ResponseEntity<ArticuloRespuestaDTO> actualizarArticulo(@PathVariable Long id, @Valid @RequestBody ArticuloActualizacionDTO articuloActualizacionDTO) {
+        ArticuloRespuestaDTO actualizadoArticulo = articuloService.actualizar(id, articuloActualizacionDTO);
         return ResponseEntity.ok(actualizadoArticulo);
     }
 

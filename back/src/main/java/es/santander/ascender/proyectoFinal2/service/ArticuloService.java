@@ -2,6 +2,7 @@ package es.santander.ascender.proyectoFinal2.service;
 
 import es.santander.ascender.proyectoFinal2.dto.ArticuloActualizacionDTO;
 import es.santander.ascender.proyectoFinal2.dto.ArticuloDTO;
+import es.santander.ascender.proyectoFinal2.dto.ArticuloRespuestaDTO;
 import es.santander.ascender.proyectoFinal2.model.Articulo;
 import es.santander.ascender.proyectoFinal2.repository.ArticuloRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,8 +42,8 @@ public class ArticuloService {
         return articuloRepository.findByNombreContainingIgnoreCaseAndBorradoFalse(nombre);
     }
 
-   @Transactional
-    public Articulo crear(ArticuloDTO articuloDTO) {
+    @Transactional
+    public ArticuloRespuestaDTO crear(ArticuloDTO articuloDTO) {
         if (articuloRepository.existsByCodigoBarras(articuloDTO.getCodigoBarras())) {
             throw new IllegalArgumentException("Ya existe un artículo con ese código de barras");
         }
@@ -58,11 +59,22 @@ public class ArticuloService {
         );
         articulo.setPrecioPromedioPonderado(articuloDTO.getPrecioVenta());
 
-        return articuloRepository.save(articulo);
+        Articulo articuloGuardado = articuloRepository.save(articulo);
+        return convertArticuloToArticuloRespuestaDTO(articuloGuardado);
     }
 
+    //private ArticuloRespuestaDTO convertArticuloToArticuloRespuestaDTO(Articulo articulo) {
+    //return new ArticuloRespuestaDTO(
+       // articulo.getId(),
+       // articulo.getNombre(),
+        //articulo.getDescripcion(),
+        //articulo.getCodigoBarras(),
+       // articulo.getFamilia(),
+       // articulo.getFotografia(),
+       // articulo.getPrecioVenta()
+
     @Transactional
-    public Articulo actualizar(Long id, ArticuloActualizacionDTO articuloActualizacionDTO) {
+    public ArticuloRespuestaDTO actualizar(Long id, ArticuloActualizacionDTO articuloActualizacionDTO) {
         Optional<Articulo> articuloExistenteOptional = articuloRepository.findById(id);
 
         if (articuloExistenteOptional.isEmpty()) {
@@ -78,7 +90,8 @@ public class ArticuloService {
         articuloExistente.setFotografia(articuloActualizacionDTO.getFotografia());
         articuloExistente.setPrecioVenta(articuloActualizacionDTO.getPrecioVenta());
 
-        return articuloRepository.save(articuloExistente);
+        Articulo articuloGuardado = articuloRepository.save(articuloExistente);
+        return convertArticuloToArticuloRespuestaDTO(articuloGuardado);
     }
 
     @Transactional
@@ -136,5 +149,17 @@ public class ArticuloService {
         double nuevoPrecioPromedioPonderado = (valorTotalInventario + valorTotalCompra) / nuevoStock;
         articulo.setPrecioPromedioPonderado(nuevoPrecioPromedioPonderado);
         articuloRepository.save(articulo);
+    }
+
+    private ArticuloRespuestaDTO convertArticuloToArticuloRespuestaDTO(Articulo articulo) {
+        return new ArticuloRespuestaDTO(
+                articulo.getId(),
+                articulo.getNombre(),
+                articulo.getDescripcion(),
+                articulo.getCodigoBarras(),
+                articulo.getFamilia(),
+                articulo.getFotografia(),
+                articulo.getPrecioVenta()
+        );
     }
 }
