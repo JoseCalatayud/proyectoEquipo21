@@ -28,6 +28,11 @@ public class UsuarioController {
         return ResponseEntity.ok(usuarioService.listarTodos());
     }
 
+    @GetMapping("/activos")
+    public ResponseEntity<List<Usuario>> listarUsuariosActivos() {
+        return ResponseEntity.ok(usuarioService.listarActivos());
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<?> buscarPorId(@PathVariable Long id) {
         Optional<Usuario> usuario = usuarioService.buscarPorId(id);
@@ -77,7 +82,21 @@ public class UsuarioController {
         try {
             usuarioService.eliminar(id);
             Map<String, Object> response = new HashMap<>();
-            response.put("mensaje", "Usuario eliminado correctamente");
+            response.put("mensaje", "Usuario desactivado correctamente");
+            return ResponseEntity.ok(response);
+        } catch (IllegalArgumentException e) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("mensaje", e.getMessage());
+            return ResponseEntity.badRequest().body(response);
+        }
+    }
+    
+    @PutMapping("/reactivar/{id}")
+    public ResponseEntity<?> reactivarUsuario(@PathVariable Long id) {
+        try {
+            usuarioService.reactivar(id);
+            Map<String, Object> response = new HashMap<>();
+            response.put("mensaje", "Usuario reactivado correctamente");
             return ResponseEntity.ok(response);
         } catch (IllegalArgumentException e) {
             Map<String, Object> response = new HashMap<>();

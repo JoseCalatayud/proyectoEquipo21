@@ -28,17 +28,17 @@ public class UsuarioService {
 
     @Transactional(readOnly = true)
     public Optional<Usuario> buscarPorId(Long id) {
-        return usuarioRepository.findById(id);
+        return usuarioRepository.findByIdAndActivoTrue(id);
     }
 
     @Transactional(readOnly = true)
     public Optional<Usuario> buscarPorUsername(String username) {
-        return usuarioRepository.findByUsername(username);
+        return usuarioRepository.findByUsernameAndActivoTrue(username);
     }
 
     @Transactional(readOnly = true)
     public Usuario obtenerUsuarioPorUsername(String username) {
-        return usuarioRepository.findByUsername(username).orElseThrow(() -> new IllegalArgumentException("No existe el usuario"));
+        return usuarioRepository.findByUsernameAndActivoTrue(username).orElseThrow(() -> new IllegalArgumentException("No existe el usuario"));
     }
 
     @Transactional(readOnly = true)
@@ -61,7 +61,7 @@ public class UsuarioService {
 
     @Transactional
     public Usuario actualizar(Usuario usuario) {
-        Optional<Usuario> usuarioExistente = usuarioRepository.findById(usuario.getId());
+        Optional<Usuario> usuarioExistente = usuarioRepository.findByIdAndActivoTrue(usuario.getId());
 
         if (usuarioExistente.isEmpty()) {
             throw new IllegalArgumentException("No existe el usuario con ID: " + usuario.getId());
@@ -83,10 +83,28 @@ public class UsuarioService {
 
     @Transactional
     public void eliminar(Long id) {
-        if (!usuarioRepository.existsById(id)) {
+        Optional<Usuario> usuarioOptional = usuarioRepository.findById(id);
+
+        if (usuarioOptional.isEmpty()) {
             throw new IllegalArgumentException("No existe el usuario con ID: " + id);
         }
-        usuarioRepository.deleteById(id);
+
+        Usuario usuario = usuarioOptional.get();
+        usuario.setActivo(false); // Borrado lógico: se desactiva el usuario
+        usuarioRepository.save(usuario);
+    }
+    
+    @Transactional
+    public void reactivar(Long id) {
+        Optional<Usuario> usuarioOptional = usuarioRepository.findById(id);
+
+        if (usuarioOptional.isEmpty()) {
+            throw new IllegalArgumentException("No existe el usuario con ID: " + id);
+        }
+
+        Usuario usuario = usuarioOptional.get();
+        usuario.setActivo(true); // Reactivar el usuario
+        usuarioRepository.save(usuario);
     }
 
     @Transactional(readOnly = true)
@@ -94,21 +112,9 @@ public class UsuarioService {
         return usuario != null && "ADMIN".equals(usuario.getRol().name());
     }
 
+    
     @Transactional(readOnly = true)
-    public boolean puedeRealizarVenta(Usuario usuario) {
-        // Todos los usuarios pueden realizar ventas
-        return usuario != null;
-    }
-
-    @Transactional(readOnly = true)
-    public boolean puedeGestionarArticulos(Usuario usuario) {
-        // Solo los administradores pueden gestionar artículos
-        return esAdmin(usuario);
-    }
-
-    @Transactional(readOnly = true)
-    public boolean puedeRealizarCompras(Usuario usuario) {
-        // Solo los administradores pueden realizar compras
-        return esAdmin(usuario);
+    public List<Usuario> listarActivos() {
+        return usuarioRepository.findByActivoTrue();
     }
 }

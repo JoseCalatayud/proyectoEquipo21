@@ -24,18 +24,18 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Override
     @Transactional(readOnly = true)
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Usuario usuario = usuarioRepository.findByUsername(username)
+        Usuario usuario = usuarioRepository.findByUsernameAndActivoTrue(username)
                 .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado: " + username));
 
         List<GrantedAuthority> authorities = new ArrayList<>();
         authorities.add(new SimpleGrantedAuthority("ROLE_" + usuario.getRol()));
 
-        return new User(usuario.getUsername(), 
-                        usuario.getPassword(), 
-                        true, 
-                        true, 
-                        true, 
-                        true, 
-                        authorities);
+        return new User(usuario.getUsername(),
+                usuario.getPassword(),
+                true,
+                true,
+                true,
+                true,
+                authorities);
     }
 }
