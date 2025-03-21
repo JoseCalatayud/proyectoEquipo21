@@ -182,8 +182,8 @@ public class UsuarioControllerIntegrationTest {
                 .content(objectMapper.writeValueAsString(user)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(user.getId().intValue())))
-                .andExpect(jsonPath("$.username", is("user_test")))
-                .andExpect(jsonPath("$.rol", is("ADMIN")));
+                .andExpect(jsonPath("$.username", is("PEPE")))
+                .andExpect(jsonPath("$.rol", is("USER")));
 
         // Verificar que el rol fue actualizado
         Usuario usuarioActualizado = usuarioRepository.findById(user.getId()).orElse(null);

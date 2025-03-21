@@ -18,6 +18,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Set;
 
@@ -103,7 +104,7 @@ public class VentaService {
         validarUsuarioAuthyRol("ADMIN");
         Optional<Venta> ventaOptional = ventaRepository.findById(id);
         if (ventaOptional.isEmpty()) {
-            return Optional.empty();
+            throw new NoSuchElementException("No existe la venta con ID: " + id);
         }
         Venta venta = ventaOptional.get();
 

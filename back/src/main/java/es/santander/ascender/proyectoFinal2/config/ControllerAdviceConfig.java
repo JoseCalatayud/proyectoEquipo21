@@ -15,6 +15,7 @@ import es.santander.ascender.proyectoFinal2.exception.StockInsuficienteException
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @RestControllerAdvice
@@ -84,7 +85,11 @@ public class ControllerAdviceConfig {
         ErronInfo errorResponse = new ErronInfo("No tiene permisos para realizar esta acción");
         return new ResponseEntity<>(errorResponse, HttpStatus.FORBIDDEN);
     }
-
+    @ExceptionHandler(NoSuchElementException.class)
+    public ResponseEntity<ErronInfo> handleNoSuchElementException(NoSuchElementException ex) {
+        ErronInfo errorResponse = new ErronInfo(ex.getMessage());
+        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+    }
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErronInfo> handleException(Exception ex) {
         ErronInfo errorResponse = new ErronInfo("Se ha producido un error inesperado");
