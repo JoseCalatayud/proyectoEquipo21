@@ -144,7 +144,7 @@ public class VentaControllerIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = "user_test", roles = {"USER"})
+    @WithMockUser(username = "user_test", roles = {"ADMIN"})
     public void buscarPorId_ventaPropia_deberiaRetornarVenta() throws Exception {
         // Crear venta
         crearVentaDePrueba();
@@ -170,7 +170,7 @@ public class VentaControllerIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = "user_test", roles = {"USER"})
+    @WithMockUser(username = "user_test", roles = {"ADMIN"})
     public void anularVenta_ventaPropia_deberiaAnularVenta() throws Exception {
         // Crear venta
         crearVentaDePrueba();

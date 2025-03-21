@@ -33,9 +33,8 @@ public class VentaController {
 
     @GetMapping("/listar")
     @PreAuthorize("hasRole('ADMIN')") // Only ADMIN can list all sales
-    public ResponseEntity<List<VentaListDTO>> listarVentas() {
-        List<VentaListDTO> ventas = ventaService.listarVentas();
-        return ResponseEntity.ok(ventas);
+    public ResponseEntity<List<VentaResponseDTO>> listarVentas() {
+        return ResponseEntity.ok(ventaService.listarVentas());
     }
 
     @PostMapping("/crear")
@@ -46,55 +45,23 @@ public class VentaController {
 
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')") // Both ADMIN and USER can get a sale by ID
-    public ResponseEntity<?> buscarPorId(@PathVariable Long id) {
-        // Obtener el usuario autenticado
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        Optional<Usuario> usuario = usuarioService.buscarPorUsername(auth.getName());
+    public ResponseEntity<VentaResponseDTO> buscarPorId(@PathVariable Long id) {
+        return ResponseEntity.ok(ventaService.buscarPorId(id).orElse(null));
 
-        if (usuario.isEmpty()) {
-            return ResponseEntity.status(401).body(null);
-        }
-
-        Optional<VentaResponseDTO> ventaOptional = ventaService.buscarPorId(id);
-
-        if (ventaOptional.isPresent()) {
-            // Si el usuario no es admin, solo puede ver sus propias ventas
-            if (!usuarioService.esAdmin(usuario.get()) && !ventaOptional.get().getUsuario().getId().equals(usuario.get().getId())) {
-                return ResponseEntity.status(403).body(Map.of("mensaje", "No tiene permisos para ver esta venta"));
-            }
-            return ResponseEntity.ok(ventaOptional.get());
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+          
     }
 
     @GetMapping("/usuario/{idUsuario}")
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')") // Both ADMIN and USER can get sales by user ID
-    public ResponseEntity<?> buscarPorUsuario(@PathVariable Long idUsuario) {
-        // Obtener el usuario autenticado
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        Optional<Usuario> usuario = usuarioService.buscarPorUsername(auth.getName());
-
-        if (usuario.isEmpty()) {
-            return ResponseEntity.status(401).body(null);
-        }
-
-        try {
-            List<Venta> ventas;
-            // Si el usuario no es admin, solo puede ver sus propias ventas
-            if (!usuarioService.esAdmin(usuario.get()) && !usuario.get().getId().equals(idUsuario)) {
-                return ResponseEntity.status(403).body(Map.of("mensaje", "No tiene permisos para ver las ventas de este usuario"));
-            }
-            ventas = ventaService.buscarPorUsuario(idUsuario);
-            return ResponseEntity.ok(ventas);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    public ResponseEntity<List<VentaResponseDTO>> buscarPorUsuario(@PathVariable Long idUsuario) {
+        return ResponseEntity.ok(ventaService.buscarPorUsuario(idUsuario));
+        
+        
     }
 
     @GetMapping("/fechas")
     @PreAuthorize("hasRole('ADMIN')") // Only ADMIN can search sales by date range
-    public ResponseEntity<List<Venta>> buscarPorFechas(
+    public ResponseEntity<List<VentaResponseDTO>> buscarPorFechas(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fechaInicio,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fechaFin) {
         return ResponseEntity.ok(ventaService.buscarPorFechas(fechaInicio, fechaFin));
@@ -102,44 +69,23 @@ public class VentaController {
 
     @GetMapping("/usuario/{idUsuario}/fechas")
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')") // Both ADMIN and USER can search sales by user and date range
-    public ResponseEntity<?> buscarPorUsuarioYFechas(
+    public ResponseEntity<List<VentaResponseDTO>> buscarPorUsuarioYFechas(
             @PathVariable Long idUsuario,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fechaInicio,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fechaFin) {
         // Obtener el usuario autenticado
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        Optional<Usuario> usuario = usuarioService.buscarPorUsername(auth.getName());
-
-        if (usuario.isEmpty()) {
-            return ResponseEntity.status(401).body(null);
-        }
-
-        // Si el usuario no es admin, solo puede ver sus propias ventas
-        if (!usuarioService.esAdmin(usuario.get()) && !usuario.get().getId().equals(idUsuario)) {
-            return ResponseEntity.status(403).body(Map.of("mensaje", "No tiene permisos para ver las ventas de este usuario"));
-        }
-
+        
         return ResponseEntity.ok(ventaService.buscarPorUsuarioYFechas(idUsuario, fechaInicio, fechaFin));
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')") // Both ADMIN and USER can cancel a sale
     public ResponseEntity<?> anularVenta(@PathVariable Long id) {
-        // Obtener el usuario autenticado
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        Optional<Usuario> usuario = usuarioService.buscarPorUsername(auth.getName());
-
-        if (usuario.isEmpty()) {
-            return ResponseEntity.status(401).body(null);
-        }
-
         Optional<VentaResponseDTO> ventaOptional = ventaService.buscarPorId(id);
 
         if (ventaOptional.isPresent()) {
             // Si el usuario no es admin, solo puede anular sus propias ventas
-            if (!usuarioService.esAdmin(usuario.get()) && !ventaOptional.get().getUsuario().getId().equals(usuario.get().getId())) {
-                return ResponseEntity.status(403).body(Map.of("mensaje", "No tiene permisos para anular esta venta"));
-            }
+           
             ventaService.anularVenta(id);
             return ResponseEntity.ok(Map.of("mensaje", "Venta anulada correctamente"));
         } else {

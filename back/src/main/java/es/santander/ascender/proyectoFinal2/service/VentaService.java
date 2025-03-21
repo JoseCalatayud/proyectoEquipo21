@@ -18,6 +18,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -35,34 +36,15 @@ public class VentaService {
     private UsuarioService usuarioService;
 
     @Transactional(readOnly = true)
-    public List<VentaListDTO> listarVentas() {
+    public List<VentaResponseDTO> listarVentas() {
         List<Venta> ventas = ventaRepository.findAll();
-        List<VentaListDTO> ventaListDTOS = new ArrayList<>();
+        List<VentaResponseDTO> ventaResponseDTO = new ArrayList<>();
 
         for (Venta venta : ventas) {
-            List<DetalleVentaListDTO> detalleVentaListDTOS = new ArrayList<>();
-            for (DetalleVenta detalleVenta : venta.getDetalles()) {
-                DetalleVentaListDTO detalleVentaListDTO = new DetalleVentaListDTO(
-                        detalleVenta.getArticulo().getId(),
-                        detalleVenta.getArticulo().getNombre(),
-                        detalleVenta.getArticulo().getDescripcion(),
-                        detalleVenta.getArticulo().getCodigoBarras(),
-                        detalleVenta.getArticulo().getFamilia(),
-                        detalleVenta.getCantidad(),
-                        detalleVenta.getSubtotal());
-                detalleVentaListDTOS.add(detalleVentaListDTO);
-            }
-            UsuarioVentaDTO usuarioVentaDTO = new UsuarioVentaDTO(venta.getUsuario().getId(),
-                    venta.getUsuario().getUsername());
-            VentaListDTO ventaListDTO = new VentaListDTO(
-                    venta.getId(),
-                    venta.getFecha(),
-                    venta.getTotal(),
-                    usuarioVentaDTO,
-                    detalleVentaListDTOS);
-            ventaListDTOS.add(ventaListDTO);
+
+            ventaResponseDTO.add(convertirVentaEnVentaResponseDTO(venta));
         }
-        return ventaListDTOS;
+        return ventaResponseDTO;
     }
 
     public VentaResponseDTO crearVenta(VentaRequestDTO ventaRequestDTO) {
@@ -71,13 +53,7 @@ public class VentaService {
         if (auth == null || !auth.isAuthenticated()) {
             throw new IllegalArgumentException("Usuario no autenticado");
         }
-        // 1.1. Comprobar rol usuario
-        if (!auth.getAuthorities().stream()
-                .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_ADMIN"))) {
-            throw new IllegalArgumentException("El usuario no tiene permisos para realizar compras");
-        }
         Usuario usuario = usuarioService.obtenerUsuarioPorUsername(auth.getName());
-
         Set<Long> articulosIds = new HashSet<>();
         for (DetalleVentaDTO detalleDTO : ventaRequestDTO.getDetalles()) {
             if (!articulosIds.add(detalleDTO.getIdArticulo())) {
@@ -86,9 +62,6 @@ public class VentaService {
         }
         // 2. Crear venta
         Venta venta = new Venta(usuario);
-        
-        
-
         // 3. Procesar cada detalle de venta
         for (DetalleVentaDTO detalleDTO : ventaRequestDTO.getDetalles()) {
             // 3.1. Buscar articulo.
@@ -119,8 +92,97 @@ public class VentaService {
 
         // 5. Guardar la venta
         ventaRepository.save(venta);
-        VentaResponseDTO ventaResponseDTO = new VentaResponseDTO();
+
+        return convertirVentaEnVentaResponseDTO(venta);
+    }
+
+    @Transactional(readOnly = true)
+    public Optional<VentaResponseDTO> buscarPorId(Long id) {
+        validarUsuarioAuthyRol("ADMIN");
+        Optional<Venta> ventaOptional = ventaRepository.findById(id);
+        if (ventaOptional.isEmpty()) {
+            return Optional.empty();
+        }
+        Venta venta = ventaOptional.get();
+
+        return Optional.of(convertirVentaEnVentaResponseDTO(venta));
+    }
+
+    @Transactional(readOnly = true)
+    public List<VentaResponseDTO> buscarPorUsuario(Long idUsuario) {
+        Usuario usuario = usuarioService.buscarPorId(idUsuario)
+                .orElseThrow(() -> new IllegalArgumentException("No existe el usuario"));
+        validarUsuarioAuthyRol("ADMIN");
+        List<Venta> ventas = ventaRepository.findByUsuario(usuario);
+        List<VentaResponseDTO> detalleVentaListDTOS = new ArrayList<>();
+        for (Venta venta : ventas) {
+            detalleVentaListDTOS.add(convertirVentaEnVentaResponseDTO(venta));
+        }
+        return detalleVentaListDTOS;
+    }
+
+    @Transactional(readOnly = true)
+    public List<VentaResponseDTO> buscarPorFechas(LocalDateTime fechaInicio, LocalDateTime fechaFin) {
+        validarUsuarioAuthyRol("ADMIN");
+        List<Venta> ventas = ventaRepository.findByFechaBetween(fechaInicio, fechaFin);
+        List<VentaResponseDTO> detalleVentaListDTOS = new ArrayList<>();
+        for (Venta venta : ventas) {
+            detalleVentaListDTOS.add(convertirVentaEnVentaResponseDTO(venta));
+        }
+        return detalleVentaListDTOS;
+    }
+
+    @Transactional(readOnly = true)
+    public List<VentaResponseDTO> buscarPorUsuarioYFechas(Long idUsuario, LocalDateTime fechaInicio,
+            LocalDateTime fechaFin) {
+        Usuario usuario = usuarioService.buscarPorId(idUsuario)
+                .orElseThrow(() -> new IllegalArgumentException("No existe el usuario"));
+
+        validarUsuarioAuthyRol("ADMIN");
+        List<Venta> ventas = ventaRepository.findByUsuarioAndFechaBetween(usuario, fechaInicio, fechaFin);
+        List<VentaResponseDTO> detalleVentaListDTOS = new ArrayList<>();
+        for (Venta venta : ventas) {
+            detalleVentaListDTOS.add(convertirVentaEnVentaResponseDTO(venta));
+        }
+        return detalleVentaListDTOS;
+
+    }
+
+    public void anularVenta(Long id) {
         
+        Usuario usuario = usuarioService.obtenerUsuarioPorUsername(validarUsuarioAuthyRol("ADMIN"));
+        
+        Venta venta = ventaRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("No existe la venta con ID: " + id));
+
+         if (!usuarioService.esAdmin(usuario) && !venta.getUsuario().getId().equals(usuario.getId())) {
+                throw new IllegalAccessError("No tienes permisos para anular esta venta");
+            }
+
+        // Devolver el stock que se había restado
+        for (DetalleVenta detalle : venta.getDetalles()) {
+            articuloService.actualizarStock(detalle.getArticulo().getId(), detalle.getCantidad());
+        }
+        ventaRepository.deleteById(id);
+    }
+
+    private String validarUsuarioAuthyRol(String rol) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || !auth.isAuthenticated()) {
+            throw new IllegalArgumentException("Usuario no autenticado");
+        }
+        // 1.1. Comprobar rol usuario
+        if (!auth.getAuthorities().stream()
+                .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_" + rol))) {
+            throw new IllegalArgumentException("El usuario no tiene permisos para ver este venta");
+        }
+        Usuario usuario = usuarioService.obtenerUsuarioPorUsername(auth.getName());
+        return usuario.getUsername();
+    }
+
+    private VentaResponseDTO convertirVentaEnVentaResponseDTO(Venta venta) {
+        VentaResponseDTO ventaResponseDTO = new VentaResponseDTO();
+
         // Convertir venta en VentaResponseDTO
         List<DetalleVentaListDTO> detalleVentaListDTOS = new ArrayList<>();
         for (DetalleVenta detalleVenta : venta.getDetalles()) {
@@ -136,84 +198,15 @@ public class VentaService {
         }
 
         UsuarioVentaDTO usuarioVentaDTO = new UsuarioVentaDTO(
-        venta.getUsuario().getId(),
-        venta.getUsuario().getUsername()
-    );
-        
+                venta.getUsuario().getId(),
+                venta.getUsuario().getUsername());
+
         ventaResponseDTO.setId(venta.getId());
         ventaResponseDTO.setFecha(venta.getFecha());
         ventaResponseDTO.setTotal(venta.getTotal());
         ventaResponseDTO.setUsuario(usuarioVentaDTO);
         ventaResponseDTO.setDetalles(detalleVentaListDTOS);
 
-        
-
         return ventaResponseDTO;
-    }
-
-    @Transactional(readOnly = true)
-    public Optional<VentaResponseDTO> buscarPorId(Long id) {
-        Optional<Venta> ventaOptional = ventaRepository.findById(id);
-        if (ventaOptional.isEmpty()) {
-            return Optional.empty();
-        }
-        Venta venta = ventaOptional.get();
-
-        List<DetalleVentaListDTO> detalleVentaListDTOS = new ArrayList<>();
-        for (DetalleVenta detalleVenta : venta.getDetalles()) {
-            DetalleVentaListDTO detalleVentaListDTO = new DetalleVentaListDTO(
-                    detalleVenta.getArticulo().getId(),
-                    detalleVenta.getArticulo().getNombre(),
-                    detalleVenta.getArticulo().getDescripcion(),
-                    detalleVenta.getArticulo().getCodigoBarras(),
-                    detalleVenta.getArticulo().getFamilia(),
-                    detalleVenta.getCantidad(),
-                    detalleVenta.getSubtotal());
-            detalleVentaListDTOS.add(detalleVentaListDTO);
-        }
-        UsuarioVentaDTO usuarioVentaDTO = new UsuarioVentaDTO(venta.getUsuario().getId(),
-                venta.getUsuario().getUsername());
-        VentaResponseDTO ventaResponseDTO = new VentaResponseDTO(
-                venta.getId(),
-                venta.getFecha(),
-                venta.getTotal(),
-                usuarioVentaDTO,
-                detalleVentaListDTOS);
-        return Optional.of(ventaResponseDTO);
-    }
-
-    @Transactional(readOnly = true)
-    public List<Venta> buscarPorUsuario(Long idUsuario) {
-        Usuario usuario = usuarioService.buscarPorId(idUsuario)
-                .orElseThrow(() -> new IllegalArgumentException("No existe el usuario"));
-        return ventaRepository.findByUsuario(usuario);
-    }
-
-    @Transactional(readOnly = true)
-    public List<Venta> buscarPorFechas(LocalDateTime fechaInicio, LocalDateTime fechaFin) {
-        return ventaRepository.findByFechaBetween(fechaInicio, fechaFin);
-    }
-
-    @Transactional(readOnly = true)
-    public List<Venta> buscarPorUsuarioYFechas(Long idUsuario, LocalDateTime fechaInicio, LocalDateTime fechaFin) {
-        Usuario usuario = usuarioService.buscarPorId(idUsuario)
-                .orElseThrow(() -> new IllegalArgumentException("No existe el usuario"));
-        return ventaRepository.findByUsuarioAndFechaBetween(usuario, fechaInicio, fechaFin);
-    }
-
-    public void anularVenta(Long id) {
-        Venta venta = ventaRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("No existe la venta con ID: " + id));
-
-        // Devolver el stock que se había restado
-        for (DetalleVenta detalle : venta.getDetalles()) {
-            // Usamos synchronized para evitar condiciones de carrera
-            synchronized (detalle.getArticulo()) {
-                articuloService.actualizarStock(detalle.getArticulo().getId(), detalle.getCantidad());
-            }
-        }
-
-        // Eliminar la venta
-        ventaRepository.deleteById(id);
     }
 }
