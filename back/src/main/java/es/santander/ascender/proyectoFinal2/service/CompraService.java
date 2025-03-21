@@ -23,6 +23,7 @@ import es.santander.ascender.proyectoFinal2.model.DetalleCompra;
 import es.santander.ascender.proyectoFinal2.model.Usuario;
 import es.santander.ascender.proyectoFinal2.repository.ArticuloRepository;
 import es.santander.ascender.proyectoFinal2.repository.CompraRepository;
+import es.santander.ascender.proyectoFinal2.repository.UsuarioRepository;
 
 @Service
 @Transactional
@@ -33,13 +34,13 @@ public class CompraService {
 
     @Autowired
     private ArticuloRepository articuloRepository;
+
+    @Autowired
+    private UsuarioRepository usuarioRepository;
     
 
     @Autowired
     private ArticuloService articuloService;
-
-    @Autowired
-    private UsuarioService usuarioService;
 
     @Transactional(readOnly = true)
     public List<CompraListDTO> listarTodas() {
@@ -100,7 +101,7 @@ public class CompraService {
             throw new IllegalArgumentException("El usuario no tiene permisos para realizar compras");
         }
         
-        Usuario usuario = usuarioService.obtenerUsuarioPorUsername(auth.getName());
+        Usuario usuario = usuarioRepository.findByUsername(auth.getName()).get();
 
         // 2. Validar que no hay artículos duplicados
         Set<Long> articulosIds = new HashSet<>();

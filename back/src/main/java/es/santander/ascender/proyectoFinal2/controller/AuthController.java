@@ -1,6 +1,7 @@
 package es.santander.ascender.proyectoFinal2.controller;
 
-import es.santander.ascender.proyectoFinal2.model.Usuario;
+import es.santander.ascender.proyectoFinal2.dto.UsuarioRequestDTO;
+import es.santander.ascender.proyectoFinal2.dto.UsuarioResponseDTO;
 import es.santander.ascender.proyectoFinal2.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -37,13 +38,8 @@ public class AuthController {
     }
 
     @PostMapping("/registro")
-    public ResponseEntity<?> registrarUsuario(@RequestBody Usuario usuario) {
-        try {
-            Usuario nuevoUsuario = usuarioService.crear(usuario);
-            return ResponseEntity.status(HttpStatus.CREATED).body(nuevoUsuario);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(Map.of("mensaje", e.getMessage()));
-        }
+    public ResponseEntity<UsuarioResponseDTO> registrarUsuario(@RequestBody UsuarioRequestDTO usuarioRequestDTO) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(usuarioService.crear(usuarioRequestDTO));
     }
 
     // Clase auxiliar para la solicitud de login

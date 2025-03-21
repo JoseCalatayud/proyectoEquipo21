@@ -7,6 +7,7 @@ import es.santander.ascender.proyectoFinal2.model.DetalleVenta;
 import es.santander.ascender.proyectoFinal2.model.Usuario;
 import es.santander.ascender.proyectoFinal2.model.Venta;
 import es.santander.ascender.proyectoFinal2.repository.ArticuloRepository;
+import es.santander.ascender.proyectoFinal2.repository.UsuarioRepository;
 import es.santander.ascender.proyectoFinal2.repository.VentaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -32,6 +33,9 @@ public class VentaService {
     @Autowired
     private ArticuloRepository articuloRepository;    
 
+    @Autowired 
+    private UsuarioRepository usuarioRepository;
+
     @Autowired
     private ArticuloService articuloService;
 
@@ -54,9 +58,12 @@ public class VentaService {
         // 1. Obtener el usuario autenticado
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth == null || !auth.isAuthenticated()) {
-            throw new IllegalArgumentException("Usuario no autenticado");
+            throw new NoSuchElementException("Usuario no autenticado");
         }
-        Usuario usuario = usuarioService.obtenerUsuarioPorUsername(auth.getName());
+        Optional<Usuario> usuarioOptional = usuarioRepository.findByUsername(auth.getName());
+        if (usuarioOptional.isEmpty()) {
+            throw new IllegalArgumentException("Usuario no encontrado");
+        }
         Set<Long> articulosIds = new HashSet<>();
         for (DetalleVentaDTO detalleDTO : ventaRequestDTO.getDetalles()) {
             if (!articulosIds.add(detalleDTO.getIdArticulo())) {
@@ -64,7 +71,7 @@ public class VentaService {
             }
         }
         // 2. Crear venta
-        Venta venta = new Venta(usuario);
+        Venta venta = new Venta(usuarioOptional.get());
         // 3. Procesar cada detalle de venta
         for (DetalleVentaDTO detalleDTO : ventaRequestDTO.getDetalles()) {
             // 3.1. Buscar articulo.
@@ -113,8 +120,8 @@ public class VentaService {
 
     @Transactional(readOnly = true)
     public List<VentaResponseDTO> buscarPorUsuario(Long idUsuario) {
-        Usuario usuario = usuarioService.buscarPorId(idUsuario)
-                .orElseThrow(() -> new IllegalArgumentException("No existe el usuario"));
+        Usuario usuario = usuarioRepository.findById(idUsuario)
+                .orElseThrow(() -> new NoSuchElementException("No existe el usuario"));
         validarUsuarioAuthyRol("ADMIN");
         List<Venta> ventas = ventaRepository.findByUsuario(usuario);
         List<VentaResponseDTO> detalleVentaListDTOS = new ArrayList<>();
@@ -138,9 +145,8 @@ public class VentaService {
     @Transactional(readOnly = true)
     public List<VentaResponseDTO> buscarPorUsuarioYFechas(Long idUsuario, LocalDateTime fechaInicio,
             LocalDateTime fechaFin) {
-        Usuario usuario = usuarioService.buscarPorId(idUsuario)
+        Usuario usuario = usuarioRepository.findById(idUsuario)
                 .orElseThrow(() -> new IllegalArgumentException("No existe el usuario"));
-
         validarUsuarioAuthyRol("ADMIN");
         List<Venta> ventas = ventaRepository.findByUsuarioAndFechaBetween(usuario, fechaInicio, fechaFin);
         List<VentaResponseDTO> detalleVentaListDTOS = new ArrayList<>();
@@ -151,14 +157,15 @@ public class VentaService {
 
     }
 
-    public void anularVenta(Long id) {
+    public void anularVenta(Long id) {        
+        Usuario usuario = usuarioRepository.findByUsername(validarUsuarioAuthyRol("ADMIN"))
+                .orElseThrow(() -> new NoSuchElementException("No existe el usuario"));
         
-        Usuario usuario = usuarioService.obtenerUsuarioPorUsername(validarUsuarioAuthyRol("ADMIN"));
         
         Venta venta = ventaRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("No existe la venta con ID: " + id));
 
-         if (!usuarioService.esAdmin(usuario) && !venta.getUsuario().getId().equals(usuario.getId())) {
+         if (!usuarioService.esAdmin(usuario.getUsername()) && !venta.getUsuario().getId().equals(usuario.getId())) {
                 throw new IllegalAccessError("No tienes permisos para anular esta venta");
             }
             
@@ -172,14 +179,18 @@ public class VentaService {
     private String validarUsuarioAuthyRol(String rol) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth == null || !auth.isAuthenticated()) {
-            throw new IllegalArgumentException("Usuario no autenticado");
+            throw new IllegalAccessError("Usuario no autenticado");
         }
         // 1.1. Comprobar rol usuario
         if (!auth.getAuthorities().stream()
                 .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_" + rol))) {
             throw new IllegalArgumentException("El usuario no tiene permisos para ver este venta");
         }
-        Usuario usuario = usuarioService.obtenerUsuarioPorUsername(auth.getName());
+        Usuario usuario = usuarioRepository.findByUsername(auth.getName())
+            .orElseThrow(() -> new NoSuchElementException("No existe el usuario"));
+        if (!usuario.isActivo()) {
+            throw new IllegalAccessError("El usuario no está activo");
+        }
         return usuario.getUsername();
     }
 

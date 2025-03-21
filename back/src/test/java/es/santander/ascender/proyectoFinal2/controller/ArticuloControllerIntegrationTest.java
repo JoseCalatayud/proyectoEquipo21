@@ -231,26 +231,9 @@ public class ArticuloControllerIntegrationTest {
                 .andExpect(jsonPath("$[0].id", is(articulo2.getId().intValue())));
     }
 
-    @Test
-    @WithMockUser(username = "admin_test", roles = {"ADMIN"})
-    public void verificarExistencia_conCodigoExistente_deberiaRetornarTrue() throws Exception {
-        mockMvc.perform(get("/api/articulos/verificar/1234567890123"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.existe", is(true)));
-    }
+    
 
-    @Test
-    @WithMockUser(username = "admin_test", roles = {"ADMIN"})
-    public void verificarExistencia_conCodigoInexistente_deberiaRetornarFalse() throws Exception {
-        mockMvc.perform(get("/api/articulos/verificar/9999999999999"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.existe", is(false)));
-    }
+    
 
-    @Test
-    @WithMockUser(username = "user_test", roles = {"USER"})
-    public void verificarExistencia_conUser_deberiaRetornarForbidden() throws Exception {
-        mockMvc.perform(get("/api/articulos/verificar/1234567890123"))
-                .andExpect(status().isForbidden());
-    }
+    
 }

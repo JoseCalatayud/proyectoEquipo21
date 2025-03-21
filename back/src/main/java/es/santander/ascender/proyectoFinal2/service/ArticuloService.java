@@ -1,6 +1,7 @@
 package es.santander.ascender.proyectoFinal2.service;
 
 import es.santander.ascender.proyectoFinal2.dto.ArticuloUpdateDTO;
+import es.santander.ascender.proyectoFinal2.exception.MyBadDataException;
 import es.santander.ascender.proyectoFinal2.exception.StockInsuficienteException;
 import es.santander.ascender.proyectoFinal2.dto.ArticuloRequestDTO;
 import es.santander.ascender.proyectoFinal2.dto.ArticuloResponseDTO;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -22,6 +24,9 @@ public class ArticuloService {
     @Transactional(readOnly = true)
     public List<ArticuloResponseDTO> listarTodos() {
         List<Articulo> listaArticulos = articuloRepository.findAll();
+        if (listaArticulos.isEmpty()) {
+            throw new NoSuchElementException("No existen artículos en la base de datos");
+        }
         // COnvertir Articulo a ArticuloResponseDTO
         List<ArticuloResponseDTO> listaArticulosDTO = listaArticulos.stream()
                 .map(this::convertArticuloToArticuloRespuestaDTO)
@@ -34,7 +39,7 @@ public class ArticuloService {
     public ArticuloResponseDTO buscarPorId(Long id) {
         Optional<Articulo> articulo = articuloRepository.findById(id);
         if (articulo.isEmpty()) {
-            throw new IllegalArgumentException("No existe el artículo con ID: " + id);
+            throw new NoSuchElementException("No existe el artículo con ID: " + id);
         }
         return convertArticuloToArticuloRespuestaDTO(articulo.get());
 
@@ -44,7 +49,7 @@ public class ArticuloService {
     public ArticuloResponseDTO buscarPorCodigoBarras(String codigoBarras) {
         Optional<Articulo> articulo = articuloRepository.findByCodigoBarras(codigoBarras);
         if (articulo.isEmpty()) {
-            throw new IllegalArgumentException("No existe el artículo con código de barras: " + codigoBarras);
+            throw new NoSuchElementException("No existe el artículo con código de barras: " + codigoBarras);
         }
         return convertArticuloToArticuloRespuestaDTO(articulo.get());
     }
@@ -52,6 +57,9 @@ public class ArticuloService {
     @Transactional(readOnly = true)
     public List<ArticuloResponseDTO> buscarPorFamilia(String familia) {
         List<Articulo> listaArticulos = articuloRepository.findByFamilia(familia);
+        if(listaArticulos.isEmpty()) {
+            throw new NoSuchElementException("No existen artículos en la familia: " + familia);
+        }
         List<ArticuloResponseDTO> listaArticulosDTO = listaArticulos.stream()
                 .map(this::convertArticuloToArticuloRespuestaDTO)
                 .collect(Collectors.toList());
@@ -62,6 +70,9 @@ public class ArticuloService {
     @Transactional(readOnly = true)
     public List<ArticuloResponseDTO> buscarPorNombre(String nombre) {
         List<Articulo> listaArticulos = articuloRepository.findByNombreContainingIgnoreCaseAndBorradoFalse(nombre);
+        if(listaArticulos.isEmpty()) {
+            throw new NoSuchElementException("No existen artículos con el nombre: " + nombre);
+        }
         List<ArticuloResponseDTO> listaArticulosDTO = listaArticulos.stream()
                 .map(this::convertArticuloToArticuloRespuestaDTO)
                 .collect(Collectors.toList());
@@ -71,7 +82,7 @@ public class ArticuloService {
     @Transactional
     public ArticuloResponseDTO crear(ArticuloRequestDTO articuloDTO) {
         if (articuloRepository.existsByCodigoBarras(articuloDTO.getCodigoBarras())) {
-            throw new IllegalArgumentException("Ya existe un artículo con ese código de barras");
+            throw new MyBadDataException("Ya existe un artículo con el código de barras: " + articuloDTO.getCodigoBarras(), 1);
         }
 
         Articulo articulo = new Articulo(
@@ -94,7 +105,7 @@ public class ArticuloService {
         Optional<Articulo> articuloExistenteOptional = articuloRepository.findById(id);
 
         if (articuloExistenteOptional.isEmpty()) {
-            throw new IllegalArgumentException("No existe el artículo con ID: " + id);
+            throw new MyBadDataException("No existe el artículo con ID: " + id, id);
         }
 
         Articulo articuloExistente = articuloExistenteOptional.get();
@@ -131,7 +142,7 @@ public class ArticuloService {
     public void actualizarStock(Long id, int cantidad) {
         Optional<Articulo> articuloOptional = articuloRepository.findById(id);
         if (articuloOptional.isEmpty()) {
-            throw new IllegalArgumentException("No existe el artículo con ID: " + id);
+            throw new NoSuchElementException("No existe el artículo con ID: " + id);
         }
         Articulo articulo = articuloOptional.get();
         int nuevoStock = articulo.getStock() + cantidad;
@@ -146,7 +157,7 @@ public class ArticuloService {
     public boolean hayStockSuficiente(Long id, int cantidad) {
         Optional<Articulo> articuloOptional = articuloRepository.findById(id);
         if (articuloOptional.isEmpty()) {
-            throw new IllegalArgumentException("No existe el artículo con ID: " + id);
+            throw new NoSuchElementException("No existe el artículo con ID: " + id);
         }
         return articuloOptional.get().getStock() >= cantidad;
     }
