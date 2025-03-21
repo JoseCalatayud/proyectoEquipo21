@@ -1,0 +1,6 @@
+POST  http://localhost:8080/api/login
+Authorization: Basic admin admin1234
+
+###
+GET http://localhost:8080/api/articulos
+Authorization: Basic  admin admin123

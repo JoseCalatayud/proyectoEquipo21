@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams, HttpRequest } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Usuario } from './usuario';
+import { AutenticacionService } from './autenticacion.service';
 
 @Injectable({
   providedIn: 'root'
@@ -9,24 +10,21 @@ import { Usuario } from './usuario';
 export class UsuarioRestService {
 
 
-  constructor(private httpClient: HttpClient) { }
+  constructor(private httpClient: HttpClient,private autenticacionService:AutenticacionService) { }
 
-  public validar() {
+  public validar(usuario:string,clave:string) {
 
-    console.log("llega");
+   
 
-      const headers = new HttpHeaders({
-        'Authorization': 'Basic admin admin123',
-      });
-  
-      const req = new HttpRequest('GET', "http://localhost:4200/login", {
-        headers: headers
-      });
-  
-       this.httpClient.request(req).subscribe( (datos:any)=> {
+      this.autenticacionService.autorizacion=btoa(usuario + ":"+ clave);
+      
+       this.httpClient.post("http://localhost:4200/api/login",null).subscribe( (datos:any)=> {
+          console.log(datos);
+      }, (error:Error)=> {
 
-        console.log(datos);
-
+        console.log("ha petado");
       })
   }
 }
+
+

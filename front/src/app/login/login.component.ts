@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { UsuarioRestService } from '../usuario-rest.service';
 import { Usuario } from '../usuario';
-import { RouterLink } from '@angular/router';
+import { RouterLink, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CommonModule, NgFor } from '@angular/common';
 import { AutenticacionService } from '../autenticacion.service';
@@ -23,8 +23,7 @@ export class LoginComponent {
 
   validar() {
 
-   console.log("hola");
-   this.usuarioRestService.validar();
+   this.usuarioRestService.validar(this.usuario,this.clave);
   }
 
 }
