@@ -8,7 +8,6 @@ import es.santander.ascender.proyectoFinal2.model.Usuario;
 import es.santander.ascender.proyectoFinal2.model.Venta;
 import es.santander.ascender.proyectoFinal2.repository.VentaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -18,7 +17,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -158,7 +156,7 @@ public class VentaService {
          if (!usuarioService.esAdmin(usuario) && !venta.getUsuario().getId().equals(usuario.getId())) {
                 throw new IllegalAccessError("No tienes permisos para anular esta venta");
             }
-
+            
         // Devolver el stock que se había restado
         for (DetalleVenta detalle : venta.getDetalles()) {
             articuloService.actualizarStock(detalle.getArticulo().getId(), detalle.getCantidad());

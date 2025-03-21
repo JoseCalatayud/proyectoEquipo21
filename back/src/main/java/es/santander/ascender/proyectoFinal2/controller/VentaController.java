@@ -1,25 +1,18 @@
 package es.santander.ascender.proyectoFinal2.controller;
 
-import es.santander.ascender.proyectoFinal2.dto.VentaListDTO;
 import es.santander.ascender.proyectoFinal2.dto.VentaRequestDTO;
 import es.santander.ascender.proyectoFinal2.dto.VentaResponseDTO;
-import es.santander.ascender.proyectoFinal2.model.Usuario;
-import es.santander.ascender.proyectoFinal2.model.Venta;
-import es.santander.ascender.proyectoFinal2.service.UsuarioService;
 import es.santander.ascender.proyectoFinal2.service.VentaService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/ventas")
@@ -27,9 +20,6 @@ public class VentaController {
 
     @Autowired
     private VentaService ventaService;
-
-    @Autowired
-    private UsuarioService usuarioService;
 
     @GetMapping("/listar")
     @PreAuthorize("hasRole('ADMIN')") // Only ADMIN can list all sales
@@ -81,15 +71,7 @@ public class VentaController {
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')") // Both ADMIN and USER can cancel a sale
     public ResponseEntity<?> anularVenta(@PathVariable Long id) {
-        Optional<VentaResponseDTO> ventaOptional = ventaService.buscarPorId(id);
-
-        if (ventaOptional.isPresent()) {
-            // Si el usuario no es admin, solo puede anular sus propias ventas
-           
-            ventaService.anularVenta(id);
-            return ResponseEntity.ok(Map.of("mensaje", "Venta anulada correctamente"));
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+        ventaService.anularVenta(id);
+        return ResponseEntity.ok(Map.of("mensaje", "Venta anulada correctamente"));
     }
 }
