@@ -40,27 +40,8 @@ public class VentaController {
 
     @PostMapping("/crear")
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')") // Both ADMIN and USER can create sales
-    public ResponseEntity<Venta> crearVenta(@Valid @RequestBody VentaRequestDTO ventaRequestDTO) {
-        try {
-            // Obtener el usuario autenticado
-            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-            Optional<Usuario> usuario = usuarioService.buscarPorUsername(auth.getName());
-
-            if (usuario.isEmpty()) {
-                return ResponseEntity.status(401).body(null);
-            }
-
-            // Verificar que el usuario puede realizar ventas
-            if (!usuarioService.puedeRealizarVenta(usuario.get())) {
-                return ResponseEntity.status(403).body(null);
-            }
-
-            Venta nuevaVenta = ventaService.crearVenta(ventaRequestDTO);
-            return ResponseEntity.ok(nuevaVenta);
-        } catch (Exception e) {
-            // Devolver el error.
-            return ResponseEntity.badRequest().build();
-        }
+    public ResponseEntity<VentaResponseDTO> crearVenta(@Valid @RequestBody VentaRequestDTO ventaRequestDTO) {
+        return ResponseEntity.ok(ventaService.crearVenta(ventaRequestDTO));
     }
 
     @GetMapping("/{id}")

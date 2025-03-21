@@ -8,6 +8,7 @@ import es.santander.ascender.proyectoFinal2.model.Usuario;
 import es.santander.ascender.proyectoFinal2.model.Venta;
 import es.santander.ascender.proyectoFinal2.repository.VentaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -64,11 +65,16 @@ public class VentaService {
         return ventaListDTOS;
     }
 
-    public Venta crearVenta(VentaRequestDTO ventaRequestDTO) {
+    public VentaResponseDTO crearVenta(VentaRequestDTO ventaRequestDTO) {
         // 1. Obtener el usuario autenticado
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth == null || auth.getName() == null) {
+        if (auth == null || !auth.isAuthenticated()) {
             throw new IllegalArgumentException("Usuario no autenticado");
+        }
+        // 1.1. Comprobar rol usuario
+        if (!auth.getAuthorities().stream()
+                .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_ADMIN"))) {
+            throw new IllegalArgumentException("El usuario no tiene permisos para realizar compras");
         }
         Usuario usuario = usuarioService.obtenerUsuarioPorUsername(auth.getName());
 
@@ -78,9 +84,10 @@ public class VentaService {
                 throw new IllegalArgumentException("No se permite duplicar artículos en la misma venta");
             }
         }
-
         // 2. Crear venta
         Venta venta = new Venta(usuario);
+        
+        
 
         // 3. Procesar cada detalle de venta
         for (DetalleVentaDTO detalleDTO : ventaRequestDTO.getDetalles()) {
@@ -101,7 +108,7 @@ public class VentaService {
             venta.agregarDetalle(detalleVenta);
 
             // 3.5. Actualizar stock
-            
+
             articuloService.actualizarStock(detalleDTO.getIdArticulo(), -detalleDTO.getCantidad());
 
         }
@@ -111,7 +118,37 @@ public class VentaService {
         }
 
         // 5. Guardar la venta
-        return ventaRepository.save(venta);
+        ventaRepository.save(venta);
+        VentaResponseDTO ventaResponseDTO = new VentaResponseDTO();
+        
+        // Convertir venta en VentaResponseDTO
+        List<DetalleVentaListDTO> detalleVentaListDTOS = new ArrayList<>();
+        for (DetalleVenta detalleVenta : venta.getDetalles()) {
+            DetalleVentaListDTO detalleVentaListDTO = new DetalleVentaListDTO(
+                    detalleVenta.getArticulo().getId(),
+                    detalleVenta.getArticulo().getNombre(),
+                    detalleVenta.getArticulo().getDescripcion(),
+                    detalleVenta.getArticulo().getCodigoBarras(),
+                    detalleVenta.getArticulo().getFamilia(),
+                    detalleVenta.getCantidad(),
+                    detalleVenta.getSubtotal());
+            detalleVentaListDTOS.add(detalleVentaListDTO);
+        }
+
+        UsuarioVentaDTO usuarioVentaDTO = new UsuarioVentaDTO(
+        venta.getUsuario().getId(),
+        venta.getUsuario().getUsername()
+    );
+        
+        ventaResponseDTO.setId(venta.getId());
+        ventaResponseDTO.setFecha(venta.getFecha());
+        ventaResponseDTO.setTotal(venta.getTotal());
+        ventaResponseDTO.setUsuario(usuarioVentaDTO);
+        ventaResponseDTO.setDetalles(detalleVentaListDTOS);
+
+        
+
+        return ventaResponseDTO;
     }
 
     @Transactional(readOnly = true)
