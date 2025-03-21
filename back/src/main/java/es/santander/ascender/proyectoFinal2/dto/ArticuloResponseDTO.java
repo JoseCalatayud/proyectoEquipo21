@@ -1,39 +1,43 @@
 package es.santander.ascender.proyectoFinal2.dto;
 
-import jakarta.validation.constraints.DecimalMin;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-
-public class ArticuloActualizacionDTO {
-
-    @NotBlank(message = "El nombre es obligatorio")
+public class ArticuloResponseDTO {
+    private Long id;
     private String nombre;
-
     private String descripcion;
-
-    @NotBlank(message = "La familia/categoría es obligatoria")
+    private String codigoBarras;
     private String familia;
-
     private String fotografia;
-
-    @NotNull(message = "El precio de venta es obligatorio")
-    @DecimalMin(value = "0.0", inclusive = false, message = "El precio de venta debe ser mayor que cero")
     private Double precioVenta;
+    private Integer stock;
+    private Double precioPromedioPonderado;
 
     // Constructor vacío
-    public ArticuloActualizacionDTO() {
+    public ArticuloResponseDTO() {
     }
 
     // Constructor con parámetros
-    public ArticuloActualizacionDTO(String nombre, String descripcion, String familia, String fotografia, Double precioVenta) {
+    public ArticuloResponseDTO(Long id, String nombre, String descripcion, String codigoBarras, String familia,
+            String fotografia, Double precioVenta, Integer stock, Double precioPromedioPonderado) {
+        this.id = id;
         this.nombre = nombre;
         this.descripcion = descripcion;
+        this.codigoBarras = codigoBarras;
         this.familia = familia;
         this.fotografia = fotografia;
         this.precioVenta = precioVenta;
+        this.stock = stock;
+        this.precioPromedioPonderado = precioPromedioPonderado;
     }
 
     // Getters y setters
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public String getNombre() {
         return nombre;
     }
@@ -48,6 +52,14 @@ public class ArticuloActualizacionDTO {
 
     public void setDescripcion(String descripcion) {
         this.descripcion = descripcion;
+    }
+
+    public String getCodigoBarras() {
+        return codigoBarras;
+    }
+
+    public void setCodigoBarras(String codigoBarras) {
+        this.codigoBarras = codigoBarras;
     }
 
     public String getFamilia() {
@@ -72,5 +84,21 @@ public class ArticuloActualizacionDTO {
 
     public void setPrecioVenta(Double precioVenta) {
         this.precioVenta = precioVenta;
+    }
+
+    public Integer getStock() {
+        return stock;
+    }
+
+    public void setStock(Integer stock) {
+        this.stock = stock;
+    }
+
+    public Double getPrecioPromedioPonderado() {
+        return precioPromedioPonderado;
+    }
+
+    public void setPrecioPromedioPonderado(Double precioPromedioPonderado) {
+        this.precioPromedioPonderado = precioPromedioPonderado;
     }
 }

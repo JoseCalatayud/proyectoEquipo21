@@ -1,9 +1,8 @@
 package es.santander.ascender.proyectoFinal2.controller;
 
-import es.santander.ascender.proyectoFinal2.dto.ArticuloActualizacionDTO;
-import es.santander.ascender.proyectoFinal2.dto.ArticuloDTO;
-import es.santander.ascender.proyectoFinal2.dto.ArticuloRespuestaDTO;
-import es.santander.ascender.proyectoFinal2.model.Articulo;
+import es.santander.ascender.proyectoFinal2.dto.ArticuloUpdateDTO;
+import es.santander.ascender.proyectoFinal2.dto.ArticuloRequestDTO;
+import es.santander.ascender.proyectoFinal2.dto.ArticuloResponseDTO;
 import es.santander.ascender.proyectoFinal2.service.ArticuloService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,7 +14,6 @@ import jakarta.validation.Valid;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/articulos")
@@ -25,45 +23,42 @@ public class ArticuloController {
     private ArticuloService articuloService;
 
     @GetMapping
-    public ResponseEntity<List<Articulo>> listarArticulos() {
+    public ResponseEntity<List<ArticuloResponseDTO>> listarArticulos() {
         return ResponseEntity.ok(articuloService.listarTodos());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Articulo> buscarPorId(@PathVariable Long id) {
-        Optional<Articulo> articulo = articuloService.buscarPorId(id);
-        return articulo.map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<ArticuloResponseDTO> buscarPorId(@PathVariable Long id) {
+        return ResponseEntity.ok(articuloService.buscarPorId(id));
+        
     }
 
     @GetMapping("/codigo/{codigoBarras}")
-    public ResponseEntity<Articulo> buscarPorCodigoBarras(@PathVariable String codigoBarras) {
-        Optional<Articulo> articulo = articuloService.buscarPorCodigoBarras(codigoBarras);
-        return articulo.map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<ArticuloResponseDTO> buscarPorCodigoBarras(@PathVariable String codigoBarras) {
+        return ResponseEntity.ok(articuloService.buscarPorCodigoBarras(codigoBarras));
     }
 
     @GetMapping("/familia/{familia}")
-    public ResponseEntity<List<Articulo>> buscarPorFamilia(@PathVariable String familia) {
+    public ResponseEntity<List<ArticuloResponseDTO>> buscarPorFamilia(@PathVariable String familia) {
         return ResponseEntity.ok(articuloService.buscarPorFamilia(familia));
     }
 
     @GetMapping("/buscar")
-    public ResponseEntity<List<Articulo>> buscarPorNombre(@RequestParam String nombre) {
+    public ResponseEntity<List<ArticuloResponseDTO>> buscarPorNombre(@RequestParam String nombre) {
         return ResponseEntity.ok(articuloService.buscarPorNombre(nombre));
     }
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ArticuloRespuestaDTO> crearArticulo(@Valid @RequestBody ArticuloDTO articuloDTO) {
-        ArticuloRespuestaDTO articuloRespuestaDTO = articuloService.crear(articuloDTO);
+    public ResponseEntity<ArticuloResponseDTO> crearArticulo(@Valid @RequestBody ArticuloRequestDTO articuloDTO) {
+        ArticuloResponseDTO articuloRespuestaDTO = articuloService.crear(articuloDTO);
         return new ResponseEntity<>(articuloRespuestaDTO, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ArticuloRespuestaDTO> actualizarArticulo(@PathVariable Long id, @Valid @RequestBody ArticuloActualizacionDTO articuloActualizacionDTO) {
-        ArticuloRespuestaDTO actualizadoArticulo = articuloService.actualizar(id, articuloActualizacionDTO);
+    public ResponseEntity<ArticuloResponseDTO> actualizarArticulo(@PathVariable Long id, @Valid @RequestBody ArticuloUpdateDTO articuloActualizacionDTO) {
+        ArticuloResponseDTO actualizadoArticulo = articuloService.actualizar(id, articuloActualizacionDTO);
         return ResponseEntity.ok(actualizadoArticulo);
     }
 
@@ -77,12 +72,5 @@ public class ArticuloController {
 
     }
 
-    @GetMapping("/verificar/{codigoBarras}")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<?> verificarExistencia(@PathVariable String codigoBarras) {
-        boolean existe = articuloService.existeArticulo(codigoBarras);
-        Map<String, Object> response = new HashMap<>();
-        response.put("existe", existe);
-        return ResponseEntity.ok(response);
-    }
+    
 }

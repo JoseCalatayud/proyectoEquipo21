@@ -4,15 +4,12 @@ import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
-public class ArticuloDTO {
+public class ArticuloUpdateDTO {
 
     @NotBlank(message = "El nombre es obligatorio")
     private String nombre;
 
     private String descripcion;
-
-    @NotBlank(message = "El código de barras es obligatorio")
-    private String codigoBarras;
 
     @NotBlank(message = "La familia/categoría es obligatoria")
     private String familia;
@@ -24,14 +21,13 @@ public class ArticuloDTO {
     private Double precioVenta;
 
     // Constructor vacío
-    public ArticuloDTO() {
+    public ArticuloUpdateDTO() {
     }
 
     // Constructor con parámetros
-    public ArticuloDTO(String nombre, String descripcion, String codigoBarras, String familia, String fotografia, Double precioVenta) {
+    public ArticuloUpdateDTO(String nombre, String descripcion, String familia, String fotografia, Double precioVenta) {
         this.nombre = nombre;
         this.descripcion = descripcion;
-        this.codigoBarras = codigoBarras;
         this.familia = familia;
         this.fotografia = fotografia;
         this.precioVenta = precioVenta;
@@ -52,14 +48,6 @@ public class ArticuloDTO {
 
     public void setDescripcion(String descripcion) {
         this.descripcion = descripcion;
-    }
-
-    public String getCodigoBarras() {
-        return codigoBarras;
-    }
-
-    public void setCodigoBarras(String codigoBarras) {
-        this.codigoBarras = codigoBarras;
     }
 
     public String getFamilia() {

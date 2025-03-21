@@ -1,21 +1,34 @@
 package es.santander.ascender.proyectoFinal2.dto;
 
-public class ArticuloRespuestaDTO {
-    private Long id;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
+public class ArticuloRequestDTO {
+
+    @NotBlank(message = "El nombre es obligatorio")
     private String nombre;
+
     private String descripcion;
+
+    @NotBlank(message = "El código de barras es obligatorio")
     private String codigoBarras;
+
+    @NotBlank(message = "La familia/categoría es obligatoria")
     private String familia;
+
     private String fotografia;
+
+    @NotNull(message = "El precio de venta es obligatorio")
+    @DecimalMin(value = "0.0", inclusive = false, message = "El precio de venta debe ser mayor que cero")
     private Double precioVenta;
 
     // Constructor vacío
-    public ArticuloRespuestaDTO() {
+    public ArticuloRequestDTO() {
     }
 
     // Constructor con parámetros
-    public ArticuloRespuestaDTO(Long id, String nombre, String descripcion, String codigoBarras, String familia, String fotografia, Double precioVenta) {
-        this.id = id;
+    public ArticuloRequestDTO(String nombre, String descripcion, String codigoBarras, String familia, String fotografia, Double precioVenta) {
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.codigoBarras = codigoBarras;
@@ -25,14 +38,6 @@ public class ArticuloRespuestaDTO {
     }
 
     // Getters y setters
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
     public String getNombre() {
         return nombre;
     }

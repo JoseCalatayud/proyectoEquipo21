@@ -6,6 +6,7 @@ import es.santander.ascender.proyectoFinal2.model.Articulo;
 import es.santander.ascender.proyectoFinal2.model.DetalleVenta;
 import es.santander.ascender.proyectoFinal2.model.Usuario;
 import es.santander.ascender.proyectoFinal2.model.Venta;
+import es.santander.ascender.proyectoFinal2.repository.ArticuloRepository;
 import es.santander.ascender.proyectoFinal2.repository.VentaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -26,6 +27,9 @@ public class VentaService {
 
     @Autowired
     private VentaRepository ventaRepository;
+
+    @Autowired
+    private ArticuloRepository articuloRepository;    
 
     @Autowired
     private ArticuloService articuloService;
@@ -63,7 +67,7 @@ public class VentaService {
         // 3. Procesar cada detalle de venta
         for (DetalleVentaDTO detalleDTO : ventaRequestDTO.getDetalles()) {
             // 3.1. Buscar articulo.
-            Articulo articulo = articuloService.buscarPorId(detalleDTO.getIdArticulo())
+            Articulo articulo = articuloRepository.findById(detalleDTO.getIdArticulo())
                     .orElseThrow(() -> new IllegalArgumentException("No existe el articulo"));
 
             // 3.2. Comprobar stock.

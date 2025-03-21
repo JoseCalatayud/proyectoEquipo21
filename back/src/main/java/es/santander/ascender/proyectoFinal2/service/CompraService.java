@@ -21,6 +21,7 @@ import es.santander.ascender.proyectoFinal2.model.Articulo;
 import es.santander.ascender.proyectoFinal2.model.Compra;
 import es.santander.ascender.proyectoFinal2.model.DetalleCompra;
 import es.santander.ascender.proyectoFinal2.model.Usuario;
+import es.santander.ascender.proyectoFinal2.repository.ArticuloRepository;
 import es.santander.ascender.proyectoFinal2.repository.CompraRepository;
 
 @Service
@@ -29,6 +30,10 @@ public class CompraService {
 
     @Autowired
     private CompraRepository compraRepository;
+
+    @Autowired
+    private ArticuloRepository articuloRepository;
+    
 
     @Autowired
     private ArticuloService articuloService;
@@ -110,7 +115,7 @@ public class CompraService {
         // 4. Procesar cada detalle de compra
         for (DetalleCompraDTO detalleDTO : compraRequestDTO.getDetalles()) {
             // 3.1. Buscar articulo.
-            Articulo articulo = articuloService.buscarPorId(detalleDTO.getIdArticulo())
+            Articulo articulo = articuloRepository.findById(detalleDTO.getIdArticulo())
                     .orElseThrow(() -> new IllegalArgumentException("No existe el articulo"));
 
             // 4.2. Verificar que el artículo no está borrado
