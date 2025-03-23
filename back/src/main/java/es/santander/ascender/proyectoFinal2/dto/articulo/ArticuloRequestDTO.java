@@ -1,4 +1,4 @@
-package es.santander.ascender.proyectoFinal2.dto;
+package es.santander.ascender.proyectoFinal2.dto.articulo;
 
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
@@ -8,7 +8,7 @@ public class ArticuloRequestDTO {
 
     @NotBlank(message = "El nombre es obligatorio")
     private String nombre;
-
+    @NotBlank(message = "La descripción es obligatoria")
     private String descripcion;
 
     @NotBlank(message = "El código de barras es obligatorio")

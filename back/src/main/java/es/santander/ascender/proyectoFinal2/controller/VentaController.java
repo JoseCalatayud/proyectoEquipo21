@@ -1,7 +1,7 @@
 package es.santander.ascender.proyectoFinal2.controller;
 
-import es.santander.ascender.proyectoFinal2.dto.VentaRequestDTO;
-import es.santander.ascender.proyectoFinal2.dto.VentaResponseDTO;
+import es.santander.ascender.proyectoFinal2.dto.venta.VentaRequestDTO;
+import es.santander.ascender.proyectoFinal2.dto.venta.VentaResponseDTO;
 import es.santander.ascender.proyectoFinal2.service.VentaService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +22,7 @@ public class VentaController {
     private VentaService ventaService;
 
     @GetMapping("/listar")
-    @PreAuthorize("hasRole('ADMIN')") // Only ADMIN can list all sales
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")  // Only ADMIN can list all sales
     public ResponseEntity<List<VentaResponseDTO>> listarVentas() {
         return ResponseEntity.ok(ventaService.listarVentas());
     }
@@ -34,7 +34,7 @@ public class VentaController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'USER')") // Both ADMIN and USER can get a sale by ID
+    @PreAuthorize("hasAnyRole('ADMIN')") // Both ADMIN and USER can get a sale by ID
     public ResponseEntity<VentaResponseDTO> buscarPorId(@PathVariable Long id) {
         return ResponseEntity.ok(ventaService.buscarPorId(id).orElse(null));
 
@@ -42,7 +42,7 @@ public class VentaController {
     }
 
     @GetMapping("/usuario/{idUsuario}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'USER')") // Both ADMIN and USER can get sales by user ID
+    @PreAuthorize("hasAnyRole('ADMIN')") // Both ADMIN and USER can get sales by user ID
     public ResponseEntity<List<VentaResponseDTO>> buscarPorUsuario(@PathVariable Long idUsuario) {
         return ResponseEntity.ok(ventaService.buscarPorUsuario(idUsuario));
         
@@ -58,18 +58,17 @@ public class VentaController {
     }
 
     @GetMapping("/usuario/{idUsuario}/fechas")
-    @PreAuthorize("hasAnyRole('ADMIN', 'USER')") // Both ADMIN and USER can search sales by user and date range
+    @PreAuthorize("hasAnyRole('ADMIN')") // Both ADMIN and USER can search sales by user and date range
     public ResponseEntity<List<VentaResponseDTO>> buscarPorUsuarioYFechas(
             @PathVariable Long idUsuario,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fechaInicio,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fechaFin) {
-        // Obtener el usuario autenticado
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fechaFin) { 
         
         return ResponseEntity.ok(ventaService.buscarPorUsuarioYFechas(idUsuario, fechaInicio, fechaFin));
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'USER')") // Both ADMIN and USER can cancel a sale
+    @PreAuthorize("hasAnyRole('ADMIN')") // Both ADMIN and USER can cancel a sale
     public ResponseEntity<?> anularVenta(@PathVariable Long id) {
         ventaService.anularVenta(id);
         return ResponseEntity.ok(Map.of("mensaje", "Venta anulada correctamente"));

@@ -1,21 +1,21 @@
-package es.santander.ascender.proyectoFinal2.dto;
+package es.santander.ascender.proyectoFinal2.dto.compra;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-public class CompraListDTO {
+public class CompraListResponseDTO {
     private Long id;
     private LocalDateTime fecha;
     private Double total;
     private String usuario;
-    private List<DetalleCompraListDTO> detalles;
+    private List<DetalleCompraListResponseDTO> detalles;
 
     // Constructor vacío
-    public CompraListDTO() {
+    public CompraListResponseDTO() {
     }
 
     // Constructor con parámetros
-    public CompraListDTO(Long id, LocalDateTime fecha, Double total, String usuario, List<DetalleCompraListDTO> detalles) {
+    public CompraListResponseDTO(Long id, LocalDateTime fecha, Double total, String usuario, List<DetalleCompraListResponseDTO> detalles) {
         this.id = id;
         this.fecha = fecha;
         this.total = total;
@@ -55,11 +55,11 @@ public class CompraListDTO {
         this.usuario = usuario;
     }
 
-    public List<DetalleCompraListDTO> getDetalles() {
+    public List<DetalleCompraListResponseDTO> getDetalles() {
         return detalles;
     }
 
-    public void setDetalles(List<DetalleCompraListDTO> detalles) {
+    public void setDetalles(List<DetalleCompraListResponseDTO> detalles) {
         this.detalles = detalles;
     }
 }

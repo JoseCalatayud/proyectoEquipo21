@@ -1,4 +1,4 @@
-package es.santander.ascender.proyectoFinal2.dto;
+package es.santander.ascender.proyectoFinal2.dto.usuario;
 
 public class UsuarioRequestDTO {
 

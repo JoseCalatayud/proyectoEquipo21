@@ -1,17 +1,17 @@
-package es.santander.ascender.proyectoFinal2.dto;
+package es.santander.ascender.proyectoFinal2.dto.articulo;
 
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
-public class ArticuloUpdateDTO {
+public class ArticuloUpdateRequestDTO {
 
     @NotBlank(message = "El nombre es obligatorio")
     private String nombre;
 
     private String descripcion;
 
-    @NotBlank(message = "La familia/categoría es obligatoria")
+    @NotBlank(message = "El código de barras es obligatorio")
     private String familia;
 
     private String fotografia;
@@ -21,11 +21,11 @@ public class ArticuloUpdateDTO {
     private Double precioVenta;
 
     // Constructor vacío
-    public ArticuloUpdateDTO() {
+    public ArticuloUpdateRequestDTO() {
     }
 
     // Constructor con parámetros
-    public ArticuloUpdateDTO(String nombre, String descripcion, String familia, String fotografia, Double precioVenta) {
+    public ArticuloUpdateRequestDTO(String nombre, String descripcion, String familia, String fotografia, Double precioVenta) {
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.familia = familia;

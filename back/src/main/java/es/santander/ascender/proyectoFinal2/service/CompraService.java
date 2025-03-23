@@ -13,10 +13,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import es.santander.ascender.proyectoFinal2.dto.CompraListDTO;
-import es.santander.ascender.proyectoFinal2.dto.CompraRequestDTO;
-import es.santander.ascender.proyectoFinal2.dto.DetalleCompraDTO;
-import es.santander.ascender.proyectoFinal2.dto.DetalleCompraListDTO;
+import es.santander.ascender.proyectoFinal2.dto.compra.CompraListResponseDTO;
+import es.santander.ascender.proyectoFinal2.dto.compra.CompraRequestDTO;
+import es.santander.ascender.proyectoFinal2.dto.compra.DetalleCompraListResponseDTO;
+import es.santander.ascender.proyectoFinal2.dto.compra.DetalleCompraRequestDTO;
 import es.santander.ascender.proyectoFinal2.model.Articulo;
 import es.santander.ascender.proyectoFinal2.model.Compra;
 import es.santander.ascender.proyectoFinal2.model.DetalleCompra;
@@ -37,19 +37,18 @@ public class CompraService {
 
     @Autowired
     private UsuarioRepository usuarioRepository;
-    
 
     @Autowired
     private ArticuloService articuloService;
 
     @Transactional(readOnly = true)
-    public List<CompraListDTO> listarTodas() {
+    public List<CompraListResponseDTO> listarTodas() {
         List<Compra> compras = compraRepository.findAll();
         return convertirCompraToCompraListDTOs(compras);
     }
 
     @Transactional(readOnly = true)
-    public CompraListDTO buscarPorId(Long id) {
+    public CompraListResponseDTO buscarPorId(Long id) {
         Optional<Compra> compraOpt = compraRepository.findById(id);
         if (compraOpt.isPresent()) {
             Compra compra = compraOpt.get();
@@ -59,15 +58,13 @@ public class CompraService {
         }
     }
 
-    
-
     @Transactional(readOnly = true)
     public List<Compra> buscarPorUsuario(Usuario usuario) {
         return compraRepository.findByUsuario(usuario);
     }
 
     @Transactional(readOnly = true)
-    public List<CompraListDTO> buscarPorFechas(LocalDateTime fechaInicio, LocalDateTime fechaFin) {
+    public List<CompraListResponseDTO> buscarPorFechas(LocalDateTime fechaInicio, LocalDateTime fechaFin) {
 
         List<Compra> compras = compraRepository.findByFechaBetween(fechaInicio, fechaFin);
         // 1. Validar que las fechas no son nulas
@@ -76,7 +73,7 @@ public class CompraService {
     }
 
     @Transactional(readOnly = true)
-    public List<CompraListDTO> buscarPorUsuarioYFechas(Usuario usuario, LocalDateTime fechaInicio,
+    public List<CompraListResponseDTO> buscarPorUsuarioYFechas(Usuario usuario, LocalDateTime fechaInicio,
             LocalDateTime fechaFin) {
         // 1. Validar que el usuario no es nulo
         if (usuario == null) {
@@ -90,22 +87,23 @@ public class CompraService {
 
     }
 
-    public CompraListDTO crearCompra(CompraRequestDTO compraRequestDTO) {
+    public CompraListResponseDTO crearCompra(CompraRequestDTO compraRequestDTO) {
         // 1. Obtener el usuario autenticado
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth == null || !auth.isAuthenticated()) {
             throw new IllegalArgumentException("Usuario no autenticado");
         }
         // 1.1. Comprobar rol usuario
-        if (!auth.getAuthorities().stream().anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_ADMIN"))) {
+        if (!auth.getAuthorities().stream()
+                .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_ADMIN"))) {
             throw new IllegalArgumentException("El usuario no tiene permisos para realizar compras");
         }
-        
+
         Usuario usuario = usuarioRepository.findByUsername(auth.getName()).get();
 
         // 2. Validar que no hay artículos duplicados
         Set<Long> articulosIds = new HashSet<>();
-        for (DetalleCompraDTO detalleDTO : compraRequestDTO.getDetalles()) {
+        for (DetalleCompraRequestDTO detalleDTO : compraRequestDTO.getDetalles()) {
             if (!articulosIds.add(detalleDTO.getIdArticulo())) {
                 throw new IllegalArgumentException("No se permite duplicar artículos en la misma compra");
             }
@@ -114,40 +112,30 @@ public class CompraService {
         Compra compra = new Compra(usuario);
 
         // 4. Procesar cada detalle de compra
-        for (DetalleCompraDTO detalleDTO : compraRequestDTO.getDetalles()) {
+        for (DetalleCompraRequestDTO detalleDTO : compraRequestDTO.getDetalles()) {
             // 3.1. Buscar articulo.
             Articulo articulo = articuloRepository.findById(detalleDTO.getIdArticulo())
                     .orElseThrow(() -> new IllegalArgumentException("No existe el articulo"));
-
             // 4.2. Verificar que el artículo no está borrado
             if (articulo.isBorrado()) {
                 throw new IllegalStateException(
                         "No se puede comprar el artículo porque está descatalogado: " + articulo.getNombre());
             }
-
             // 3.4. Crear detalle compra
             // Usar el precio de compra del DTO
             DetalleCompra detalleCompra = new DetalleCompra(articulo, detalleDTO.getCantidad(),
                     detalleDTO.getPrecioUnitario());
-
             // 3.5. Agregar detalle a compra
             compra.agregarDetalle(detalleCompra);
-
             // 3.6. Actualizar stock
-
             articuloService.actualizarStock(detalleDTO.getIdArticulo(), detalleDTO.getCantidad());
             // Calculamos el nuevo precio promedio ponderado
             articuloService.actualizarPrecioPromedioPonderado(articulo, detalleDTO.getCantidad(),
                     detalleDTO.getPrecioUnitario());
-
         }
-               
         compraRepository.save(compra);
         return convertCompraToCompraListDTO(compra);
-        
     }
-
-    // 4. Guardar la compra
 
     @Transactional
     public void anularCompra(Long id) {
@@ -157,22 +145,20 @@ public class CompraService {
         // Restar el stock que se había añadido
         for (DetalleCompra detalle : compra.getDetalles()) {
             // Usamos synchronized para evitar condiciones de carrera
-            synchronized (detalle.getArticulo()) {
-                articuloService.actualizarStock(detalle.getArticulo().getId(), -detalle.getCantidad());
-            }
+            articuloService.actualizarStock(detalle.getArticulo().getId(), -detalle.getCantidad());
         }
 
         // Eliminar la compra
         compraRepository.deleteById(id);
     }
 
-    private List<CompraListDTO> convertirCompraToCompraListDTOs(List<Compra> compras) {
-        List<CompraListDTO> compraListDTOS = new ArrayList<>();
+    private List<CompraListResponseDTO> convertirCompraToCompraListDTOs(List<Compra> compras) {
+        List<CompraListResponseDTO> compraListDTOS = new ArrayList<>();
         for (Compra compra : compras) {
-            List<DetalleCompraListDTO> detalleCompraListDTOS = new ArrayList<>();
+            List<DetalleCompraListResponseDTO> detalleCompraListDTOS = new ArrayList<>();
             for (DetalleCompra detalleCompra : compra.getDetalles()) {
                 Articulo articulo = detalleCompra.getArticulo();
-                DetalleCompraListDTO detalleCompraListDTO = new DetalleCompraListDTO(
+                DetalleCompraListResponseDTO detalleCompraListDTO = new DetalleCompraListResponseDTO(
                         articulo.getId(),
                         articulo.getNombre(),
                         articulo.getDescripcion(),
@@ -183,7 +169,7 @@ public class CompraService {
                         detalleCompra.getSubtotal());
                 detalleCompraListDTOS.add(detalleCompraListDTO);
             }
-            CompraListDTO compraListDTO = new CompraListDTO(
+            CompraListResponseDTO compraListDTO = new CompraListResponseDTO(
                     compra.getId(),
                     compra.getFecha(),
                     compra.getTotal(),
@@ -193,6 +179,7 @@ public class CompraService {
         }
         return compraListDTOS;
     }
+
     private void validarFechas(LocalDateTime fechaInicio, LocalDateTime fechaFin) {
         if (fechaInicio == null || fechaFin == null) {
             throw new IllegalArgumentException("Las fechas no pueden ser nulas");
@@ -202,11 +189,12 @@ public class CompraService {
             throw new IllegalArgumentException("La fecha de inicio no puede ser posterior a la fecha de fin");
         }
     }
-    private CompraListDTO convertCompraToCompraListDTO(Compra compra) {
-        List<DetalleCompraListDTO> detalleCompraListDTOS = new ArrayList<>();
+
+    private CompraListResponseDTO convertCompraToCompraListDTO(Compra compra) {
+        List<DetalleCompraListResponseDTO> detalleCompraListDTOS = new ArrayList<>();
         for (DetalleCompra detalleCompra : compra.getDetalles()) {
             Articulo articulo = detalleCompra.getArticulo();
-            DetalleCompraListDTO detalleCompraListDTO = new DetalleCompraListDTO(
+            DetalleCompraListResponseDTO detalleCompraListDTO = new DetalleCompraListResponseDTO(
                     articulo.getId(),
                     articulo.getNombre(),
                     articulo.getDescripcion(),
@@ -217,6 +205,7 @@ public class CompraService {
                     detalleCompra.getSubtotal());
             detalleCompraListDTOS.add(detalleCompraListDTO);
         }
-        return new CompraListDTO(compra.getId(), compra.getFecha(), compra.getTotal(), compra.getUsuario().getUsername(), detalleCompraListDTOS);
+        return new CompraListResponseDTO(compra.getId(), compra.getFecha(), compra.getTotal(),
+                compra.getUsuario().getUsername(), detalleCompraListDTOS);
     }
 }

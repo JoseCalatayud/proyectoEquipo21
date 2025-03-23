@@ -18,8 +18,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import es.santander.ascender.proyectoFinal2.dto.CompraListDTO;
-import es.santander.ascender.proyectoFinal2.dto.CompraRequestDTO;
+import es.santander.ascender.proyectoFinal2.dto.compra.CompraListResponseDTO;
+import es.santander.ascender.proyectoFinal2.dto.compra.CompraRequestDTO;
 import es.santander.ascender.proyectoFinal2.service.CompraService;
 import jakarta.validation.Valid;
 
@@ -33,27 +33,27 @@ public class CompraController {
 
     
     @GetMapping
-    public ResponseEntity<List<CompraListDTO>> listarCompras() {
+    public ResponseEntity<List<CompraListResponseDTO>> listarCompras() {
         return ResponseEntity.ok(compraService.listarTodas());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CompraListDTO> buscarPorId(@PathVariable Long id) {
+    public ResponseEntity<CompraListResponseDTO> buscarPorId(@PathVariable Long id) {
         compraService.buscarPorId(id);
         return ResponseEntity.ok(compraService.buscarPorId(id));
         
     }
 
     @GetMapping("/fechas")
-    public ResponseEntity<List<CompraListDTO>> buscarPorFechas(
+    public ResponseEntity<List<CompraListResponseDTO>> buscarPorFechas(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fechaInicio,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fechaFin) {
         return ResponseEntity.ok(compraService.buscarPorFechas(fechaInicio, fechaFin));
     }
 
     @PostMapping
-    public ResponseEntity<CompraListDTO> realizarCompra(@Valid @RequestBody CompraRequestDTO compraRequestDTO) {
-        CompraListDTO compraCreada = compraService.crearCompra(compraRequestDTO);
+    public ResponseEntity<CompraListResponseDTO> realizarCompra(@Valid @RequestBody CompraRequestDTO compraRequestDTO) {
+        CompraListResponseDTO compraCreada = compraService.crearCompra(compraRequestDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(compraCreada);
                 
                 

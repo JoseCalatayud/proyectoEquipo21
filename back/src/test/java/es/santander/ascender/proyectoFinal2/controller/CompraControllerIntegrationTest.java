@@ -1,8 +1,9 @@
 package es.santander.ascender.proyectoFinal2.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import es.santander.ascender.proyectoFinal2.dto.CompraRequestDTO;
-import es.santander.ascender.proyectoFinal2.dto.DetalleCompraDTO;
+
+import es.santander.ascender.proyectoFinal2.dto.compra.CompraRequestDTO;
+import es.santander.ascender.proyectoFinal2.dto.compra.DetalleCompraRequestDTO;
 import es.santander.ascender.proyectoFinal2.model.Articulo;
 import es.santander.ascender.proyectoFinal2.model.Compra;
 import es.santander.ascender.proyectoFinal2.model.DetalleCompra;
@@ -176,9 +177,9 @@ public class CompraControllerIntegrationTest {
     public void realizarCompra_conAdmin_deberiaCrearCompra() throws Exception {
         // Crear DTO para la compra
         CompraRequestDTO compraRequestDTO = new CompraRequestDTO();
-        List<DetalleCompraDTO> detalles = new ArrayList<>();
+        List<DetalleCompraRequestDTO> detalles = new ArrayList<>();
 
-        DetalleCompraDTO detalle = new DetalleCompraDTO();
+        DetalleCompraRequestDTO detalle = new DetalleCompraRequestDTO();
         detalle.setIdArticulo(articulo1.getId());
         detalle.setCantidad(5);
         detalle.setPrecioUnitario(12.0);
@@ -203,9 +204,9 @@ public class CompraControllerIntegrationTest {
     @WithMockUser(username = "user_test", roles = { "USER" })
     public void realizarCompra_conUser_deberiaRetornarForbidden() throws Exception {
         CompraRequestDTO compraRequestDTO = new CompraRequestDTO();
-        List<DetalleCompraDTO> detalles = new ArrayList<>();
+        List<DetalleCompraRequestDTO> detalles = new ArrayList<>();
 
-        DetalleCompraDTO detalle = new DetalleCompraDTO();
+        DetalleCompraRequestDTO detalle = new DetalleCompraRequestDTO();
         detalle.setIdArticulo(articulo1.getId());
         detalle.setCantidad(5);
         detalle.setPrecioUnitario(12.0);
@@ -259,9 +260,9 @@ public class CompraControllerIntegrationTest {
     private void crearCompraDePrueba() throws Exception {
         // Crear DTO para la compra
         CompraRequestDTO compraRequestDTO = new CompraRequestDTO();
-        List<DetalleCompraDTO> detalles = new ArrayList<>();
+        List<DetalleCompraRequestDTO> detalles = new ArrayList<>();
 
-        DetalleCompraDTO detalle = new DetalleCompraDTO();
+        DetalleCompraRequestDTO detalle = new DetalleCompraRequestDTO();
         detalle.setIdArticulo(articulo1.getId());
         detalle.setCantidad(3);
         detalle.setPrecioUnitario(9.0);

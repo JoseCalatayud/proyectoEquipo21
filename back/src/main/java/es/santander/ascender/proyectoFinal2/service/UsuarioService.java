@@ -1,7 +1,7 @@
 package es.santander.ascender.proyectoFinal2.service;
 
-import es.santander.ascender.proyectoFinal2.dto.UsuarioRequestDTO;
-import es.santander.ascender.proyectoFinal2.dto.UsuarioResponseDTO;
+import es.santander.ascender.proyectoFinal2.dto.usuario.UsuarioRequestDTO;
+import es.santander.ascender.proyectoFinal2.dto.usuario.UsuarioResponseDTO;
 import es.santander.ascender.proyectoFinal2.exception.MyBadDataException;
 import es.santander.ascender.proyectoFinal2.model.RolUsuario;
 import es.santander.ascender.proyectoFinal2.model.Usuario;
@@ -61,7 +61,7 @@ public class UsuarioService {
         return convertToUsuarioResponseDTOList(listaUsuarios);
     }
 
-    @Transactional
+    
     public UsuarioResponseDTO crear(UsuarioRequestDTO usuarioRequestDTO) {
         if (usuarioRepository.existsByUsername(usuarioRequestDTO.getUsername())) {
             throw new IllegalArgumentException(
@@ -77,7 +77,7 @@ public class UsuarioService {
         return new UsuarioResponseDTO(usuario.getUsername(), usuario.getRol(), usuario.isActivo()); // Se establece el estado activo por defecto
     }
 
-    @Transactional
+    
     public UsuarioResponseDTO actualizar(Long id,UsuarioRequestDTO usuarioRequest) {
         Optional<Usuario> usuarioExistente = usuarioRepository
                 .findById(id);
@@ -121,7 +121,7 @@ public class UsuarioService {
         return new UsuarioResponseDTO(usuario.getUsername(), usuario.getRol(), usuario.isActivo()); 
     }
 
-    @Transactional
+    
     public UsuarioResponseDTO borradoLogicoDeUsuario(Long id) {
         Optional<Usuario> usuarioOptional = usuarioRepository.findById(id);
         if (usuarioOptional.isEmpty()) {
@@ -136,7 +136,7 @@ public class UsuarioService {
         return new UsuarioResponseDTO(usuario.getUsername(), usuario.getRol(), usuario.isActivo()); 
     }
 
-    @Transactional
+    
     public UsuarioResponseDTO reactivar(Long id) {
         Optional<Usuario> usuarioOptional = usuarioRepository.findById(id);
         if (usuarioOptional.isEmpty()) {

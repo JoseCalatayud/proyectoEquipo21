@@ -1,9 +1,9 @@
-package es.santander.ascender.proyectoFinal2.dto;
+package es.santander.ascender.proyectoFinal2.dto.compra;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 
-public class DetalleCompraDTO {
+public class DetalleCompraRequestDTO {
     @NotNull(message = "El ID del artículo es obligatorio")
     private Long idArticulo;
 
@@ -16,11 +16,11 @@ public class DetalleCompraDTO {
     private Double precioUnitario;
 
     // Constructor vacío
-    public DetalleCompraDTO() {
+    public DetalleCompraRequestDTO() {
     }
 
     // Constructor con parámetros
-    public DetalleCompraDTO(Long idArticulo, Integer cantidad, Double precioUnitario) {
+    public DetalleCompraRequestDTO(Long idArticulo, Integer cantidad, Double precioUnitario) {
         this.idArticulo = idArticulo;
         this.cantidad = cantidad;
         this.precioUnitario = precioUnitario;

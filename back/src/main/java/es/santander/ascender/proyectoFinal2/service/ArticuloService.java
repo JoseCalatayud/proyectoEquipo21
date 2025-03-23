@@ -1,10 +1,10 @@
 package es.santander.ascender.proyectoFinal2.service;
 
-import es.santander.ascender.proyectoFinal2.dto.ArticuloUpdateDTO;
+import es.santander.ascender.proyectoFinal2.dto.articulo.ArticuloRequestDTO;
+import es.santander.ascender.proyectoFinal2.dto.articulo.ArticuloResponseDTO;
+import es.santander.ascender.proyectoFinal2.dto.articulo.ArticuloUpdateRequestDTO;
 import es.santander.ascender.proyectoFinal2.exception.MyBadDataException;
 import es.santander.ascender.proyectoFinal2.exception.StockInsuficienteException;
-import es.santander.ascender.proyectoFinal2.dto.ArticuloRequestDTO;
-import es.santander.ascender.proyectoFinal2.dto.ArticuloResponseDTO;
 import es.santander.ascender.proyectoFinal2.model.Articulo;
 import es.santander.ascender.proyectoFinal2.repository.ArticuloRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +17,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional
 public class ArticuloService {
     @Autowired
     private ArticuloRepository articuloRepository;
@@ -79,7 +80,6 @@ public class ArticuloService {
         return listaArticulosDTO;
     }
 
-    @Transactional
     public ArticuloResponseDTO crear(ArticuloRequestDTO articuloDTO) {
         if (articuloRepository.existsByCodigoBarras(articuloDTO.getCodigoBarras())) {
             throw new MyBadDataException("Ya existe un artículo con el código de barras: " + articuloDTO.getCodigoBarras(), 1);
@@ -100,8 +100,8 @@ public class ArticuloService {
         return convertArticuloToArticuloRespuestaDTO(articuloGuardado);
     }
 
-    @Transactional
-    public ArticuloResponseDTO actualizar(Long id, ArticuloUpdateDTO articuloActualizacionDTO) {
+    
+    public ArticuloResponseDTO actualizar(Long id, ArticuloUpdateRequestDTO articuloActualizacionDTO) {
         Optional<Articulo> articuloExistenteOptional = articuloRepository.findById(id);
 
         if (articuloExistenteOptional.isEmpty()) {
@@ -121,7 +121,7 @@ public class ArticuloService {
         return convertArticuloToArticuloRespuestaDTO(articuloGuardado);
     }
 
-    @Transactional
+    
     public void borradoLogico(Long id) {
         Optional<Articulo> articuloOptional = articuloRepository.findById(id);
 
@@ -138,7 +138,7 @@ public class ArticuloService {
         return articuloRepository.existsByCodigoBarras(codigoBarras);
     }
 
-    @Transactional
+    
     public void actualizarStock(Long id, int cantidad) {
         Optional<Articulo> articuloOptional = articuloRepository.findById(id);
         if (articuloOptional.isEmpty()) {
@@ -162,7 +162,7 @@ public class ArticuloService {
         return articuloOptional.get().getStock() >= cantidad;
     }
 
-    @Transactional
+    
     public void actualizarPrecioPromedioPonderado(Articulo articulo, int cantidadComprada,
             double precioUnitarioCompra) {
         // Calculamos el precio promedio ponderado

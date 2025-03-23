@@ -1,7 +1,7 @@
 package es.santander.ascender.proyectoFinal2.controller;
 
-import es.santander.ascender.proyectoFinal2.dto.UsuarioRequestDTO;
-import es.santander.ascender.proyectoFinal2.dto.UsuarioResponseDTO;
+import es.santander.ascender.proyectoFinal2.dto.usuario.UsuarioRequestDTO;
+import es.santander.ascender.proyectoFinal2.dto.usuario.UsuarioResponseDTO;
 import es.santander.ascender.proyectoFinal2.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

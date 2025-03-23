@@ -1,6 +1,10 @@
 package es.santander.ascender.proyectoFinal2.service;
 
-import es.santander.ascender.proyectoFinal2.dto.*;
+import es.santander.ascender.proyectoFinal2.dto.venta.DetalleVentaRequestDTO;
+import es.santander.ascender.proyectoFinal2.dto.venta.VentaUsuarioDTO;
+import es.santander.ascender.proyectoFinal2.dto.venta.DetalleVentaListResponseDTO;
+import es.santander.ascender.proyectoFinal2.dto.venta.VentaRequestDTO;
+import es.santander.ascender.proyectoFinal2.dto.venta.VentaResponseDTO;
 import es.santander.ascender.proyectoFinal2.exception.StockInsuficienteException;
 import es.santander.ascender.proyectoFinal2.model.Articulo;
 import es.santander.ascender.proyectoFinal2.model.DetalleVenta;
@@ -22,6 +26,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -31,28 +36,35 @@ public class VentaService {
     private VentaRepository ventaRepository;
 
     @Autowired
-    private ArticuloRepository articuloRepository;    
+    private ArticuloRepository articuloRepository;
 
-    @Autowired 
+    @Autowired
     private UsuarioRepository usuarioRepository;
 
     @Autowired
     private ArticuloService articuloService;
 
-    @Autowired
-    private UsuarioService usuarioService;
+  
 
     @Transactional(readOnly = true)
     public List<VentaResponseDTO> listarVentas() {
-        List<Venta> ventas = ventaRepository.findAll();
-        List<VentaResponseDTO> ventaResponseDTO = new ArrayList<>();
-
-        for (Venta venta : ventas) {
-
-            ventaResponseDTO.add(convertirVentaEnVentaResponseDTO(venta));
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        List<Venta> ventas = new ArrayList<>(); 
+        if (usuarioLogueadoisAdmin(auth)) {
+            ventas = ventaRepository.findAll();
+            if (ventas.isEmpty()) {
+                throw new NoSuchElementException("No existen ventas en la base de datos");
+            }
+        } else {
+            ventas = ventaRepository.findByUsuario(usuarioRepository.findByUsername(auth.getName())
+                    .orElseThrow(() -> new NoSuchElementException("No existe el usuario")));
         }
-        return ventaResponseDTO;
-    }
+        List<VentaResponseDTO> ventasResponseDTO = ventas.stream()
+                .map(this::convertirVentaEnVentaResponseDTO)
+                .collect(Collectors.toList());
+
+        return ventasResponseDTO;
+    }    
 
     public VentaResponseDTO crearVenta(VentaRequestDTO ventaRequestDTO) {
         // 1. Obtener el usuario autenticado
@@ -62,10 +74,10 @@ public class VentaService {
         }
         Optional<Usuario> usuarioOptional = usuarioRepository.findByUsername(auth.getName());
         if (usuarioOptional.isEmpty()) {
-            throw new IllegalArgumentException("Usuario no encontrado");
+            throw new NoSuchElementException("Usuario no encontrado");
         }
         Set<Long> articulosIds = new HashSet<>();
-        for (DetalleVentaDTO detalleDTO : ventaRequestDTO.getDetalles()) {
+        for (DetalleVentaRequestDTO detalleDTO : ventaRequestDTO.getDetalles()) {
             if (!articulosIds.add(detalleDTO.getIdArticulo())) {
                 throw new IllegalArgumentException("No se permite duplicar artículos en la misma venta");
             }
@@ -73,48 +85,38 @@ public class VentaService {
         // 2. Crear venta
         Venta venta = new Venta(usuarioOptional.get());
         // 3. Procesar cada detalle de venta
-        for (DetalleVentaDTO detalleDTO : ventaRequestDTO.getDetalles()) {
+        for (DetalleVentaRequestDTO detalleDTO : ventaRequestDTO.getDetalles()) {
             // 3.1. Buscar articulo.
             Articulo articulo = articuloRepository.findById(detalleDTO.getIdArticulo())
                     .orElseThrow(() -> new IllegalArgumentException("No existe el articulo"));
-
             // 3.2. Comprobar stock.
             if (!articuloService.hayStockSuficiente(detalleDTO.getIdArticulo(), detalleDTO.getCantidad())) {
                 throw new StockInsuficienteException(articulo.getNombre(), articulo.getStock(),
                         detalleDTO.getCantidad());
             }
-
             // 3.3. Crear detalle venta
             DetalleVenta detalleVenta = new DetalleVenta(articulo, detalleDTO.getCantidad());
-
             // 3.4. Agregar detalle a venta
             venta.agregarDetalle(detalleVenta);
-
             // 3.5. Actualizar stock
-
             articuloService.actualizarStock(detalleDTO.getIdArticulo(), -detalleDTO.getCantidad());
-
         }
         // 4. Comprobar que la venta tiene detalles
         if (venta.getDetalles().isEmpty()) {
             throw new IllegalArgumentException("La venta debe tener al menos un detalle");
         }
-
         // 5. Guardar la venta
         ventaRepository.save(venta);
-
         return convertirVentaEnVentaResponseDTO(venta);
     }
 
     @Transactional(readOnly = true)
     public Optional<VentaResponseDTO> buscarPorId(Long id) {
-        validarUsuarioAuthyRol("ADMIN");
         Optional<Venta> ventaOptional = ventaRepository.findById(id);
         if (ventaOptional.isEmpty()) {
             throw new NoSuchElementException("No existe la venta con ID: " + id);
         }
         Venta venta = ventaOptional.get();
-
         return Optional.of(convertirVentaEnVentaResponseDTO(venta));
     }
 
@@ -133,7 +135,10 @@ public class VentaService {
 
     @Transactional(readOnly = true)
     public List<VentaResponseDTO> buscarPorFechas(LocalDateTime fechaInicio, LocalDateTime fechaFin) {
-        validarUsuarioAuthyRol("ADMIN");
+        if (fechaFin.isBefore(fechaInicio)) {
+            throw new IllegalArgumentException("La fecha de inicio no puede ser posterior a la fecha de fin");
+            
+        }
         List<Venta> ventas = ventaRepository.findByFechaBetween(fechaInicio, fechaFin);
         List<VentaResponseDTO> detalleVentaListDTOS = new ArrayList<>();
         for (Venta venta : ventas) {
@@ -147,7 +152,10 @@ public class VentaService {
             LocalDateTime fechaFin) {
         Usuario usuario = usuarioRepository.findById(idUsuario)
                 .orElseThrow(() -> new IllegalArgumentException("No existe el usuario"));
-        validarUsuarioAuthyRol("ADMIN");
+        if(fechaFin.isBefore(fechaInicio)) {
+            throw new IllegalArgumentException("La fecha de inicio no puede ser posterior a la fecha de fin");
+        }
+        
         List<Venta> ventas = ventaRepository.findByUsuarioAndFechaBetween(usuario, fechaInicio, fechaFin);
         List<VentaResponseDTO> detalleVentaListDTOS = new ArrayList<>();
         for (Venta venta : ventas) {
@@ -156,19 +164,14 @@ public class VentaService {
         return detalleVentaListDTOS;
 
     }
-
-    public void anularVenta(Long id) {        
-        Usuario usuario = usuarioRepository.findByUsername(validarUsuarioAuthyRol("ADMIN"))
-                .orElseThrow(() -> new NoSuchElementException("No existe el usuario"));
-        
-        
+    public void anularVenta(Long id) {    
+        // 1. Obtener el usuario autenticado
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if(!usuarioLogueadoisAdmin(auth)) {
+            throw new IllegalAccessError("El usuario no tiene permisos para anular la venta");
+        }
         Venta venta = ventaRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("No existe la venta con ID: " + id));
-
-         if (!usuarioService.esAdmin(usuario.getUsername()) && !venta.getUsuario().getId().equals(usuario.getId())) {
-                throw new IllegalAccessError("No tienes permisos para anular esta venta");
-            }
-            
         // Devolver el stock que se había restado
         for (DetalleVenta detalle : venta.getDetalles()) {
             articuloService.actualizarStock(detalle.getArticulo().getId(), detalle.getCantidad());
@@ -187,20 +190,20 @@ public class VentaService {
             throw new IllegalArgumentException("El usuario no tiene permisos para ver este venta");
         }
         Usuario usuario = usuarioRepository.findByUsername(auth.getName())
-            .orElseThrow(() -> new NoSuchElementException("No existe el usuario"));
+                .orElseThrow(() -> new NoSuchElementException("No existe el usuario"));
         if (!usuario.isActivo()) {
             throw new IllegalAccessError("El usuario no está activo");
         }
         return usuario.getUsername();
     }
-
+    
     private VentaResponseDTO convertirVentaEnVentaResponseDTO(Venta venta) {
         VentaResponseDTO ventaResponseDTO = new VentaResponseDTO();
 
         // Convertir venta en VentaResponseDTO
-        List<DetalleVentaListDTO> detalleVentaListDTOS = new ArrayList<>();
+        List<DetalleVentaListResponseDTO> detalleVentaListDTOS = new ArrayList<>();
         for (DetalleVenta detalleVenta : venta.getDetalles()) {
-            DetalleVentaListDTO detalleVentaListDTO = new DetalleVentaListDTO(
+            DetalleVentaListResponseDTO detalleVentaListDTO = new DetalleVentaListResponseDTO(
                     detalleVenta.getArticulo().getId(),
                     detalleVenta.getArticulo().getNombre(),
                     detalleVenta.getArticulo().getDescripcion(),
@@ -211,7 +214,7 @@ public class VentaService {
             detalleVentaListDTOS.add(detalleVentaListDTO);
         }
 
-        UsuarioVentaDTO usuarioVentaDTO = new UsuarioVentaDTO(
+        VentaUsuarioDTO usuarioVentaDTO = new VentaUsuarioDTO(
                 venta.getUsuario().getId(),
                 venta.getUsuario().getUsername());
 
@@ -222,5 +225,18 @@ public class VentaService {
         ventaResponseDTO.setDetalles(detalleVentaListDTOS);
 
         return ventaResponseDTO;
+    }
+    private boolean usuarioLogueadoisAdmin(Authentication auth) {
+        boolean isAdmin = auth.getAuthorities().stream()
+                .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_ADMIN"));
+        return isAdmin;
+    }
+    private Usuario obtenerUsuarioAutenticado() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || !auth.isAuthenticated()) {
+            throw new NoSuchElementException("Usuario no autenticado");
+        }
+        return usuarioRepository.findByUsername(auth.getName())
+                .orElseThrow(() -> new NoSuchElementException("Usuario no encontrado"));
     }
 }

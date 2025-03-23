@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -174,13 +175,15 @@ public class UsuarioControllerIntegrationTest {
     @WithMockUser(username = "admin_test", roles = {"ADMIN"})
     public void actualizarUsuario_conAdmin_deberiaActualizarUsuario() throws Exception {
         user.setUsername("PEPE");
+        user.setRol(RolUsuario.ADMIN);
+        user.setPassword(passwordEncoder.encode("new_password"));
 
         mockMvc.perform(put("/api/usuarios/" + user.getId())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(user)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.username", is("PEPE")))
-                .andExpect(jsonPath("$.rol", is("USER")));
+                .andExpect(jsonPath("$.rol", is("ADMIN")));
 
         // Verificar que el rol fue actualizado
         Usuario usuarioActualizado = usuarioRepository.findById(user.getId()).orElse(null);
@@ -205,14 +208,14 @@ public class UsuarioControllerIntegrationTest {
     @Test
     @WithMockUser(username = "admin_test", roles = {"ADMIN"})
     public void eliminarUsuario_conAdmin_deberiaEliminarUsuario() throws Exception {
+        assertTrue(user.isActivo());
         mockMvc.perform(delete("/api/usuarios/" + user.getId()))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.mensaje", is("Usuario eliminado correctamente")));
+                .andExpect(status().isOk());
+                
 
         // Verificar que el usuario fue eliminado
-        List<Usuario> usuarios = usuarioRepository.findAll();
-        assert(usuarios.size() == 1);
-        assert(usuarios.stream().noneMatch(u -> u.getUsername().equals("user_test")));
+        mockMvc.perform(get("/api/usuarios/" + user.getId()))
+                .andExpect(jsonPath("$.activo", is(false)));
     }
 
     @Test
