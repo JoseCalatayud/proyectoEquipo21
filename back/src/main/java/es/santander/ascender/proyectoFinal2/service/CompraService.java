@@ -50,12 +50,11 @@ public class CompraService {
     @Transactional(readOnly = true)
     public CompraListResponseDTO buscarPorId(Long id) {
         Optional<Compra> compraOpt = compraRepository.findById(id);
-        if (compraOpt.isPresent()) {
-            Compra compra = compraOpt.get();
-            return convertCompraToCompraListDTO(compra);
-        } else {
+        if (compraOpt.isEmpty()) {
             throw new IllegalArgumentException("No existe la compra con ID: " + id);
         }
+        Compra compra = compraOpt.get();
+        return convertCompraToCompraListDTO(compra);
     }
 
     @Transactional(readOnly = true)

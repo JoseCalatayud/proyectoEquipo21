@@ -25,9 +25,7 @@ public class ArticuloService {
     @Transactional(readOnly = true)
     public List<ArticuloResponseDTO> listarTodos() {
         List<Articulo> listaArticulos = articuloRepository.findAll();
-        if (listaArticulos.isEmpty()) {
-            throw new NoSuchElementException("No existen artículos en la base de datos");
-        }
+        
         // COnvertir Articulo a ArticuloResponseDTO
         List<ArticuloResponseDTO> listaArticulosDTO = listaArticulos.stream()
                 .map(this::convertArticuloToArticuloRespuestaDTO)
@@ -58,9 +56,6 @@ public class ArticuloService {
     @Transactional(readOnly = true)
     public List<ArticuloResponseDTO> buscarPorFamilia(String familia) {
         List<Articulo> listaArticulos = articuloRepository.findByFamilia(familia);
-        if(listaArticulos.isEmpty()) {
-            throw new NoSuchElementException("No existen artículos en la familia: " + familia);
-        }
         List<ArticuloResponseDTO> listaArticulosDTO = listaArticulos.stream()
                 .map(this::convertArticuloToArticuloRespuestaDTO)
                 .collect(Collectors.toList());
@@ -71,9 +66,6 @@ public class ArticuloService {
     @Transactional(readOnly = true)
     public List<ArticuloResponseDTO> buscarPorNombre(String nombre) {
         List<Articulo> listaArticulos = articuloRepository.findByNombreContainingIgnoreCaseAndBorradoFalse(nombre);
-        if(listaArticulos.isEmpty()) {
-            throw new NoSuchElementException("No existen artículos con el nombre: " + nombre);
-        }
         List<ArticuloResponseDTO> listaArticulosDTO = listaArticulos.stream()
                 .map(this::convertArticuloToArticuloRespuestaDTO)
                 .collect(Collectors.toList());
@@ -105,7 +97,7 @@ public class ArticuloService {
         Optional<Articulo> articuloExistenteOptional = articuloRepository.findById(id);
 
         if (articuloExistenteOptional.isEmpty()) {
-            throw new MyBadDataException("No existe el artículo con ID: " + id, id);
+            throw new NoSuchElementException("No existe el artículo con ID: " + id);
         }
 
         Articulo articuloExistente = articuloExistenteOptional.get();

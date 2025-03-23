@@ -28,9 +28,6 @@ public class UsuarioService {
     @Transactional(readOnly = true)
     public List<UsuarioResponseDTO> listarTodos() {
         List<Usuario> listaUsuarios = usuarioRepository.findAll();
-        if (listaUsuarios.isEmpty()) {
-            throw new NoSuchElementException("No existen usuarios en la base de datos");
-        }
         return convertToUsuarioResponseDTOList(listaUsuarios);
     }
 
@@ -55,9 +52,6 @@ public class UsuarioService {
     @Transactional(readOnly = true)
     public List<UsuarioResponseDTO> buscarPorRol(RolUsuario rol) {
         List<Usuario> listaUsuarios = usuarioRepository.findByRol(rol);
-        if (listaUsuarios.isEmpty()) {
-            throw new NoSuchElementException("No existen usuarios con rol: " + rol);
-        }
         return convertToUsuarioResponseDTOList(listaUsuarios);
     }
 

@@ -52,15 +52,13 @@ public class VentaService {
         List<Venta> ventas = new ArrayList<>(); 
         if (usuarioLogueadoisAdmin(auth)) {
             ventas = ventaRepository.findAll();
-            if (ventas.isEmpty()) {
-                throw new NoSuchElementException("No existen ventas en la base de datos");
-            }
+            
         } else {
             ventas = ventaRepository.findByUsuario(usuarioRepository.findByUsername(auth.getName())
                     .orElseThrow(() -> new NoSuchElementException("No existe el usuario")));
         }
         List<VentaResponseDTO> ventasResponseDTO = ventas.stream()
-                .map(this::convertirVentaEnVentaResponseDTO)
+                .map(v -> convertirVentaEnVentaResponseDTO(v))
                 .collect(Collectors.toList());
 
         return ventasResponseDTO;
