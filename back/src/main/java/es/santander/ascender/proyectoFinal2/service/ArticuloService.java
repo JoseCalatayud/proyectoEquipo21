@@ -3,14 +3,16 @@ package es.santander.ascender.proyectoFinal2.service;
 import es.santander.ascender.proyectoFinal2.dto.articulo.ArticuloRequestDTO;
 import es.santander.ascender.proyectoFinal2.dto.articulo.ArticuloResponseDTO;
 import es.santander.ascender.proyectoFinal2.dto.articulo.ArticuloUpdateRequestDTO;
-import es.santander.ascender.proyectoFinal2.exception.MyBadDataException;
 import es.santander.ascender.proyectoFinal2.exception.StockInsuficienteException;
 import es.santander.ascender.proyectoFinal2.model.Articulo;
 import es.santander.ascender.proyectoFinal2.repository.ArticuloRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -24,8 +26,14 @@ public class ArticuloService {
 
     @Transactional(readOnly = true)
     public List<ArticuloResponseDTO> listarTodos() {
-        List<Articulo> listaArticulos = articuloRepository.findAll();
-        
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        List<Articulo> listaArticulos = new ArrayList<>();
+        if (usuarioLogueadoisAdmin(auth)) {
+            listaArticulos = articuloRepository.findAll();
+        } else {
+            listaArticulos = articuloRepository.findByBorradoFalse();
+        }
+
         // COnvertir Articulo a ArticuloResponseDTO
         List<ArticuloResponseDTO> listaArticulosDTO = listaArticulos.stream()
                 .map(this::convertArticuloToArticuloRespuestaDTO)
@@ -36,36 +44,61 @@ public class ArticuloService {
 
     @Transactional(readOnly = true)
     public ArticuloResponseDTO buscarPorId(Long id) {
-        Optional<Articulo> articulo = articuloRepository.findById(id);
-        if (articulo.isEmpty()) {
-            throw new NoSuchElementException("No existe el artículo con ID: " + id);
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (usuarioLogueadoisAdmin(auth)) {
+            Optional<Articulo> articulo = articuloRepository.findById(id);
+            if (articulo.isEmpty()) {
+                throw new NoSuchElementException("No existe el artículo con ID: " + id);
+            }
+            return convertArticuloToArticuloRespuestaDTO(articulo.get());
+        } else {
+            Optional<Articulo> articulo = articuloRepository.findByIdAndBorradoFalse(id);
+            return convertArticuloToArticuloRespuestaDTO(articulo.get());
         }
-        return convertArticuloToArticuloRespuestaDTO(articulo.get());
-
     }
 
     @Transactional(readOnly = true)
     public ArticuloResponseDTO buscarPorCodigoBarras(String codigoBarras) {
-        Optional<Articulo> articulo = articuloRepository.findByCodigoBarras(codigoBarras);
-        if (articulo.isEmpty()) {
-            throw new NoSuchElementException("No existe el artículo con código de barras: " + codigoBarras);
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (usuarioLogueadoisAdmin(auth)) {
+            Optional<Articulo> articulo = articuloRepository.findByCodigoBarras(codigoBarras);
+            if (articulo.isEmpty()) {
+                throw new NoSuchElementException("No existe el artículo con códifo de barras: " + codigoBarras);
+            }
+            return convertArticuloToArticuloRespuestaDTO(articulo.get());
+        } else {
+            Optional<Articulo> articulo = articuloRepository.findByCodigoBarrasAndBorradoFalse(codigoBarras);
+            return convertArticuloToArticuloRespuestaDTO(articulo.get());
         }
-        return convertArticuloToArticuloRespuestaDTO(articulo.get());
     }
 
     @Transactional(readOnly = true)
     public List<ArticuloResponseDTO> buscarPorFamilia(String familia) {
-        List<Articulo> listaArticulos = articuloRepository.findByFamilia(familia);
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        List<Articulo> listaArticulos = new ArrayList<>();
+        if (usuarioLogueadoisAdmin(auth)) {
+            listaArticulos = articuloRepository.findByFamilia(familia);
+        } else {
+            listaArticulos = articuloRepository.findByFamiliaAndBorradoFalse(familia);
+        }
         List<ArticuloResponseDTO> listaArticulosDTO = listaArticulos.stream()
                 .map(this::convertArticuloToArticuloRespuestaDTO)
                 .collect(Collectors.toList());
         return listaArticulosDTO;
-        
+
     }
 
     @Transactional(readOnly = true)
     public List<ArticuloResponseDTO> buscarPorNombre(String nombre) {
-        List<Articulo> listaArticulos = articuloRepository.findByNombreContainingIgnoreCaseAndBorradoFalse(nombre);
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+        List<Articulo> listaArticulos = new ArrayList<>();
+        if (usuarioLogueadoisAdmin(auth)) {
+            listaArticulos = articuloRepository.findByNombreContainingIgnoreCase(nombre);
+        } else {
+            listaArticulos = articuloRepository.findByNombreContainingIgnoreCaseAndBorradoFalse(nombre);
+            
+        }
         List<ArticuloResponseDTO> listaArticulosDTO = listaArticulos.stream()
                 .map(this::convertArticuloToArticuloRespuestaDTO)
                 .collect(Collectors.toList());
@@ -74,7 +107,8 @@ public class ArticuloService {
 
     public ArticuloResponseDTO crear(ArticuloRequestDTO articuloDTO) {
         if (articuloRepository.existsByCodigoBarras(articuloDTO.getCodigoBarras())) {
-            throw new MyBadDataException("Ya existe un artículo con el código de barras: " + articuloDTO.getCodigoBarras(), 1);
+            throw new IllegalArgumentException(
+                    "Ya existe un artículo con el código de barras: " + articuloDTO.getCodigoBarras());
         }
 
         Articulo articulo = new Articulo(
@@ -92,7 +126,6 @@ public class ArticuloService {
         return convertArticuloToArticuloRespuestaDTO(articuloGuardado);
     }
 
-    
     public ArticuloResponseDTO actualizar(Long id, ArticuloUpdateRequestDTO articuloActualizacionDTO) {
         Optional<Articulo> articuloExistenteOptional = articuloRepository.findById(id);
 
@@ -113,12 +146,11 @@ public class ArticuloService {
         return convertArticuloToArticuloRespuestaDTO(articuloGuardado);
     }
 
-    
     public void borradoLogico(Long id) {
         Optional<Articulo> articuloOptional = articuloRepository.findById(id);
 
         if (articuloOptional.isEmpty()) {
-            throw new IllegalArgumentException("No existe el artículo con ID: " + id);
+            throw new NoSuchElementException("No existe el artículo con ID: " + id);
         }
         Articulo articulo = articuloOptional.get();
         articulo.setBorrado(true);
@@ -130,7 +162,6 @@ public class ArticuloService {
         return articuloRepository.existsByCodigoBarras(codigoBarras);
     }
 
-    
     public void actualizarStock(Long id, int cantidad) {
         Optional<Articulo> articuloOptional = articuloRepository.findById(id);
         if (articuloOptional.isEmpty()) {
@@ -154,7 +185,6 @@ public class ArticuloService {
         return articuloOptional.get().getStock() >= cantidad;
     }
 
-    
     public void actualizarPrecioPromedioPonderado(Articulo articulo, int cantidadComprada,
             double precioUnitarioCompra) {
         // Calculamos el precio promedio ponderado
@@ -176,6 +206,13 @@ public class ArticuloService {
                 articulo.getFotografia(),
                 articulo.getPrecioVenta(),
                 articulo.getStock(),
-                articulo.getPrecioPromedioPonderado());
+                articulo.getPrecioPromedioPonderado(),
+                articulo.isBorrado());
+    }
+
+    private boolean usuarioLogueadoisAdmin(Authentication auth) {
+        boolean isAdmin = auth.getAuthorities().stream()
+                .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_ADMIN"));
+        return isAdmin;
     }
 }

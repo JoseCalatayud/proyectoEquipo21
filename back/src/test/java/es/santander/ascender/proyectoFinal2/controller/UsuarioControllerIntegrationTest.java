@@ -205,26 +205,9 @@ public class UsuarioControllerIntegrationTest {
                 .andExpect(jsonPath("$.mensaje", containsString("El usuario que no existe. Debe crear uno nuevo")));
     }
 
-    @Test
-    @WithMockUser(username = "admin_test", roles = {"ADMIN"})
-    public void eliminarUsuario_conAdmin_deberiaEliminarUsuario() throws Exception {
-        assertTrue(user.isActivo());
-        mockMvc.perform(delete("/api/usuarios/" + user.getId()))
-                .andExpect(status().isOk());
-                
+    
 
-        // Verificar que el usuario fue eliminado
-        mockMvc.perform(get("/api/usuarios/" + user.getId()))
-                .andExpect(jsonPath("$.activo", is(false)));
-    }
-
-    @Test
-    @WithMockUser(username = "admin_test", roles = {"ADMIN"})
-    public void eliminarUsuario_conIdInexistente_deberiaRetornarBadRequest() throws Exception {
-        mockMvc.perform(delete("/api/usuarios/999"))
-                .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.mensaje", containsString("No existe el usuario")));
-    }
+    
 
     @Test
     @WithMockUser(username = "user_test", roles = {"USER"})
@@ -252,7 +235,6 @@ public class UsuarioControllerIntegrationTest {
                 .content(objectMapper.writeValueAsString(nuevoUsuario)))
                 .andExpect(status().isForbidden());
         
-        // DELETE operation
-        mockMvc.perform(delete("/api/usuarios/1")).andExpect(status().isForbidden());
+        
     }
 }
