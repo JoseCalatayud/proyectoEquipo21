@@ -25,7 +25,7 @@ export class ArticuloRestService {
 
   public insertar(articulo: Articulo): Observable<Articulo> {
 
-    return this.httpClient.post<Articulo>("http://localhost:4200/api/articulos/", articulo)
+    return this.httpClient.post<Articulo>("http://localhost:4200/api/articulos", articulo)
 
   }
 

@@ -22,9 +22,13 @@ export class DetalleComponent {
     if (id != null)
       this.articuloRestService.verDetalle(parseInt(id)).subscribe((datos: Articulo) => {
 
-      this.articuloDetalle=datos;
+        this.articuloDetalle = datos;
       })
 
   }
 
+
+  agregarCarrito(id: number) {
+
+  }
 }

@@ -1,4 +1,18 @@
-{{articuloDetalle.nombre}}
-{{articuloDetalle.familia}}
-{{articuloDetalle.precioVenta}}
-hola
+<div class="container-lg bg-primary-subtle d-flex">
+    <div class="col-6">
+        <p> {{articuloDetalle.fotografia}} </p>
+    </div>
+    <div class="container col-4">
+        <p class="fs-1"> {{articuloDetalle.familia}} </p>
+        <p class="fs-2"> {{articuloDetalle.nombre}}</p>
+        <p class="fs-2">Precio: {{articuloDetalle.precioVenta}}€
+            <button (click)="agregarCarrito(articuloDetalle.id)" class="btn btn-outline-primary ms-3">📂</button>
+        </p>
+        <p class="fs-4"> {{articuloDetalle.descripcion}} </p>
+    </div>
+    <div class="container col-2 ms-auto mt-5">
+        <p><button class="btn btn-success">Button 1</button></p>
+        <p><button class="btn btn-success">Button 2</button></p>
+        <p><button class="btn btn-success">Button 3</button></p>
+    </div>
+</div>

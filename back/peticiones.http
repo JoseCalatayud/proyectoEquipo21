@@ -8,11 +8,14 @@ Authorization: Basic  admin admin123
 ###
 
 POST http://localhost:8080/api/articulos
-Authorization: Basic  admin admin123
+Authorization: Basic  admin  admin123
+content-type: application/json
 
-{"nombre":"Móvil",
-"descripcion":"Muybueno",
-"codigoBarras":"1111212",
-"familia":"Telefonía",
-"fotografia":"http://imagen",
-"precioVenta":"100"}
+{
+"nombre": "string",
+"descripcion": "string",
+"codigoBarras": "string",
+"familia": "string",
+"fotografia": "string",
+"precioVenta": "0.1"
+}

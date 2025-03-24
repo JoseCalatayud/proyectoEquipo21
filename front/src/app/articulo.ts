@@ -6,7 +6,7 @@ export class Articulo {
         public familia: string,
         public fotografia: string,
         public precioVenta: number,
-        public precioCompra: number,
+        public codigoBarras: string,
         public stock: number) {
 
     }

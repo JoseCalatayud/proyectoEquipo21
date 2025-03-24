@@ -24,8 +24,10 @@
                             <td>{{articulo.familia}}</td>
                             <td>{{articulo.precioVenta}} €</td>
                             <td>{{articulo.stock}}</td>
-                            <td> <button (click)="agregarCarrito(articulo.id)">Agregar a carrito</button></td>
-                            <td> <button (click)="verDetalle(articulo.id)" [routerLink]="'/detalle'">🔍</button></td>
+                            <td> <button class="btn btn-outline-success w-100"
+                                    (click)="agregarCarrito(articulo.id)">📂</button></td>
+                            <td> <button class="btn btn-outline-info w-100" (click)="verDetalle(articulo.id)"
+                                    [routerLink]="'/detalle'">🔍</button></td>
                         </tr>
 
                     </tbody>
@@ -34,18 +36,23 @@
         </div>
         <div class="col-md-4 d-flex align-items-center justify-content-center">
             <div class="table">
-                <tr>
-                    <td><button class="btn btn-success" [routerLink]="'/carrito'">CARRITO</button></td>
-                </tr>
-                <tr>
-                    <td><button class="btn btn-warning" [routerLink]="'/stock'">STOCK</button></td>
-                </tr>
-                <tr>
-                    <td><button class="btn btn-secondary" [routerLink]="'/stock'">ABASTECIMIENTO</button></td>
-                </tr>
-                <tr>
-                    <td><button class="btn btn-primary" [routerLink]="'/stock'">HISTÓRICO</button></td>
-                </tr>
+                <tbody>
+                    <tr>
+                        <td class="p-3"><button class="btn btn-success p-3" [routerLink]="'/carrito'">CARRITO</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="p-3"><button class="btn btn-warning p-3" [routerLink]="'/stock'">STOCK</button></td>
+                    </tr>
+                    <tr>
+                        <td class="p-3"><button class="btn btn-secondary p-3"
+                                [routerLink]="'/stock'">ABASTECIMIENTO</button></td>
+                    </tr>
+                    <tr>
+                        <td class="p-3"><button class="btn btn-primary p-3" [routerLink]="'/stock'">HISTÓRICO</button>
+                        </td>
+                    </tr>
+                </tbody>
             </div>
         </div>
     </div>
