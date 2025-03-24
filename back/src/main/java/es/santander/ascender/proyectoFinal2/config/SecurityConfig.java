@@ -43,6 +43,11 @@ public class SecurityConfig {
                 .requestMatchers("/api/auth/**").permitAll()
                 // Otras rutas...
                 .requestMatchers("/api/dummy").permitAll()
+                .requestMatchers("api/articulos/**").authenticated()
+                .requestMatchers("api/compras/**").hasRole("ADMIN")
+                .requestMatchers("api/usuarios/**").hasRole("ADMIN")
+                .requestMatchers("api/ventas/**").hasAnyRole("ADMIN", "USER")
+                
                 .anyRequest().authenticated()
             )
             

@@ -10,6 +10,7 @@ public class ArticuloResponseDTO {
     private Double precioVenta;
     private Integer stock;
     private Double precioPromedioPonderado;
+    private Boolean borrado;
 
     // Constructor vacío
     public ArticuloResponseDTO() {
@@ -17,7 +18,7 @@ public class ArticuloResponseDTO {
 
     // Constructor con parámetros
     public ArticuloResponseDTO(Long id, String nombre, String descripcion, String codigoBarras, String familia,
-            String fotografia, Double precioVenta, Integer stock, Double precioPromedioPonderado) {
+            String fotografia, Double precioVenta, Integer stock, Double precioPromedioPonderado, Boolean borrado) {
         this.id = id;
         this.nombre = nombre;
         this.descripcion = descripcion;
@@ -27,7 +28,10 @@ public class ArticuloResponseDTO {
         this.precioVenta = precioVenta;
         this.stock = stock;
         this.precioPromedioPonderado = precioPromedioPonderado;
+        this.borrado = borrado;
     }
+
+    
 
     // Getters y setters
     public Long getId() {
@@ -100,5 +104,14 @@ public class ArticuloResponseDTO {
 
     public void setPrecioPromedioPonderado(Double precioPromedioPonderado) {
         this.precioPromedioPonderado = precioPromedioPonderado;
+    }
+
+    public Boolean getBorrado() {
+        return borrado;
+    }
+
+    public void setBorrado(Boolean borrado) {
+        this.borrado = borrado;
+
     }
 }

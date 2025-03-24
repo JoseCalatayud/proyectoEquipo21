@@ -24,9 +24,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 import static org.hamcrest.Matchers.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -84,6 +81,7 @@ public class ArticuloControllerIntegrationTest {
         articulo1.setPrecioVenta(10.0);
         articulo1.setStock(100);
         articulo1.setPrecioPromedioPonderado(8.0);
+        articulo1.setBorrado(false);
         articuloRepository.save(articulo1);
 
         articulo2 = new Articulo();
@@ -94,6 +92,7 @@ public class ArticuloControllerIntegrationTest {
         articulo2.setPrecioVenta(20.0);
         articulo2.setStock(50);
         articulo2.setPrecioPromedioPonderado(15.0);
+        articulo2.setBorrado(false);
         articuloRepository.save(articulo2);
     }
 
@@ -210,7 +209,7 @@ public class ArticuloControllerIntegrationTest {
         articulo1.setDescripcion("Descripción actualizada");
         articulo1.setPrecioVenta(15.0);
 
-        mockMvc.perform(put("/api/articulos/" + articulo1.getId())
+        mockMvc.perform(put("/api/articulos/actualizar/" + articulo1.getId())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(articulo1)))
                 .andExpect(status().isOk())
@@ -222,7 +221,7 @@ public class ArticuloControllerIntegrationTest {
     @Test
     @WithMockUser(username = "admin_test", roles = {"ADMIN"})
     public void borrarArticulo_conAdmin_deberiaBorrarLogicamente() throws Exception {
-        mockMvc.perform(post("/api/articulos/" + articulo1.getId()))
+        mockMvc.perform(post("/api/articulos/borrar/" + articulo1.getId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.mensaje", is("Artículo eliminado correctamente")));
 
@@ -300,9 +299,10 @@ public class ArticuloControllerIntegrationTest {
         articuloActualizado.setDescripcion("Descripción actualizada");
         articuloActualizado.setPrecioVenta(15.0);
         articuloActualizado.setFamilia("Electrónica");
+        articuloActualizado.setFotografia("https://www.example.com/image.jpg");
         
 
-        mockMvc.perform(put("/api/articulos/999")
+        mockMvc.perform(put("/api/articulos/actualizar/999")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(articuloActualizado)))
                 .andExpect(status().isNotFound());
@@ -318,7 +318,7 @@ public class ArticuloControllerIntegrationTest {
         articuloActualizado.setFamilia("Electrónica");
         
 
-        mockMvc.perform(put("/api/articulos/" + articulo1.getId())
+        mockMvc.perform(put("/api/articulos/actualizar/" + articulo1.getId())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(articuloActualizado)))
                 .andExpect(status().isForbidden());
