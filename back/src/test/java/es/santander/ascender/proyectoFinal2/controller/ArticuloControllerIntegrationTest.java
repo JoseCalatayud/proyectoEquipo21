@@ -163,14 +163,13 @@ public class ArticuloControllerIntegrationTest {
     @Test
     @WithMockUser(username = "admin_test", roles = {"ADMIN"})
     public void crearArticulo_conAdmin_deberiaCrearArticulo() throws Exception {
-        Articulo nuevoArticulo = new Articulo();
+        ArticuloRequestDTO nuevoArticulo = new ArticuloRequestDTO();
         nuevoArticulo.setNombre("Artículo Test 3");
         nuevoArticulo.setDescripcion("Descripción test 3");
-        nuevoArticulo.setCodigoBarras("3234567890123");
+        nuevoArticulo.setCodigoBarras("323456789018");
         nuevoArticulo.setFamilia("Deportes");
-        nuevoArticulo.setPrecioVenta(30.0);
-        nuevoArticulo.setStock(30);
-        nuevoArticulo.setPrecioPromedioPonderado(25.0);
+        nuevoArticulo.setPrecioVenta(30.0); // Valor inicial del stock
+        nuevoArticulo.setFotografia("kkjkdfjfsdf");
 
         mockMvc.perform(post("/api/articulos")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -270,6 +269,9 @@ public class ArticuloControllerIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(0)));
     }
+
+    //Test crear articulo como admin
+
 
     
     

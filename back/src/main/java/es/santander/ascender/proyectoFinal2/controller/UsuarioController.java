@@ -52,16 +52,16 @@ public class UsuarioController {
 
     @PutMapping("/{id}")
     public ResponseEntity<UsuarioResponseDTO> actualizarUsuario(@PathVariable Long id, @Valid @RequestBody UsuarioRequestDTO usuarioRequestDTO) {
-        return ResponseEntity.ok(usuarioService.actualizar(id, usuarioRequestDTO));
+        return ResponseEntity.status(201).body(usuarioService.actualizar(id, usuarioRequestDTO));
     }
 
     @PutMapping("/borrado/{id}")
     public ResponseEntity<UsuarioResponseDTO> eliminarUsuario(@PathVariable Long id) {
-        return ResponseEntity.ok(usuarioService.borradoLogicoDeUsuario(id));
+        return ResponseEntity.status(201).body(usuarioService.borradoLogicoDeUsuario(id));
     }
     
     @PutMapping("/activar/{id}")
     public ResponseEntity<UsuarioResponseDTO> reactivarUsuario(@PathVariable Long id) {
-        return ResponseEntity.ok(usuarioService.reactivar(id));
+        return ResponseEntity.status(201).body(usuarioService.reactivar(id));
     }
 }

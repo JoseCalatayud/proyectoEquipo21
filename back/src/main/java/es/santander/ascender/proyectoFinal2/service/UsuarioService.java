@@ -79,14 +79,14 @@ public class UsuarioService {
             throw new NoSuchElementException("El usuario que no existe. Debe crear uno nuevo");
         }
         Usuario usuario = usuarioExistente.get();
-        if(usuarioRequest.getUsername() == null || usuarioRequest.getUsername().isEmpty()) {
-            throw new IllegalArgumentException("El nombre de usuario no puede estar vacío");
+        if(usuarioRequest.getUsername() == null)  {
+            usuarioRequest.setUsername(usuario.getUsername());
         }
-        if(usuarioRequest.getPassword() == null || usuarioRequest.getPassword().isEmpty()) {
-            throw new IllegalArgumentException("La contraseña no puede estar vacía");
+        if(usuarioRequest.getPassword() == null ) {
+            usuarioRequest.setPassword(usuario.getPassword());
         }
-        if(usuarioRequest.getRol() == null || usuarioRequest.getRol().isEmpty()) {
-            throw new IllegalArgumentException("El rol no puede estar vacío");
+        if(usuarioRequest.getRol() == null )  {
+            usuarioRequest.setRol(usuario.getRol().toString());
         }
         //Verificar que el rol es válido
         try {
@@ -121,10 +121,11 @@ public class UsuarioService {
         if (usuarioOptional.isEmpty()) {
             throw new NoSuchElementException("No existe el usuario con ID: " + id);
         }
-        if (!usuarioOptional.get().isActivo()) {
-            throw new MyBadDataException("El usuario ya está desactivado", id);
-        }
         Usuario usuario = usuarioOptional.get();
+
+        if (!usuario.isActivo()) {
+            throw new IllegalStateException("El usuario ya está desactivado");
+        }
         usuario.setActivo(false); // Borrado lógico: se desactiva el usuario
         usuarioRepository.save(usuario);
         return new UsuarioResponseDTO(usuario.getUsername(), usuario.getRol(), usuario.isActivo()); 
@@ -136,10 +137,11 @@ public class UsuarioService {
         if (usuarioOptional.isEmpty()) {
             throw new NoSuchElementException("No existe el usuario con ID: " + id);
         }
-        if (usuarioOptional.get().isActivo()) {
-            throw new MyBadDataException("El usuario ya está activo", id);
-        }
         Usuario usuario = usuarioOptional.get();
+
+        if (usuario.isActivo()) {
+            throw new IllegalStateException("El usuario ya está activo");
+        }
         usuario.setActivo(true); // Reactivar el usuario
         usuarioRepository.save(usuario);
         return new UsuarioResponseDTO(usuario.getUsername(), usuario.getRol(), usuario.isActivo()); 
