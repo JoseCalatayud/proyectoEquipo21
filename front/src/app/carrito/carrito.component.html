@@ -10,7 +10,7 @@
         <tbody>
             <tr *ngFor="let articulo of listaArticulos">
                 <td>
-                    <img [src]="articulo.fotografia" alt="{{ articulo.nombre }}" width="50" height="50">
+                    <img [src]="'/public/fondolanding'" alt="{{ articulo.nombre }}" width="50" height="50">
                 </td>
                 <td>{{ articulo.nombre }}</td>
                 <td>{{ articulo.precioVenta}} €</td>

@@ -14,7 +14,7 @@ import { CommonModule, NgFor } from '@angular/common';
 export class StockComponent {
 
   listaArticulos: Articulo[] = [];
-
+  articulo: Articulo = {} as Articulo;
   constructor(private articuloRestService: ArticuloRestService) {
     this.articuloRestService.buscarTodos().subscribe((datos) => {
       this.listaArticulos = datos;
@@ -44,6 +44,7 @@ export class StockComponent {
   }
 
   insertar(articulo: Articulo) {
+    console.log("inserta");
     this.articuloRestService.insertar(articulo).subscribe((datos) => {
       this.articuloRestService.buscarTodos().subscribe((datos) => {
         this.listaArticulos = datos;

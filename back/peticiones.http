@@ -4,3 +4,15 @@ Authorization: Basic admin admin1234
 ###
 GET http://localhost:8080/api/articulos
 Authorization: Basic  admin admin123
+
+###
+
+POST http://localhost:8080/api/articulos
+Authorization: Basic  admin admin123
+
+{"nombre":"Móvil",
+"descripcion":"Muybueno",
+"codigoBarras":"1111212",
+"familia":"Telefonía",
+"fotografia":"http://imagen",
+"precioVenta":"100"}
