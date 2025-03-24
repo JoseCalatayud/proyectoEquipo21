@@ -1,9 +1,9 @@
-package es.santander.ascender.proyectoFinal2.dto;
+package es.santander.ascender.proyectoFinal2.dto.venta;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 
-public class DetalleVentaDTO {
+public class DetalleVentaRequestDTO {
 
     @NotNull(message = "El ID del artículo es obligatorio")
     private Long idArticulo;

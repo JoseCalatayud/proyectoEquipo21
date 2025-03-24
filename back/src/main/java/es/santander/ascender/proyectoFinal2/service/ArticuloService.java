@@ -1,5 +1,10 @@
 package es.santander.ascender.proyectoFinal2.service;
 
+import es.santander.ascender.proyectoFinal2.dto.articulo.ArticuloRequestDTO;
+import es.santander.ascender.proyectoFinal2.dto.articulo.ArticuloResponseDTO;
+import es.santander.ascender.proyectoFinal2.dto.articulo.ArticuloUpdateRequestDTO;
+import es.santander.ascender.proyectoFinal2.exception.MyBadDataException;
+import es.santander.ascender.proyectoFinal2.exception.StockInsuficienteException;
 import es.santander.ascender.proyectoFinal2.model.Articulo;
 import es.santander.ascender.proyectoFinal2.repository.ArticuloRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,70 +12,114 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
+@Transactional
 public class ArticuloService {
     @Autowired
     private ArticuloRepository articuloRepository;
 
     @Transactional(readOnly = true)
-    public List<Articulo> listarTodos() {
-        return articuloRepository.findAll(); // Devolver todos los artículos
+    public List<ArticuloResponseDTO> listarTodos() {
+        List<Articulo> listaArticulos = articuloRepository.findAll();
+        
+        // COnvertir Articulo a ArticuloResponseDTO
+        List<ArticuloResponseDTO> listaArticulosDTO = listaArticulos.stream()
+                .map(this::convertArticuloToArticuloRespuestaDTO)
+                .collect(Collectors.toList());
+        return listaArticulosDTO;
+        // Devolver todos los artículos
     }
 
     @Transactional(readOnly = true)
-    public Optional<Articulo> buscarPorId(Long id) {
-        return articuloRepository.findById(id);
-    }
-
-    @Transactional(readOnly = true)
-    public Optional<Articulo> buscarPorCodigoBarras(String codigoBarras) {
-        return articuloRepository.findByCodigoBarras(codigoBarras);
-    }
-
-    @Transactional(readOnly = true)
-    public List<Articulo> buscarPorFamilia(String familia) {
-        return articuloRepository.findByFamiliaAndBorradoFalse(familia);
-    }
-
-    @Transactional(readOnly = true)
-    public List<Articulo> buscarPorNombre(String nombre) {
-        return articuloRepository.findByNombreContainingIgnoreCaseAndBorradoFalse(nombre);
-    }
-
-    @Transactional
-    public Articulo crear(Articulo articulo) {
-        if (articuloRepository.existsByCodigoBarras(articulo.getCodigoBarras())) {
-            throw new IllegalArgumentException("Ya existe un artículo con ese código de barras");
+    public ArticuloResponseDTO buscarPorId(Long id) {
+        Optional<Articulo> articulo = articuloRepository.findById(id);
+        if (articulo.isEmpty()) {
+            throw new NoSuchElementException("No existe el artículo con ID: " + id);
         }
-        return articuloRepository.save(articulo);
+        return convertArticuloToArticuloRespuestaDTO(articulo.get());
+
     }
 
-    @Transactional
-    public Articulo actualizar(Articulo articulo) {
-        Optional<Articulo> articuloExistente = articuloRepository.findById(articulo.getId());
-
-        if (articuloExistente.isEmpty()) {
-            throw new IllegalArgumentException("No existe el artículo con ID: " + articulo.getId());
+    @Transactional(readOnly = true)
+    public ArticuloResponseDTO buscarPorCodigoBarras(String codigoBarras) {
+        Optional<Articulo> articulo = articuloRepository.findByCodigoBarras(codigoBarras);
+        if (articulo.isEmpty()) {
+            throw new NoSuchElementException("No existe el artículo con código de barras: " + codigoBarras);
         }
-
-        // No permitir cambiar el código de barras
-        if (!articuloExistente.get().getCodigoBarras().equals(articulo.getCodigoBarras())) {
-            throw new IllegalArgumentException("No se puede modificar el código de barras de un artículo existente");
-        }
-
-        return articuloRepository.save(articulo);
+        return convertArticuloToArticuloRespuestaDTO(articulo.get());
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
+    public List<ArticuloResponseDTO> buscarPorFamilia(String familia) {
+        List<Articulo> listaArticulos = articuloRepository.findByFamilia(familia);
+        List<ArticuloResponseDTO> listaArticulosDTO = listaArticulos.stream()
+                .map(this::convertArticuloToArticuloRespuestaDTO)
+                .collect(Collectors.toList());
+        return listaArticulosDTO;
+        
+    }
+
+    @Transactional(readOnly = true)
+    public List<ArticuloResponseDTO> buscarPorNombre(String nombre) {
+        List<Articulo> listaArticulos = articuloRepository.findByNombreContainingIgnoreCaseAndBorradoFalse(nombre);
+        List<ArticuloResponseDTO> listaArticulosDTO = listaArticulos.stream()
+                .map(this::convertArticuloToArticuloRespuestaDTO)
+                .collect(Collectors.toList());
+        return listaArticulosDTO;
+    }
+
+    public ArticuloResponseDTO crear(ArticuloRequestDTO articuloDTO) {
+        if (articuloRepository.existsByCodigoBarras(articuloDTO.getCodigoBarras())) {
+            throw new MyBadDataException("Ya existe un artículo con el código de barras: " + articuloDTO.getCodigoBarras(), 1);
+        }
+
+        Articulo articulo = new Articulo(
+                articuloDTO.getNombre(),
+                articuloDTO.getDescripcion(),
+                articuloDTO.getCodigoBarras(),
+                articuloDTO.getFamilia(),
+                articuloDTO.getFotografia(),
+                articuloDTO.getPrecioVenta(),
+                0 // Stock inicial en 0
+        );
+        articulo.setPrecioPromedioPonderado(articuloDTO.getPrecioVenta());
+
+        Articulo articuloGuardado = articuloRepository.save(articulo);
+        return convertArticuloToArticuloRespuestaDTO(articuloGuardado);
+    }
+
+    
+    public ArticuloResponseDTO actualizar(Long id, ArticuloUpdateRequestDTO articuloActualizacionDTO) {
+        Optional<Articulo> articuloExistenteOptional = articuloRepository.findById(id);
+
+        if (articuloExistenteOptional.isEmpty()) {
+            throw new NoSuchElementException("No existe el artículo con ID: " + id);
+        }
+
+        Articulo articuloExistente = articuloExistenteOptional.get();
+
+        // Actualizar los campos permitidos
+        articuloExistente.setNombre(articuloActualizacionDTO.getNombre());
+        articuloExistente.setDescripcion(articuloActualizacionDTO.getDescripcion());
+        articuloExistente.setFamilia(articuloActualizacionDTO.getFamilia());
+        articuloExistente.setFotografia(articuloActualizacionDTO.getFotografia());
+        articuloExistente.setPrecioVenta(articuloActualizacionDTO.getPrecioVenta());
+
+        Articulo articuloGuardado = articuloRepository.save(articuloExistente);
+        return convertArticuloToArticuloRespuestaDTO(articuloGuardado);
+    }
+
+    
     public void borradoLogico(Long id) {
         Optional<Articulo> articuloOptional = articuloRepository.findById(id);
 
         if (articuloOptional.isEmpty()) {
             throw new IllegalArgumentException("No existe el artículo con ID: " + id);
         }
-
         Articulo articulo = articuloOptional.get();
         articulo.setBorrado(true);
         articuloRepository.save(articulo);
@@ -81,21 +130,17 @@ public class ArticuloService {
         return articuloRepository.existsByCodigoBarras(codigoBarras);
     }
 
-    @Transactional
+    
     public void actualizarStock(Long id, int cantidad) {
         Optional<Articulo> articuloOptional = articuloRepository.findById(id);
-
         if (articuloOptional.isEmpty()) {
-            throw new IllegalArgumentException("No existe el artículo con ID: " + id);
+            throw new NoSuchElementException("No existe el artículo con ID: " + id);
         }
-
         Articulo articulo = articuloOptional.get();
         int nuevoStock = articulo.getStock() + cantidad;
-
         if (nuevoStock < 0) {
-            throw new IllegalArgumentException("No hay stock suficiente del artículo: " + articulo.getNombre());
+            throw new StockInsuficienteException(articulo.getNombre(), articulo.getStock(), cantidad);
         }
-
         articulo.setStock(nuevoStock);
         articuloRepository.save(articulo);
     }
@@ -103,17 +148,34 @@ public class ArticuloService {
     @Transactional(readOnly = true)
     public boolean hayStockSuficiente(Long id, int cantidad) {
         Optional<Articulo> articuloOptional = articuloRepository.findById(id);
-        return articuloOptional.isPresent() && articuloOptional.get().getStock() >= cantidad;
+        if (articuloOptional.isEmpty()) {
+            throw new NoSuchElementException("No existe el artículo con ID: " + id);
+        }
+        return articuloOptional.get().getStock() >= cantidad;
     }
 
-    @Transactional
-    public void actualizarPrecioPromedioPonderado(Articulo articulo, int cantidadComprada, double precioUnitarioCompra) {
-        //Calculamos el precio promedio ponderado
+    
+    public void actualizarPrecioPromedioPonderado(Articulo articulo, int cantidadComprada,
+            double precioUnitarioCompra) {
+        // Calculamos el precio promedio ponderado
         double valorTotalInventario = articulo.getStock() * articulo.getPrecioPromedioPonderado();
         double valorTotalCompra = cantidadComprada * precioUnitarioCompra;
         double nuevoStock = articulo.getStock() + cantidadComprada;
         double nuevoPrecioPromedioPonderado = (valorTotalInventario + valorTotalCompra) / nuevoStock;
         articulo.setPrecioPromedioPonderado(nuevoPrecioPromedioPonderado);
         articuloRepository.save(articulo);
+    }
+
+    private ArticuloResponseDTO convertArticuloToArticuloRespuestaDTO(Articulo articulo) {
+        return new ArticuloResponseDTO(
+                articulo.getId(),
+                articulo.getNombre(),
+                articulo.getDescripcion(),
+                articulo.getCodigoBarras(),
+                articulo.getFamilia(),
+                articulo.getFotografia(),
+                articulo.getPrecioVenta(),
+                articulo.getStock(),
+                articulo.getPrecioPromedioPonderado());
     }
 }

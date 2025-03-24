@@ -15,6 +15,7 @@ import es.santander.ascender.proyectoFinal2.exception.StockInsuficienteException
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @RestControllerAdvice
@@ -34,12 +35,15 @@ public class ControllerAdviceConfig {
 
     @ExceptionHandler(StockInsuficienteException.class)
     public ResponseEntity<ErronInfo> handleStockInsuficienteException(StockInsuficienteException ex) {
+        String mensaje = "No hay stock suficiente del artículo: " + ex.getNombreArticulo() +
+                ". Stock disponible: " + ex.getStockDisponible() +
+                ". Cantidad solicitada: " + ex.getCantidadSolicitada();
         Map<String, Object> details = new HashMap<>();
         details.put("nombreArticulo", ex.getNombreArticulo());
         details.put("stockDisponible", ex.getStockDisponible());
         details.put("cantidadSolicitada", ex.getCantidadSolicitada());
-        
-        ErronInfo errorResponse = new ErronInfo(ex.getMessage(), details);
+
+        ErronInfo errorResponse = new ErronInfo(mensaje, details);
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
@@ -47,12 +51,12 @@ public class ControllerAdviceConfig {
     public ResponseEntity<ErronInfo> handleValidationExceptions(MethodArgumentNotValidException ex) {
         String message = "Error de validación";
         Map<String, String> errors = ex.getBindingResult().getFieldErrors().stream()
-            .collect(Collectors.toMap(
-                error -> error.getField(),
-                error -> error.getDefaultMessage(),
-                (errorMsg1, errorMsg2) -> errorMsg1 + ", " + errorMsg2
-            ));
-            
+                .collect(Collectors.toMap(
+                        error -> error.getField(),
+                        error -> error.getDefaultMessage(),
+                        (errorMsg1, errorMsg2) -> errorMsg1 + ", " + errorMsg2
+                ));
+
         ErronInfo errorResponse = new ErronInfo(message, errors);
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
@@ -60,12 +64,12 @@ public class ControllerAdviceConfig {
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<ErronInfo> handleConstraintViolationException(ConstraintViolationException ex) {
         Map<String, String> errors = ex.getConstraintViolations().stream()
-            .collect(Collectors.toMap(
-                violation -> violation.getPropertyPath().toString(),
-                violation -> violation.getMessage(),
-                (errorMsg1, errorMsg2) -> errorMsg1 + ", " + errorMsg2
-            ));
-            
+                .collect(Collectors.toMap(
+                        violation -> violation.getPropertyPath().toString(),
+                        violation -> violation.getMessage(),
+                        (errorMsg1, errorMsg2) -> errorMsg1 + ", " + errorMsg2
+                ));
+
         ErronInfo errorResponse = new ErronInfo("Error de validación", errors);
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
@@ -81,12 +85,17 @@ public class ControllerAdviceConfig {
         ErronInfo errorResponse = new ErronInfo("No tiene permisos para realizar esta acción");
         return new ResponseEntity<>(errorResponse, HttpStatus.FORBIDDEN);
     }
-
+    @ExceptionHandler(NoSuchElementException.class)
+    public ResponseEntity<ErronInfo> handleNoSuchElementException(NoSuchElementException ex) {
+        ErronInfo errorResponse = new ErronInfo(ex.getMessage());
+        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+    }
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErronInfo> handleException(Exception ex) {
         ErronInfo errorResponse = new ErronInfo("Se ha producido un error inesperado");
         return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
     @ExceptionHandler(OptimisticLockingFailureException.class)
     public ResponseEntity<ErronInfo> handleOptimisticLockingFailureException(OptimisticLockingFailureException ex) {
         ErronInfo errorResponse = new ErronInfo("Error de concurrencia al actualizar el stock. Por favor, intente nuevamente.");

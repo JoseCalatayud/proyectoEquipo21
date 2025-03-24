@@ -1,6 +1,5 @@
 package es.santander.ascender.proyectoFinal2.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -8,7 +7,6 @@ import jakarta.validation.constraints.Size;
 
 @Entity
 @Table(name = "usuarios", uniqueConstraints = @UniqueConstraint(columnNames = "username"))
-
 public class Usuario {
 
     @Id
@@ -22,8 +20,6 @@ public class Usuario {
 
     @NotBlank(message = "La contraseña es obligatoria")
     @Column(nullable = false)
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-
     private String password;
 
     @NotNull(message = "El rol es obligatorio")
@@ -31,8 +27,12 @@ public class Usuario {
     @Column(nullable = false)
     private RolUsuario rol; // ADMIN o USER
 
+    @Column(nullable = false)
+    private boolean activo; // Nuevo campo para el estado del usuario
+
     // Constructor vacío
     public Usuario() {
+        this.activo = true; // Por defecto, un usuario nuevo está activo
     }
 
     // Constructor con parámetros
@@ -40,6 +40,7 @@ public class Usuario {
         this.username = username;
         this.password = password;
         this.rol = rol;
+        this.activo = true; // Por defecto, un usuario nuevo está activo
     }
 
     // Getters y setters
@@ -73,5 +74,13 @@ public class Usuario {
 
     public void setRol(RolUsuario rol) {
         this.rol = rol;
+    }
+
+    public boolean isActivo() {
+        return activo;
+    }
+
+    public void setActivo(boolean activo) {
+        this.activo = activo;
     }
 }

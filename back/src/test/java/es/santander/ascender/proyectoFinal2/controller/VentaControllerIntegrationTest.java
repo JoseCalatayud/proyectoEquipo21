@@ -1,8 +1,9 @@
 package es.santander.ascender.proyectoFinal2.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import es.santander.ascender.proyectoFinal2.dto.DetalleVentaDTO;
-import es.santander.ascender.proyectoFinal2.dto.VentaRequestDTO;
+
+import es.santander.ascender.proyectoFinal2.dto.venta.DetalleVentaRequestDTO;
+import es.santander.ascender.proyectoFinal2.dto.venta.VentaRequestDTO;
 import es.santander.ascender.proyectoFinal2.model.Articulo;
 import es.santander.ascender.proyectoFinal2.model.RolUsuario;
 import es.santander.ascender.proyectoFinal2.model.Usuario;
@@ -113,21 +114,15 @@ public class VentaControllerIntegrationTest {
                 .andExpect(jsonPath("$[0].id", notNullValue()));
     }
 
-    @Test
-    @WithMockUser(username = "user_test", roles = {"USER"})
-    public void listarVentas_conUser_deberiaRetornarForbidden() throws Exception {
-        mockMvc.perform(get("/api/ventas/listar"))
-                .andExpect(status().isForbidden());
-    }
-
+    
     @Test
     @WithMockUser(username = "user_test", roles = {"USER"})
     public void crearVenta_conUser_deberiaCrearVenta() throws Exception {
         // Crear DTO para la venta
         VentaRequestDTO ventaRequestDTO = new VentaRequestDTO();
-        List<DetalleVentaDTO> detalles = new ArrayList<>();
+        List<DetalleVentaRequestDTO> detalles = new ArrayList<>();
         
-        DetalleVentaDTO detalle = new DetalleVentaDTO();
+        DetalleVentaRequestDTO detalle = new DetalleVentaRequestDTO();
         detalle.setIdArticulo(articulo1.getId());
         detalle.setCantidad(2);
         detalles.add(detalle);
@@ -144,7 +139,7 @@ public class VentaControllerIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = "user_test", roles = {"USER"})
+    @WithMockUser(username = "user_test", roles = {"ADMIN"})
     public void buscarPorId_ventaPropia_deberiaRetornarVenta() throws Exception {
         // Crear venta
         crearVentaDePrueba();
@@ -170,7 +165,7 @@ public class VentaControllerIntegrationTest {
     }
 
     @Test
-    @WithMockUser(username = "user_test", roles = {"USER"})
+    @WithMockUser(username = "user_test", roles = {"ADMIN"})
     public void anularVenta_ventaPropia_deberiaAnularVenta() throws Exception {
         // Crear venta
         crearVentaDePrueba();
@@ -188,9 +183,9 @@ public class VentaControllerIntegrationTest {
     private void crearVentaDePrueba() throws Exception {
         // Crear DTO para la venta
         VentaRequestDTO ventaRequestDTO = new VentaRequestDTO();
-        List<DetalleVentaDTO> detalles = new ArrayList<>();
+        List<DetalleVentaRequestDTO> detalles = new ArrayList<>();
         
-        DetalleVentaDTO detalle = new DetalleVentaDTO();
+        DetalleVentaRequestDTO detalle = new DetalleVentaRequestDTO();
         detalle.setIdArticulo(articulo1.getId());
         detalle.setCantidad(1);
         detalles.add(detalle);

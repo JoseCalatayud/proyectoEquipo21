@@ -1,6 +1,9 @@
 package es.santander.ascender.proyectoFinal2.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import es.santander.ascender.proyectoFinal2.dto.articulo.ArticuloRequestDTO;
+import es.santander.ascender.proyectoFinal2.dto.articulo.ArticuloUpdateRequestDTO;
 import es.santander.ascender.proyectoFinal2.model.Articulo;
 import es.santander.ascender.proyectoFinal2.model.RolUsuario;
 import es.santander.ascender.proyectoFinal2.model.Usuario;
@@ -21,6 +24,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -216,7 +222,7 @@ public class ArticuloControllerIntegrationTest {
     @Test
     @WithMockUser(username = "admin_test", roles = {"ADMIN"})
     public void borrarArticulo_conAdmin_deberiaBorrarLogicamente() throws Exception {
-        mockMvc.perform(delete("/api/articulos/" + articulo1.getId()))
+        mockMvc.perform(post("/api/articulos/" + articulo1.getId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.mensaje", is("Artículo eliminado correctamente")));
 
@@ -224,33 +230,106 @@ public class ArticuloControllerIntegrationTest {
         Articulo articuloBorrado = articuloRepository.findById(articulo1.getId()).orElse(null);
         assert(articuloBorrado != null && articuloBorrado.isBorrado());
 
-        // Verificar que no aparece en la lista de artículos
+        
+        
+    }
+    @Test
+    @WithMockUser(username = "admin_test", roles = {"ADMIN"})
+    public void listarArticulos_deberiaRetornarTodosLosArticulosNoBorrados() throws Exception {
         mockMvc.perform(get("/api/articulos"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(1)))
-                .andExpect(jsonPath("$[0].id", is(articulo2.getId().intValue())));
+                .andExpect(jsonPath("$", hasSize(2))) // Solo los no borrados
+                .andExpect(jsonPath("$[?(@.nombre == 'Artículo Test 1')]", hasSize(1)))
+                .andExpect(jsonPath("$[?(@.nombre == 'Artículo Test 2')]", hasSize(1)))
+                .andExpect(jsonPath("$[?(@.nombre == 'Artículo Borrado')]", hasSize(0)));
     }
-
+   
+    
     @Test
     @WithMockUser(username = "admin_test", roles = {"ADMIN"})
-    public void verificarExistencia_conCodigoExistente_deberiaRetornarTrue() throws Exception {
-        mockMvc.perform(get("/api/articulos/verificar/1234567890123"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.existe", is(true)));
+    public void buscarPorCodigoBarras_conArticuloBorrado_deberiaRetornarNotFound() throws Exception {
+        mockMvc.perform(get("/api/articulos/codigo/3334567890123"))
+                .andExpect(status().isNotFound());
     }
 
+    
+    
     @Test
     @WithMockUser(username = "admin_test", roles = {"ADMIN"})
-    public void verificarExistencia_conCodigoInexistente_deberiaRetornarFalse() throws Exception {
-        mockMvc.perform(get("/api/articulos/verificar/9999999999999"))
+    public void buscarPorFamilia_conFamiliaInexistente_deberiaRetornarListaVacia() throws Exception {
+        mockMvc.perform(get("/api/articulos/familia/Inexistente"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.existe", is(false)));
+                .andExpect(jsonPath("$", hasSize(0)));
     }
 
+    
+    
+    @Test
+    @WithMockUser(username = "admin_test", roles = {"ADMIN"})
+    public void buscarPorNombre_conNombreInexistente_deberiaRetornarListaVacia() throws Exception {
+        mockMvc.perform(get("/api/articulos/buscar?nombre=NoExiste"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(0)));
+    }
+
+    
+    
+    
+    
+    @Test
+    @WithMockUser(username = "admin_test", roles = {"ADMIN"})
+    public void crearArticulo_sinCamposObligatorios_deberiaRetornarBadRequest() throws Exception {
+        ArticuloRequestDTO nuevoArticulo = new ArticuloRequestDTO();
+        // No establecemos campos obligatorios
+
+        mockMvc.perform(post("/api/articulos")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(nuevoArticulo)))
+                .andExpect(status().isBadRequest());
+    }
+
+    
+
+    
+    
+    @Test
+    @WithMockUser(username = "admin_test", roles = {"ADMIN"})
+    public void actualizarArticulo_conIdInexistente_deberiaRetornarNotFound() throws Exception {
+        ArticuloUpdateRequestDTO articuloActualizado = new ArticuloUpdateRequestDTO();
+        articuloActualizado.setNombre("Artículo Inexistente");
+        articuloActualizado.setDescripcion("Descripción actualizada");
+        articuloActualizado.setPrecioVenta(15.0);
+        articuloActualizado.setFamilia("Electrónica");
+        
+
+        mockMvc.perform(put("/api/articulos/999")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(articuloActualizado)))
+                .andExpect(status().isNotFound());
+    }
+    
     @Test
     @WithMockUser(username = "user_test", roles = {"USER"})
-    public void verificarExistencia_conUser_deberiaRetornarForbidden() throws Exception {
-        mockMvc.perform(get("/api/articulos/verificar/1234567890123"))
+    public void actualizarArticulo_conUser_deberiaRetornarForbidden() throws Exception {
+        ArticuloUpdateRequestDTO articuloActualizado = new ArticuloUpdateRequestDTO();
+        articuloActualizado.setNombre("Artículo Test 1 Actualizado");
+        articuloActualizado.setDescripcion("Descripción actualizada");
+        articuloActualizado.setPrecioVenta(15.0);
+        articuloActualizado.setFamilia("Electrónica");
+        
+
+        mockMvc.perform(put("/api/articulos/" + articulo1.getId())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(articuloActualizado)))
                 .andExpect(status().isForbidden());
     }
+    
+    
+    
+
+    
+
+    
+
+    
 }

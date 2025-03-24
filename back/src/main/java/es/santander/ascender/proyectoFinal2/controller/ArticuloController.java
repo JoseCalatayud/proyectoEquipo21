@@ -1,6 +1,8 @@
 package es.santander.ascender.proyectoFinal2.controller;
 
-import es.santander.ascender.proyectoFinal2.model.Articulo;
+import es.santander.ascender.proyectoFinal2.dto.articulo.ArticuloRequestDTO;
+import es.santander.ascender.proyectoFinal2.dto.articulo.ArticuloResponseDTO;
+import es.santander.ascender.proyectoFinal2.dto.articulo.ArticuloUpdateRequestDTO;
 import es.santander.ascender.proyectoFinal2.service.ArticuloService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -12,7 +14,9 @@ import jakarta.validation.Valid;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+
 
 @RestController
 @RequestMapping("/api/articulos")
@@ -22,51 +26,51 @@ public class ArticuloController {
     private ArticuloService articuloService;
 
     @GetMapping
-    public ResponseEntity<List<Articulo>> listarArticulos() {
+    @PreAuthorize("hasRole('ADMIN')") // Only ADMIN can list all articles
+    public ResponseEntity<List<ArticuloResponseDTO>> listarArticulos() {
         return ResponseEntity.ok(articuloService.listarTodos());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> buscarPorId(@PathVariable Long id) {
-        Optional<Articulo> articulo = articuloService.buscarPorId(id);
-        return articulo.map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')") // Both ADMIN and USER can get an article by ID
+    public ResponseEntity<ArticuloResponseDTO> buscarPorId(@PathVariable Long id) {
+        return ResponseEntity.ok(articuloService.buscarPorId(id));
+        
     }
 
     @GetMapping("/codigo/{codigoBarras}")
-    public ResponseEntity<?> buscarPorCodigoBarras(@PathVariable String codigoBarras) {
-        Optional<Articulo> articulo = articuloService.buscarPorCodigoBarras(codigoBarras);
-        return articulo.map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')") // Both ADMIN and USER can get an article by barcode
+    public ResponseEntity<ArticuloResponseDTO> buscarPorCodigoBarras(@PathVariable String codigoBarras) {
+        return ResponseEntity.ok(articuloService.buscarPorCodigoBarras(codigoBarras));
     }
 
     @GetMapping("/familia/{familia}")
-    public ResponseEntity<List<Articulo>> buscarPorFamilia(@PathVariable String familia) {
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')") // Both ADMIN and USER can get articles by family
+    public ResponseEntity<List<ArticuloResponseDTO>> buscarPorFamilia(@PathVariable String familia) {
         return ResponseEntity.ok(articuloService.buscarPorFamilia(familia));
     }
 
     @GetMapping("/buscar")
-    public ResponseEntity<List<Articulo>> buscarPorNombre(@RequestParam String nombre) {
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')") // Both ADMIN and USER can search articles by name
+    public ResponseEntity<List<ArticuloResponseDTO>> buscarPorNombre(@RequestParam String nombre) {
         return ResponseEntity.ok(articuloService.buscarPorNombre(nombre));
     }
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<?> crearArticulo(@Valid @RequestBody Articulo articulo) {
-        Articulo nuevoArticulo = articuloService.crear(articulo);
-        return ResponseEntity.status(HttpStatus.CREATED).body(nuevoArticulo);
-
+    public ResponseEntity<ArticuloResponseDTO> crearArticulo(@Valid @RequestBody ArticuloRequestDTO articuloDTO) {
+        ArticuloResponseDTO articuloRespuestaDTO = articuloService.crear(articuloDTO);
+        return new ResponseEntity<>(articuloRespuestaDTO, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<?> actualizarArticulo(@PathVariable Long id, @Valid @RequestBody Articulo articulo) {
-        articulo.setId(id); // Asegurar que el ID coincida con el de la ruta
-        Articulo actualizadoArticulo = articuloService.actualizar(articulo);
+    public ResponseEntity<ArticuloResponseDTO> actualizarArticulo(@PathVariable Long id, @Valid @RequestBody ArticuloUpdateRequestDTO articuloActualizacionDTO) {
+        ArticuloResponseDTO actualizadoArticulo = articuloService.actualizar(id, articuloActualizacionDTO);
         return ResponseEntity.ok(actualizadoArticulo);
     }
 
-    @DeleteMapping("/{id}")
+    @PostMapping("/{id}")    
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> borrarArticulo(@PathVariable Long id) {
         articuloService.borradoLogico(id);
@@ -76,12 +80,5 @@ public class ArticuloController {
 
     }
 
-    @GetMapping("/verificar/{codigoBarras}")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<?> verificarExistencia(@PathVariable String codigoBarras) {
-        boolean existe = articuloService.existeArticulo(codigoBarras);
-        Map<String, Object> response = new HashMap<>();
-        response.put("existe", existe);
-        return ResponseEntity.ok(response);
-    }
+    
 }

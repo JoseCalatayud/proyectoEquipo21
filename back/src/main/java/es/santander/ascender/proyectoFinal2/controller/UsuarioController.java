@@ -1,19 +1,16 @@
 package es.santander.ascender.proyectoFinal2.controller;
 
+import es.santander.ascender.proyectoFinal2.dto.usuario.UsuarioRequestDTO;
+import es.santander.ascender.proyectoFinal2.dto.usuario.UsuarioResponseDTO;
 import es.santander.ascender.proyectoFinal2.model.RolUsuario;
-import es.santander.ascender.proyectoFinal2.model.Usuario;
 import es.santander.ascender.proyectoFinal2.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/usuarios")
@@ -24,65 +21,47 @@ public class UsuarioController {
     private UsuarioService usuarioService;
 
     @GetMapping
-    public ResponseEntity<List<Usuario>> listarUsuarios() {
+    public ResponseEntity<List<UsuarioResponseDTO>> listarUsuarios() {
         return ResponseEntity.ok(usuarioService.listarTodos());
     }
 
+    @GetMapping("/activos")
+    public ResponseEntity<List<UsuarioResponseDTO>> listarUsuariosActivos() {
+        return ResponseEntity.ok(usuarioService.listarActivos());
+    }
+
     @GetMapping("/{id}")
-    public ResponseEntity<?> buscarPorId(@PathVariable Long id) {
-        Optional<Usuario> usuario = usuarioService.buscarPorId(id);
-        return usuario.map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<UsuarioResponseDTO> buscarPorId(@PathVariable Long id) {
+        return ResponseEntity.ok(usuarioService.buscarPorId(id));
     }
 
     @GetMapping("/username/{username}")
-    public ResponseEntity<?> buscarPorUsername(@PathVariable String username) {
-        Optional<Usuario> usuario = usuarioService.buscarPorUsername(username);
-        return usuario.map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<UsuarioResponseDTO> buscarPorUsername(@PathVariable String username) {
+        return ResponseEntity.ok(usuarioService.buscarPorUsername(username));
     }
 
     @GetMapping("/rol/{rol}")
-    public ResponseEntity<List<Usuario>> buscarPorRol(@PathVariable RolUsuario rol) {
+    public ResponseEntity<List<UsuarioResponseDTO>> buscarPorRol(@PathVariable RolUsuario rol) {
         return ResponseEntity.ok(usuarioService.buscarPorRol(rol));
     }
 
     @PostMapping
-    public ResponseEntity<?> crearUsuario(@Valid @RequestBody Usuario usuario) {
-        try {
-            Usuario nuevoUsuario = usuarioService.crear(usuario);
-            return ResponseEntity.status(HttpStatus.CREATED).body(nuevoUsuario);
-        } catch (IllegalArgumentException e) {
-            Map<String, Object> response = new HashMap<>();
-            response.put("mensaje", e.getMessage());
-            return ResponseEntity.badRequest().body(response);
-        }
+    public ResponseEntity<UsuarioResponseDTO> crearUsuario(@Valid @RequestBody UsuarioRequestDTO usuarioRequest) {
+        return ResponseEntity.status(201).body(usuarioService.crear(usuarioRequest));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> actualizarUsuario(@PathVariable Long id, @Valid @RequestBody Usuario usuario) {
-        try {
-            usuario.setId(id); // Asegurar que el ID coincida con el de la ruta
-            Usuario actualizadoUsuario = usuarioService.actualizar(usuario);
-            return ResponseEntity.ok(actualizadoUsuario);
-        } catch (IllegalArgumentException e) {
-            Map<String, Object> response = new HashMap<>();
-            response.put("mensaje", e.getMessage());
-            return ResponseEntity.badRequest().body(response);
-        }
+    public ResponseEntity<UsuarioResponseDTO> actualizarUsuario(@PathVariable Long id, @Valid @RequestBody UsuarioRequestDTO usuarioRequestDTO) {
+        return ResponseEntity.ok(usuarioService.actualizar(id, usuarioRequestDTO));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> eliminarUsuario(@PathVariable Long id) {
-        try {
-            usuarioService.eliminar(id);
-            Map<String, Object> response = new HashMap<>();
-            response.put("mensaje", "Usuario eliminado correctamente");
-            return ResponseEntity.ok(response);
-        } catch (IllegalArgumentException e) {
-            Map<String, Object> response = new HashMap<>();
-            response.put("mensaje", e.getMessage());
-            return ResponseEntity.badRequest().body(response);
-        }
+    public ResponseEntity<UsuarioResponseDTO> eliminarUsuario(@PathVariable Long id) {
+        return ResponseEntity.ok(usuarioService.borradoLogicoDeUsuario(id));
+    }
+    
+    @PutMapping("/activar/{id}")
+    public ResponseEntity<UsuarioResponseDTO> reactivarUsuario(@PathVariable Long id) {
+        return ResponseEntity.ok(usuarioService.reactivar(id));
     }
 }

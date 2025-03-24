@@ -12,6 +12,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 @Configuration
 @Profile("!test") // No ejecutar en perfil de test
@@ -28,139 +29,207 @@ public class DataInitializer {
             CompraRepository compraRepository) {
 
         return args -> {
-            // Crear usuarios de prueba
+            Random random = new Random();
+            
+            // Crear usuarios de prueba (2 admin + 5 user)
             if (usuarioRepository.count() == 0) {
-                Usuario admin = new Usuario();
-                admin.setUsername("admin");
-                admin.setPassword(passwordEncoder.encode("admin123"));
-                admin.setRol(RolUsuario.ADMIN);
-                usuarioRepository.save(admin);
-
-                Usuario user = new Usuario();
-                user.setUsername("user");
-                user.setPassword(passwordEncoder.encode("user123"));
-                user.setRol(RolUsuario.USER);
-                usuarioRepository.save(user);
-
-                System.out.println("Usuarios creados: admin/admin123 y user/user123");
+                List<Usuario> usuarios = new ArrayList<>();
+                
+                // Administradores
+                Usuario admin1 = new Usuario();
+                admin1.setUsername("admin");
+                admin1.setPassword(passwordEncoder.encode("admin123"));
+                admin1.setRol(RolUsuario.ADMIN);
+                usuarios.add(admin1);
+                
+                Usuario admin2 = new Usuario();
+                admin2.setUsername("superadmin");
+                admin2.setPassword(passwordEncoder.encode("admin456"));
+                admin2.setRol(RolUsuario.ADMIN);
+                usuarios.add(admin2);
+                
+                // Usuarios normales
+                for (int i = 1; i <= 5; i++) {
+                    Usuario user = new Usuario();
+                    user.setUsername("user" + i);
+                    user.setPassword(passwordEncoder.encode("user" + i + "123"));
+                    user.setRol(RolUsuario.USER);
+                    usuarios.add(user);
+                }
+                
+                usuarioRepository.saveAll(usuarios);
+                System.out.println("Se han creado " + usuarios.size() + " usuarios");
             }
 
-            // Crear artículos de prueba
+            // Crear artículos de prueba (50 productos de electrónica y electrodomésticos)
             if (articuloRepository.count() == 0) {
                 List<Articulo> articulos = new ArrayList<>();
-
-                // Electrónica
-                Articulo a1 = new Articulo();
-                a1.setNombre("Smartphone XYZ");
-                a1.setDescripcion("Teléfono inteligente de última generación");
-                a1.setCodigoBarras("8400000001");
-                a1.setFamilia("Electrónica");
-                a1.setPrecioVenta(599.99);
-                a1.setStock(20);
-                a1.setPrecioPromedioPonderado(450.00); // Inicializar el precio promedio ponderado
-                articulos.add(a1);
-
-                Articulo a2 = new Articulo();
-                a2.setNombre("Tablet ABC");
-                a2.setDescripcion("Tablet de 10 pulgadas con 128GB");
-                a2.setCodigoBarras("8400000002");
-                a2.setFamilia("Electrónica");
-                a2.setPrecioVenta(399.99);
-                a2.setStock(15);
-                a2.setPrecioPromedioPonderado(300.00); // Inicializar el precio promedio ponderado
-                articulos.add(a2);
-
-                // Alimentación
-                Articulo a3 = new Articulo();
-                a3.setNombre("Aceite de Oliva Virgen Extra");
-                a3.setDescripcion("Aceite de oliva virgen extra 1L");
-                a3.setCodigoBarras("8400000003");
-                a3.setFamilia("Alimentación");
-                a3.setPrecioVenta(7.99);
-                a3.setStock(50);
-                a3.setPrecioPromedioPonderado(5.00); // Inicializar el precio promedio ponderado
-                articulos.add(a3);
-
-                Articulo a4 = new Articulo();
-                a4.setNombre("Leche Desnatada");
-                a4.setDescripcion("Leche desnatada 1L");
-                a4.setCodigoBarras("8400000004");
-                a4.setFamilia("Alimentación");
-                a4.setPrecioVenta(0.99);
-                a4.setStock(100);
-                a4.setPrecioPromedioPonderado(0.50); // Inicializar el precio promedio ponderado
-                articulos.add(a4);
-
-                // Ropa
-                Articulo a5 = new Articulo();
-                a5.setNombre("Camiseta Algodón");
-                a5.setDescripcion("Camiseta 100% algodón, talla M");
-                a5.setCodigoBarras("8400000005");
-                a5.setFamilia("Ropa");
-                a5.setPrecioVenta(19.99);
-                a5.setStock(30);
-                a5.setPrecioPromedioPonderado(15.00); // Inicializar el precio promedio ponderado
-                articulos.add(a5);
-
-                // Hogar
-                Articulo a6 = new Articulo();
-                a6.setNombre("Sartén Antiadherente");
-                a6.setDescripcion("Sartén antiadherente 24cm");
-                a6.setCodigoBarras("8400000006");
-                a6.setFamilia("Hogar");
-                a6.setPrecioVenta(24.99);
-                a6.setStock(25);
-                a6.setPrecioPromedioPonderado(20.00); // Inicializar el precio promedio ponderado
-                articulos.add(a6);
-
-                // Artículo descatalogado pero con stock
-                Articulo a7 = new Articulo();
-                a7.setNombre("Teléfono Antiguo");
-                a7.setDescripcion("Modelo descatalogado");
-                a7.setCodigoBarras("8400000007");
-                a7.setFamilia("Electrónica");
-                a7.setPrecioVenta(99.99);
-                a7.setStock(5);
-                a7.setBorrado(true);
-                a7.setPrecioPromedioPonderado(75.00); // Inicializar el precio promedio ponderado
-                articulos.add(a7);
+                
+                // Familias para los productos
+                String[] familias = {"Electrónica", "Electrodomésticos", "Informática", "Telefonía", "Audio/Video"};
+                
+                // Productos por familia
+                String[][] nombresPorFamilia = {
+                    // Electrónica
+                    {"Smart TV 32\"", "Smart TV 43\"", "Smart TV 50\"", "Smart TV 55\"", "Smart TV 65\"", 
+                     "Reproductor DVD", "Home Cinema", "Barra de Sonido", "Proyector LED", "Auriculares Inalámbricos"},
+                    // Electrodomésticos
+                    {"Frigorífico Combi", "Lavavajillas", "Lavadora", "Secadora", "Horno Eléctrico", 
+                     "Microondas", "Vitrocerámica", "Campana Extractora", "Aspiradora Robot", "Freidora de Aire"},
+                    // Informática
+                    {"Portátil Gaming", "Portátil Ultrabook", "PC Sobremesa", "Monitor 24\"", "Monitor 27\"", 
+                     "Teclado Mecánico", "Ratón Gaming", "Webcam HD", "Disco Duro SSD", "Impresora Multifunción"},
+                    // Telefonía
+                    {"Smartphone Android", "iPhone", "Teléfono Inalámbrico", "Smartwatch", "Auriculares Bluetooth", 
+                     "Cargador Inalámbrico", "Altavoz Bluetooth", "Power Bank", "Funda Móvil", "Protector Pantalla"},
+                    // Audio/Video
+                    {"Cámara Reflex", "Cámara Deportiva", "Micrófono USB", "Altavoces PC", "Radio Digital", 
+                     "Amplificador Audio", "Tocadiscos", "Reproductor MP3", "Grabadora Digital", "Mesa Mezclas"}
+                };
+                
+                // Crear 50 productos
+                int productCounter = 1;
+                for (int i = 0; i < 50; i++) {
+                    int familiaIndex = i % 5; // Distribuir equilibradamente entre familias
+                    int productoIndex = (i / 5) % 10; // Distribuir entre los productos de cada familia
+                    
+                    Articulo articulo = new Articulo();
+                    String marca = "Marca" + (productCounter % 5 + 1); // 5 marcas diferentes
+                    String nombreProducto = nombresPorFamilia[familiaIndex][productoIndex];
+                    
+                    articulo.setNombre(marca + " " + nombreProducto);
+                    articulo.setDescripcion(marca + " " + nombreProducto + " - Modelo " + (2023 + (productCounter % 3)));
+                    articulo.setCodigoBarras("84" + String.format("%08d", productCounter));
+                    articulo.setFamilia(familias[familiaIndex]);
+                    
+                    // Precios según familia
+                    double precioBase = switch (familiaIndex) {
+                        case 0 -> 300 + random.nextDouble() * 700; // Electrónica: 300-1000
+                        case 1 -> 200 + random.nextDouble() * 800; // Electrodomésticos: 200-1000
+                        case 2 -> 400 + random.nextDouble() * 900; // Informática: 400-1300
+                        case 3 -> 150 + random.nextDouble() * 850; // Telefonía: 150-1000
+                        case 4 -> 100 + random.nextDouble() * 500; // Audio/Video: 100-600
+                        default -> 99.99;
+                    };
+                    
+                    articulo.setPrecioVenta(Math.round(precioBase * 100.0) / 100.0);
+                    articulo.setStock(10 + random.nextInt(91)); // Stock entre 10 y 100
+                    articulo.setPrecioPromedioPonderado(Math.round(precioBase * 0.75 * 100.0) / 100.0); // PVP al 75%
+                    
+                    // 10% de productos descatalogados
+                    if (productCounter % 10 == 0) {
+                        articulo.setBorrado(true);
+                    }
+                    
+                    articulos.add(articulo);
+                    productCounter++;
+                }
 
                 articuloRepository.saveAll(articulos);
                 System.out.println("Se han creado " + articulos.size() + " artículos de ejemplo");
 
-                // Crear una venta de ejemplo
-                Usuario user1 = usuarioRepository.findByUsername("user").orElseThrow();
-                Usuario admin1 = usuarioRepository.findByUsername("admin").orElseThrow();
-
-                // Crear una venta
-                Venta venta = new Venta();
-                venta.setUsuario(user1);
-                venta.setFecha(LocalDateTime.now().minusDays(1));
-
-                DetalleVenta detalle1 = new DetalleVenta(a1,1);
-                detalle1.setVenta(venta);
-
-                DetalleVenta detalle2 = new DetalleVenta(a3,2);
-                detalle2.setVenta(venta);
-
-                venta.agregarDetalle(detalle1);
-                venta.agregarDetalle(detalle2);
-
-                ventaRepository.save(venta);
-                System.out.println("Se ha creado una venta de ejemplo");
-
-                // Crear una compra
-                Compra compra = new Compra();
-                compra.setUsuario(admin1);
-                compra.setFecha(LocalDateTime.now().minusDays(7));
-
-                DetalleCompra detalleCompra1 = new DetalleCompra(a2,5,300.00);
-                detalleCompra1.setCompra(compra);
-
-                compra.agregarDetalle(detalleCompra1);
-
-                compraRepository.save(compra);
-                System.out.println("Se ha creado una compra de ejemplo");
+                // Obtener todos los usuarios y artículos para crear ventas y compras
+                List<Usuario> usuarios = usuarioRepository.findAll();
+                List<Articulo> todosArticulos = articuloRepository.findAll();
+                Usuario admin = usuarioRepository.findByUsername("admin").orElseThrow();
+                
+                // Crear 50 ventas (algunas multilinea y otras no)
+                List<Venta> ventas = new ArrayList<>();
+                
+                for (int i = 0; i < 50; i++) {
+                    // Seleccionar un usuario aleatorio (que no sea admin)
+                    Usuario usuario = usuarios.stream()
+                        .filter(u -> !u.getRol().equals(RolUsuario.ADMIN) || random.nextDouble() < 0.2) // 20% de probabilidad de que sea admin
+                        .skip(random.nextInt((int) usuarios.stream().filter(u -> !u.getRol().equals(RolUsuario.ADMIN) || random.nextDouble() < 0.2).count()))
+                        .findFirst()
+                        .orElse(usuarios.get(1)); // Por si acaso
+                    
+                    Venta venta = new Venta();
+                    venta.setUsuario(usuario);
+                    
+                    // Fecha aleatoria en los últimos 90 días
+                    LocalDateTime fecha = LocalDateTime.now().minusDays(random.nextInt(90));
+                    venta.setFecha(fecha);
+                    
+                    // Decidir cuántas líneas tendrá la venta (1-5)
+                    int numLineas = 1 + random.nextInt(5);
+                    
+                    // Lista para evitar duplicados
+                    List<Long> articulosIncluidos = new ArrayList<>();
+                    
+                    for (int j = 0; j < numLineas; j++) {
+                        // Seleccionar un artículo aleatorio no borrado y que no esté ya en la venta
+                        Articulo articulo;
+                        do {
+                            articulo = todosArticulos.get(random.nextInt(todosArticulos.size()));
+                        } while (articulo.isBorrado() || articulosIncluidos.contains(articulo.getId()));
+                        
+                        articulosIncluidos.add(articulo.getId());
+                        
+                        // Cantidad entre 1 y 5
+                        int cantidad = 1 + random.nextInt(5);
+                        
+                        DetalleVenta detalle = new DetalleVenta(articulo, cantidad);
+                        detalle.setVenta(venta);
+                        venta.agregarDetalle(detalle);
+                    }
+                    
+                    ventas.add(venta);
+                }
+                
+                ventaRepository.saveAll(ventas);
+                System.out.println("Se han creado " + ventas.size() + " ventas de ejemplo");
+                
+                // Crear 50 compras (algunas multilinea y otras no)
+                List<Compra> compras = new ArrayList<>();
+                
+                for (int i = 0; i < 50; i++) {
+                    // Las compras solo las hacen los admin
+                    Usuario usuario = usuarios.stream()
+                        .filter(u -> u.getRol().equals(RolUsuario.ADMIN))
+                        .skip(random.nextInt((int) usuarios.stream().filter(u -> u.getRol().equals(RolUsuario.ADMIN)).count()))
+                        .findFirst()
+                        .orElse(admin); // Por si acaso
+                    
+                    Compra compra = new Compra();
+                    compra.setUsuario(usuario);
+                    
+                    // Fecha aleatoria en los últimos 180 días
+                    LocalDateTime fecha = LocalDateTime.now().minusDays(random.nextInt(180));
+                    compra.setFecha(fecha);
+                    
+                    // Decidir cuántas líneas tendrá la compra (1-7)
+                    int numLineas = 1 + random.nextInt(7);
+                    
+                    // Lista para evitar duplicados
+                    List<Long> articulosIncluidos = new ArrayList<>();
+                    
+                    for (int j = 0; j < numLineas; j++) {
+                        // Seleccionar un artículo aleatorio que no esté ya en la compra
+                        Articulo articulo;
+                        do {
+                            articulo = todosArticulos.get(random.nextInt(todosArticulos.size()));
+                        } while (articulosIncluidos.contains(articulo.getId()));
+                        
+                        articulosIncluidos.add(articulo.getId());
+                        
+                        // Cantidad entre 5 y 20
+                        int cantidad = 5 + random.nextInt(16);
+                        
+                        // Precio unitario entre el 60% y el 85% del precio de venta
+                        double precioCompra = articulo.getPrecioVenta() * (0.6 + random.nextDouble() * 0.25);
+                        precioCompra = Math.round(precioCompra * 100.0) / 100.0;
+                        
+                        DetalleCompra detalle = new DetalleCompra(articulo, cantidad, precioCompra);
+                        detalle.setCompra(compra);
+                        compra.agregarDetalle(detalle);
+                    }
+                    
+                    compras.add(compra);
+                }
+                
+                compraRepository.saveAll(compras);
+                System.out.println("Se han creado " + compras.size() + " compras de ejemplo");
             }
         };
     }

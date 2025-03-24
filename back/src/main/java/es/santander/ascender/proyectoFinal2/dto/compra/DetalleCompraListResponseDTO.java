@@ -1,6 +1,6 @@
-package es.santander.ascender.proyectoFinal2.dto;
+package es.santander.ascender.proyectoFinal2.dto.compra;
 
-public class DetalleCompraListDTO {
+public class DetalleCompraListResponseDTO {
     private Long idArticulo;
     private String nombreArticulo;
     private String descripcionArticulo;
@@ -11,11 +11,11 @@ public class DetalleCompraListDTO {
     private Double subtotal;
 
     // Constructor vacío
-    public DetalleCompraListDTO() {
+    public DetalleCompraListResponseDTO() {
     }
 
     // Constructor con parámetros
-    public DetalleCompraListDTO(Long idArticulo, String nombreArticulo, String descripcionArticulo, String codigoBarrasArticulo, String familiaArticulo, Integer cantidad, Double precioUnitario, Double subtotal) {
+    public DetalleCompraListResponseDTO(Long idArticulo, String nombreArticulo, String descripcionArticulo, String codigoBarrasArticulo, String familiaArticulo, Integer cantidad, Double precioUnitario, Double subtotal) {
         this.idArticulo = idArticulo;
         this.nombreArticulo = nombreArticulo;
         this.descripcionArticulo = descripcionArticulo;

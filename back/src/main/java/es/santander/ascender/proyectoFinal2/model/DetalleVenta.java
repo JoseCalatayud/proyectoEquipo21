@@ -84,7 +84,7 @@ public class DetalleVenta {
     }
 
     public Double getPrecioUnitario() {
-        return precioUnitario;
+        return Math.round(precioUnitario * 100.0) / 100.0;
     }
 
     public void setPrecioUnitario(Double precioUnitario) {
@@ -96,7 +96,7 @@ public class DetalleVenta {
     }
 
     public Double getSubtotal() {
-        return subtotal;
+        return Math.round(subtotal * 100.0) / 100.0;
     }
 
     public void setSubtotal(Double subtotal) {

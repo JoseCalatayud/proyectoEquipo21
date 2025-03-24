@@ -48,7 +48,7 @@ public class SecurityConfig {
             
             // Reemplazar formLogin con httpBasic para API REST
             .httpBasic(withDefaults())
-            // Establecer la política de sesiones como STATELESS (API REST)
+            // Establecer la política de sesiones como STATELESS (API REST) sin sesion.
             .sessionManagement(session -> 
                 session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             );

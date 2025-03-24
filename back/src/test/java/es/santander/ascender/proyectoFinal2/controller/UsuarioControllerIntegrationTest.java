@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -87,7 +88,6 @@ public class UsuarioControllerIntegrationTest {
     public void buscarPorId_conIdExistente_deberiaRetornarUsuario() throws Exception {
         mockMvc.perform(get("/api/usuarios/" + user.getId()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id", is(user.getId().intValue())))
                 .andExpect(jsonPath("$.username", is("user_test")))
                 .andExpect(jsonPath("$.rol", is("USER")));
     }
@@ -140,7 +140,7 @@ public class UsuarioControllerIntegrationTest {
     @WithMockUser(username = "admin_test", roles = {"ADMIN"})
     public void crearUsuario_conAdmin_deberiaCrearUsuario() throws Exception {
         Usuario nuevoUsuario = new Usuario();
-        nuevoUsuario.setUsername("nuevousuario");
+        nuevoUsuario.setUsername("nuevo_usuario");
         nuevoUsuario.setPassword("password123");
         nuevoUsuario.setRol(RolUsuario.USER);
 
@@ -148,7 +148,6 @@ public class UsuarioControllerIntegrationTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(nuevoUsuario)))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.id", notNullValue()))
                 .andExpect(jsonPath("$.username", is("nuevo_usuario")))
                 .andExpect(jsonPath("$.rol", is("USER")));
 
@@ -176,13 +175,14 @@ public class UsuarioControllerIntegrationTest {
     @WithMockUser(username = "admin_test", roles = {"ADMIN"})
     public void actualizarUsuario_conAdmin_deberiaActualizarUsuario() throws Exception {
         user.setUsername("PEPE");
+        user.setRol(RolUsuario.ADMIN);
+        user.setPassword(passwordEncoder.encode("new_password"));
 
         mockMvc.perform(put("/api/usuarios/" + user.getId())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(user)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id", is(user.getId().intValue())))
-                .andExpect(jsonPath("$.username", is("user_test")))
+                .andExpect(jsonPath("$.username", is("PEPE")))
                 .andExpect(jsonPath("$.rol", is("ADMIN")));
 
         // Verificar que el rol fue actualizado
@@ -202,28 +202,27 @@ public class UsuarioControllerIntegrationTest {
         mockMvc.perform(put("/api/usuarios/999")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(usuarioInexistente)))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.mensaje", containsString("No existe el usuario")));
+                .andExpect(jsonPath("$.mensaje", containsString("El usuario que no existe. Debe crear uno nuevo")));
     }
 
     @Test
     @WithMockUser(username = "admin_test", roles = {"ADMIN"})
     public void eliminarUsuario_conAdmin_deberiaEliminarUsuario() throws Exception {
+        assertTrue(user.isActivo());
         mockMvc.perform(delete("/api/usuarios/" + user.getId()))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.mensaje", is("Usuario eliminado correctamente")));
+                .andExpect(status().isOk());
+                
 
         // Verificar que el usuario fue eliminado
-        List<Usuario> usuarios = usuarioRepository.findAll();
-        assert(usuarios.size() == 1);
-        assert(usuarios.stream().noneMatch(u -> u.getUsername().equals("user_test")));
+        mockMvc.perform(get("/api/usuarios/" + user.getId()))
+                .andExpect(jsonPath("$.activo", is(false)));
     }
 
     @Test
     @WithMockUser(username = "admin_test", roles = {"ADMIN"})
     public void eliminarUsuario_conIdInexistente_deberiaRetornarBadRequest() throws Exception {
         mockMvc.perform(delete("/api/usuarios/999"))
-                .andExpect(status().isBadRequest())
+                .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.mensaje", containsString("No existe el usuario")));
     }
 

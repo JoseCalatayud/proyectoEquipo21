@@ -96,7 +96,8 @@ public class DetalleCompra {
     }
 
     public Double getSubtotal() {
-        return subtotal;
+        return Math.round(subtotal * 100.0) / 100.0;
+    
     }
 
     public void setSubtotal(Double subtotal) {

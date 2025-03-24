@@ -1,15 +1,15 @@
-package es.santander.ascender.proyectoFinal2.dto;
+package es.santander.ascender.proyectoFinal2.dto.venta;
 
-public class UsuarioVentaDTO {
+public class VentaUsuarioDTO {
     private Long id;
     private String username;
 
     // Constructor vacío
-    public UsuarioVentaDTO() {
+    public VentaUsuarioDTO() {
     }
 
     // Constructor con parámetros
-    public UsuarioVentaDTO(Long id, String username) {
+    public VentaUsuarioDTO(Long id, String username) {
         this.id = id;
         this.username = username;
     }

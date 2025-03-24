@@ -1,58 +1,24 @@
-package es.santander.ascender.proyectoFinal2.model;
+package es.santander.ascender.proyectoFinal2.dto.articulo;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
-import jakarta.persistence.*;
-import jakarta.validation.constraints.*;
-
-@Entity
-public class Articulo {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+public class ArticuloResponseDTO {
     private Long id;
-
-    @Version
-    @JsonIgnore
-    private Long version;
-    
-
-    @NotBlank(message = "El nombre es obligatorio")
     private String nombre;
-
     private String descripcion;
-
-    @NotBlank(message = "El código de barras es obligatorio")
-    @Column(nullable = false, unique = true)
     private String codigoBarras;
-
-    @NotBlank(message = "La familia/categoría es obligatoria")
     private String familia;
-
     private String fotografia;
-
-    @NotNull(message = "El precio de venta es obligatorio")
-    @DecimalMin(value = "0.0", inclusive = false)
     private Double precioVenta;
-
-    @NotNull(message = "El stock es obligatorio")
-    @Min(value = 0, message = "El stock debe ser mayor o igual a cero")
     private Integer stock;
-
-    // Flag para borrado lógico
-    private boolean borrado = false;
-
-    @NotNull(message = "El precio promedio ponderado es obligatorio")
-    @DecimalMin(value = "0.0", inclusive = false)
     private Double precioPromedioPonderado;
 
     // Constructor vacío
-    public Articulo() {
+    public ArticuloResponseDTO() {
     }
 
     // Constructor con parámetros
-    public Articulo(String nombre, String descripcion, String codigoBarras, String familia,
-                    String fotografia, Double precioVenta, Integer stock) {
+    public ArticuloResponseDTO(Long id, String nombre, String descripcion, String codigoBarras, String familia,
+            String fotografia, Double precioVenta, Integer stock, Double precioPromedioPonderado) {
+        this.id = id;
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.codigoBarras = codigoBarras;
@@ -60,7 +26,7 @@ public class Articulo {
         this.fotografia = fotografia;
         this.precioVenta = precioVenta;
         this.stock = stock;
-        this.precioPromedioPonderado = 0.0; // Valor por defecto
+        this.precioPromedioPonderado = precioPromedioPonderado;
     }
 
     // Getters y setters
@@ -111,10 +77,9 @@ public class Articulo {
     public void setFotografia(String fotografia) {
         this.fotografia = fotografia;
     }
- 
 
     public Double getPrecioVenta() {
-        return Math.round(precioVenta * 100.0) / 100.0;
+        return precioVenta;
     }
 
     public void setPrecioVenta(Double precioVenta) {
@@ -129,25 +94,11 @@ public class Articulo {
         this.stock = stock;
     }
 
-    public boolean isBorrado() {
-        return borrado;
-    }
-
-    public void setBorrado(boolean borrado) {
-        this.borrado = borrado;
-    }
-
     public Double getPrecioPromedioPonderado() {
-        return Math.round(precioPromedioPonderado * 100.0) / 100.0;
+        return precioPromedioPonderado;
     }
 
     public void setPrecioPromedioPonderado(Double precioPromedioPonderado) {
         this.precioPromedioPonderado = precioPromedioPonderado;
-    }
-    public Long getVersion() {
-        return version;
-    }
-    public void setVersion(Long version) {
-        this.version = version;
     }
 }

@@ -1,4 +1,4 @@
-package es.santander.ascender.proyectoFinal2.dto;
+package es.santander.ascender.proyectoFinal2.dto.venta;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
@@ -9,14 +9,14 @@ public class VentaRequestDTO {
 
     @Valid
     @NotEmpty(message = "Debe tener detalles de venta")
-    private List<DetalleVentaDTO> detalles;
+    private List<DetalleVentaRequestDTO> detalles;
 
     // Getters y Setters
-    public List<DetalleVentaDTO> getDetalles() {
+    public List<DetalleVentaRequestDTO> getDetalles() {
         return detalles;
     }
 
-    public void setDetalles(List<DetalleVentaDTO> detalles) {
+    public void setDetalles(List<DetalleVentaRequestDTO> detalles) {
         this.detalles = detalles;
     }
 }
