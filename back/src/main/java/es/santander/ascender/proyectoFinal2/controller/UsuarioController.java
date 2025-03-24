@@ -55,7 +55,7 @@ public class UsuarioController {
         return ResponseEntity.ok(usuarioService.actualizar(id, usuarioRequestDTO));
     }
 
-    @DeleteMapping("/{id}")
+    @PutMapping("/borrado/{id}")
     public ResponseEntity<UsuarioResponseDTO> eliminarUsuario(@PathVariable Long id) {
         return ResponseEntity.ok(usuarioService.borradoLogicoDeUsuario(id));
     }

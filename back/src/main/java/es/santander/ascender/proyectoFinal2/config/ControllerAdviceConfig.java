@@ -23,13 +23,13 @@ public class ControllerAdviceConfig {
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ErronInfo> handleIllegalArgumentException(IllegalArgumentException ex) {
-        ErronInfo errorResponse = new ErronInfo(ex.getMessage());
+        ErronInfo errorResponse = new ErronInfo(ex.getMessage(), HttpStatus.BAD_REQUEST.getReasonPhrase());
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(IllegalStateException.class)
     public ResponseEntity<ErronInfo> handleIllegalStateException(IllegalStateException ex) {
-        ErronInfo errorResponse = new ErronInfo(ex.getMessage());
+        ErronInfo errorResponse = new ErronInfo(ex.getMessage(), HttpStatus.BAD_REQUEST.value());
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 

@@ -20,5 +20,11 @@ public interface ArticuloRepository extends JpaRepository<Articulo, Long> {
     
     List<Articulo> findByNombreContainingIgnoreCaseAndBorradoFalse(String nombre);
 
+    List<Articulo> findByNombreContainingIgnoreCase(String nombre);
+
     List<Articulo> findByFamilia(String familia);
+
+    Optional<Articulo> findByIdAndBorradoFalse(Long id);
+
+    Optional<Articulo> findByCodigoBarrasAndBorradoFalse(String codigoBarras);
 }

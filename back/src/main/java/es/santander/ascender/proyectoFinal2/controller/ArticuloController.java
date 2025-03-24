@@ -26,7 +26,7 @@ public class ArticuloController {
     private ArticuloService articuloService;
 
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN')") // Only ADMIN can list all articles
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')") // Only ADMIN can list all articles
     public ResponseEntity<List<ArticuloResponseDTO>> listarArticulos() {
         return ResponseEntity.ok(articuloService.listarTodos());
     }
@@ -63,14 +63,14 @@ public class ArticuloController {
         return new ResponseEntity<>(articuloRespuestaDTO, HttpStatus.CREATED);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/actualizar/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ArticuloResponseDTO> actualizarArticulo(@PathVariable Long id, @Valid @RequestBody ArticuloUpdateRequestDTO articuloActualizacionDTO) {
         ArticuloResponseDTO actualizadoArticulo = articuloService.actualizar(id, articuloActualizacionDTO);
         return ResponseEntity.ok(actualizadoArticulo);
     }
 
-    @PostMapping("/{id}")    
+    @PostMapping("/borrar/{id}")    
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> borrarArticulo(@PathVariable Long id) {
         articuloService.borradoLogico(id);
