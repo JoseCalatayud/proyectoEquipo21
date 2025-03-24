@@ -12,18 +12,16 @@ import { AutenticacionService } from '../autenticacion.service';
   styleUrl: './login.component.scss'
 })
 export class LoginComponent {
-  usuario:string="";
-  clave:string="";
+  usuario: string = "";
+  clave: string = "";
 
-  constructor (private autorizacionService:AutenticacionService,private usuarioRestService:UsuarioRestService){
-    
-
+  constructor(private autorizacionService: AutenticacionService, private usuarioRestService: UsuarioRestService) {
 
   }
 
   validar() {
 
-   this.usuarioRestService.validar(this.usuario,this.clave);
+    this.usuarioRestService.validar(this.usuario, this.clave);
   }
 
 }

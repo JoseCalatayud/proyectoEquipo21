@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carrito de Compras</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        .subtotal-line {
+            text-align: right;
+            font-weight: bold;
+        }
+        .buttons {
+            margin-top: 20px;
+            text-align: center;
+        }
+        .action-buttons button {
+            margin-right: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Carrito de Compras</h1>
+    <table id="cart">
+        <thead>
+            <tr>
+                <th>Producto</th>
+                <th>Cantidad</th>
+                <th>Precio</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Items del carrito irán aquí -->
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="3" class="subtotal-line">Subtotal:</td>
+                <td id="subtotal">0€</td>
+            </tr>
+        </tfoot>
+    </table>
+
+    <div class="buttons">
+        <button onclick="pagarConTarjeta()">Pagar con Tarjeta</button>
+        <button onclick="pagarConEfectivo()">Pagar en Efectivo</button>
+    </div>
+
+    <script>
+        // Carrito de ejemplo
+        let carrito = [
+            { producto: 'Manzanas', cantidad: 2, precio: 1.5 },
+            { producto: 'Naranjas', cantidad: 3, precio: 2.0 },
+            { producto: 'Manzanas', cantidad: 1, precio: 1.5 },
+            { producto: 'Plátanos', cantidad: 5, precio: 1.0 },
+        ];
+
+        // Agrupar productos
+        function agruparCarrito() {
+            const carritoAgrupado = {};
+            carrito.forEach(item => {
+                if (carritoAgrupado[item.producto]) {
+                    carritoAgrupado[item.producto].cantidad += item.cantidad;
+                } else {
+                    carritoAgrupado[item.producto] = { ...item };
+                }
+            });
+            return Object.values(carritoAgrupado);
+        }
+
+        // Renderizar carrito
+        function renderizarCarrito() {
+            const tbody = document.querySelector('#cart tbody');
+            tbody.innerHTML = ''; // Limpiar contenido previo
+            let subtotal = 0;
+
+            const carritoAgrupado = agruparCarrito();
+            carritoAgrupado.forEach((item, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${item.producto}</td>
+                    <td>${item.cantidad}</td>
+                    <td>${(item.cantidad * item.precio).toFixed(2)}€</td>
+                    <td class="action-buttons">
+                        <button onclick="aumentarCantidad('${item.producto}')">+</button>
+                        <button onclick="disminuirCantidad('${item.producto}')">-</button>
+                        <button onclick="eliminarProducto('${item.producto}')">Eliminar</button>
+                    </td>
+                `;
+                subtotal += item.cantidad * item.precio;
+                tbody.appendChild(row);
+            });
+
+            document.getElementById('subtotal').textContent = `${subtotal.toFixed(2)}€`;
+        }
+
+        // Aumentar cantidad
+        function aumentarCantidad(producto) {
+            const item = carrito.find(i => i.producto === producto);
+            if (item) item.cantidad++;
+            renderizarCarrito();
+        }
+
+        // Disminuir cantidad
+        function disminuirCantidad(producto) {
+            const item = carrito.find(i => i.producto === producto);
+            if (item && item.cantidad > 1) {
+                item.cantidad--;
+            } else if (item) {
+                carrito = carrito.filter(i => i.producto !== producto);
+            }
+            renderizarCarrito();
+        }
+
+        // Eliminar producto
+        function eliminarProducto(producto) {
+            carrito = carrito.filter(i => i.producto !== producto);
+            renderizarCarrito();
+        }
+
+        // Pagar con tarjeta
+        function pagarConTarjeta() {
+            alert('Efectúe el pago');
+        }
+
+        // Pagar con efectivo
+        function pagarConEfectivo() {
+            const cantidadPago = prompt('Cantidad pago:');
+            const subtotal = parseFloat(document.getElementById('subtotal').textContent.replace('€', ''));
+            const cambio = cantidadPago - subtotal;
+
+            if (cambio >= 0) {
+                alert(`Cambio para el cliente: ${cambio.toFixed(2)}€`);
+            } else {
+                alert('Importe insuficiente');
+            }
+        }
+
+        // Inicializar vista del carrito
+        renderizarCarrito();
+    </script>
+</body>
+</html>

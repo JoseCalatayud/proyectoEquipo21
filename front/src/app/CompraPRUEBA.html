@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pasarela de Compra</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        form {
+            max-width: 500px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+        }
+        label, select, input {
+            margin-bottom: 15px;
+        }
+        input[type="number"] {
+            width: 100px;
+        }
+        .divider {
+            margin: 20px 0;
+            border-top: 1px solid #ccc;
+        }
+        .subtotal {
+            text-align: right;
+            font-weight: bold;
+        }
+        .buttons {
+            margin-top: 20px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <h1>Pasarela de Compra</h1>
+    <form id="purchase-form">
+        <label for="id-articulo">ID Artículo:</label>
+        <input type="text" id="id-articulo" readonly>
+
+        <label for="nombre">Nombre del Artículo:</label>
+        <select id="nombre" onchange="actualizarCampos()">
+            <option value="">Seleccione un artículo</option>
+
+            <option value="1" data-preciocompra="5.0" data-precioponderado="4.5">{{articulo.nombre}}</option>
+            <option value="2" data-preciocompra="2.0" data-precioponderado="1.8">Naranjas</option>
+            <option value="3" data-preciocompra="1.0" data-precioponderado="0.9">Plátanos</option>
+        </select>
+
+        <label for="preciocompra">Precio de Compra:</label>
+        <input type="text" id="preciocompra" readonly>
+
+        <label for="precioponderado">Precio Ponderado:</label>
+        <input type="text" id="precioponderado" readonly>
+
+        <label for="cantidad">Cantidad:</label>
+        <input type="number" id="cantidad" min="1" value="1" oninput="calcularSubtotal()">
+
+        <div class="divider"></div>
+        <div class="subtotal" id="subtotal">Subtotal: 0€</div>
+
+        <div class="buttons">
+            <button type="button" onclick="efectuarCompra()">Efectuar Compra</button>
+        </div>
+    </form>
+
+    <script>
+        function actualizarCampos() {
+            const select = document.getElementById('nombre');
+            const selectedOption = select.options[select.selectedIndex];
+
+            const idArticulo = selectedOption.value;
+            const precioCompra = selectedOption.getAttribute('data-preciocompra');
+            const precioPonderado = selectedOption.getAttribute('data-precioponderado');
+
+            // Actualizar campos
+            document.getElementById('id-articulo').value = idArticulo;
+            document.getElementById('preciocompra').value = `${precioCompra}€`;
+            document.getElementById('precioponderado').value = `${precioPonderado}€`;
+
+            calcularSubtotal();
+        }
+
+        function calcularSubtotal() {
+            const precioCompra = parseFloat(document.getElementById('preciocompra').value.replace('€', '')) || 0;
+            const cantidad = parseInt(document.getElementById('cantidad').value) || 0;
+
+            const subtotal = precioCompra * cantidad;
+            document.getElementById('subtotal').textContent = `Subtotal: ${subtotal.toFixed(2)}€`;
+        }
+
+        function efectuarCompra() {
+            const nombre = document.getElementById('nombre').value;
+            const subtotal = document.getElementById('subtotal').textContent;
+
+            if (!nombre) {
+                alert('Por favor, seleccione un artículo antes de efectuar la compra.');
+                return;
+            }
+
+            alert(`Compra realizada:\nArtículo: ${nombre}\n${subtotal}`);
+        }
+    </script>
+</body>
+</html>

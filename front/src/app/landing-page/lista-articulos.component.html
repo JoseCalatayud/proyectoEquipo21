@@ -1,0 +1,50 @@
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <!-- Div for Image (8 columns) -->
+        <div class="col-md-8 d-flex justify-content-center">
+            <div class="table">
+                <thead class="table-info">
+                    <tr>
+                        <th>FOTOGRAFIA</th>
+                        <th>NOMBRE</th>
+                        <th>DESCRIPCION</th>
+                        <th>FAMILIA</th>
+                        <th>PRECIOVENTA</th>
+                        <th>STOCK</th>
+                        <th>Añadir</th>
+                        <th>Ver detalle</th>
+                    </tr>
+                </thead>
+                <tbody class="table-hover">
+                    <tr *ngFor="let articulo of listaArticulos">
+                        <td>{{articulo.fotografia}}</td>
+                        <td>{{articulo.nombre}}</td>
+                        <td>{{articulo.descripcion}}</td>
+                        <td>{{articulo.familia}}</td>
+                        <td>{{articulo.precioVenta}} €</td>
+                        <td>{{articulo.stock}}</td>
+                        <td> <button (click)="agregarCarrito(articulo.id)">Agregar a carrito</button></td>
+                        <td> funcion ver detalle</td>
+                    </tr>
+
+                </tbody>
+            </div>
+        </div>
+        <div class="col-md-4 d-flex align-items-center justify-content-center">
+            <div class="table">
+                <tr>
+                    <td><button class="btn btn-success" [routerLink]="'/stock'">CARRITO</button></td>
+                </tr>
+                <tr>
+                    <td><button class="btn btn-warning" [routerLink]="'/stock'">STOCK</button></td>
+                </tr>
+                <tr>
+                    <td><button class="btn btn-secondary" [routerLink]="'/stock'">ABASTECIMIENTO</button></td>
+                </tr>
+                <tr>
+                    <td><button class="btn btn-primary" [routerLink]="'/stock'">HISTÓRICO</button></td>
+                </tr>
+            </div>
+        </div>
+    </div>
+</div>

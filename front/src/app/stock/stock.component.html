@@ -1,0 +1,49 @@
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>NOMBRE</th>
+            <th>DESCRIPCION</th>
+            <th>FAMILIA</th>
+            <th>FOTOGRAFIA</th>
+            <th>PRECIOVENTA</th>
+            <th>PRECIOCOMPRA</th>
+            <th>CANTIDAD</th>
+            <th>CREAR</th>
+            <th>AÑADIR</th>
+            <th>EDITAR</th>
+            <th>ELIMINAR</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><input type="number" id="id" readonly></td>
+            <td><input type="text" id="nombre"></td>
+            <td><input type="text" id="descripcion"></td>
+            <td><input type="text" id="familia"></td>
+            <td><input type="text" id="fotografia"></td>
+            <td><input type="text" id="precioVenta"></td>
+            <td><input type="text" id="precioCompra"></td>
+            <td><input type="text" id="stock" readonly></td>
+            <td><button>insertar</button></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr *ngFor="let articulo of listaArticulos">
+            <td>{{articulo.id}}</td>
+            <td>{{articulo.nombre}}</td>
+            <td>{{articulo.descripcion}}</td>
+            <td>{{articulo.familia}}</td>
+            <td>{{articulo.fotografia}}</td>
+            <td>{{articulo.precioVenta}}</td>
+            <td>{{articulo.precioCompra}} €</td>
+            <td>{{articulo.stock}}</td>
+            <td><button (click)="insertar(articulo)">*</button></td>
+            <td> <button (click)="agregarCarrito(articulo.id)">+</button></td>
+            <td> <button (click)="editar(articulo)">𓂃🖊</button></td>
+            <td><button (click)="borrar(articulo)">Eliminar</button> </td>
+        </tr>
+
+    </tbody>
+</table>

@@ -1,16 +1,40 @@
-<div>
-    <h2>Iniciar Sesión</h2>
-    <form action="login.php" method="POST">
-        <label for="usuario">Usuario</label>
-        <input type="text" id="usuario" name="usuario" [(ngModel)]="usuario"  placeholder="Ingrese su usuario">
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <!-- Div for Image (8 columns) -->
+        <div class="col-md-8 d-flex align-items-center justify-content-center">
+            <img src="/home/cie/Escritorio/bootprueba/bootbueno/proyectoEquipo21/front/public/fondolanding.png"
+                alt="Login Image" class="img-fluid rounded shadow-lg">
+        </div>
 
-        <br>
+        <!-- Div for Login Form (4 columns) -->
+        <div class="col-md-4 d-flex align-items-center justify-content-center">
+            <div class="card shadow-lg p-4 w-100">
+                <h2 class="text-center text-info">Iniciar Sesión</h2>
 
-        <label for="contraseña">Contraseña</label>
-        <input type="password" id="clave" name="clave" [(ngModel)]="clave" placeholder="Ingrese su contraseña">
+                <form action="login.php" method="POST">
+                    <!-- Usuario Input -->
+                    <div class="mb-3">
+                        <label for="usuario" class="form-label text-info">Usuario</label>
+                        <input type="text" id="usuario" name="usuario" [(ngModel)]="usuario"
+                            class="form-control bg-warning-subtle border-warning" placeholder="Ingrese su usuario">
+                    </div>
 
-        <br><br>
+                    <!-- Contraseña Input -->
+                    <div class="mb-3">
+                        <label for="clave" class="form-label text-info">Contraseña</label>
+                        <input type="password" id="clave" name="clave" [(ngModel)]="clave"
+                            class="form-control bg-warning-subtle border-warning" placeholder="Ingrese su contraseña">
+                    </div>
 
-        <input  type="button" (click)="validar()" value="enviar"/>
-    </form>
+                    <!-- Botón de Enviar -->
+                    <div class="text-center">
+                        <button type="button" class="btn btn-warning text-dark fw-bold" (click)="validar()"
+                            [routerLink]="'/listado'">
+                            Enviar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>

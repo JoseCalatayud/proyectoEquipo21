@@ -18,14 +18,25 @@ export class ArticuloRestService {
     return this.httpClient.get<Articulo[]>("http://localhost:4200/api/articulos");
   }
 
-  public borrar(articulo: Articulo): Observable<Articulo[]> {
-    return this.httpClient.delete<Articulo[]>(`http://localhost:4200/api/articulos/${articulo.id}`)
+  public borrar(articulo: Articulo): Observable<Articulo> {
+    return this.httpClient.delete<Articulo>(`http://localhost:4200/api/articulos/${articulo.id}`)
 
   }
 
-  //public editar(articulo: Articulo): Observable<Articulo> {
+  public insertar(articulo: Articulo): Observable<Articulo> {
 
-  //   return this.httpClient.post<Articulo>(`http://localhost:4200/api/articulos/${articulo.id}`)
-  // }
+    return this.httpClient.post<Articulo>("http://localhost:4200/api/articulos/", articulo)
 
+  }
+
+  public editar(articulo: Articulo): Observable<Articulo> {
+
+    return this.httpClient.put<Articulo>("http://localhost:4200/api/articulos/", articulo)
+  }
+
+  public agregarCarrito(id: number): Observable<Articulo[]> {
+
+    return this.httpClient.post<Articulo[]>("http://localhost:4200/api/articulos/", id)
+
+  }
 }

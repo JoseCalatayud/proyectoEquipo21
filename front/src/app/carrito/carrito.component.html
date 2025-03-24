@@ -1,0 +1,27 @@
+<div>Artículo:
+    <table>Artículo:
+        <thead>Artículo:
+            <tr>
+                <th>Fotografía</th>
+                <th>Nombre</th>
+                <th>Precio de Venta</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let articulo of listaArticulos">
+                <td>
+                    <img [src]="articulo.fotografia" alt="{{ articulo.nombre }}" width="50" height="50">
+                </td>
+                <td>{{ articulo.nombre }}</td>
+                <td>{{ articulo.precioVenta}} €</td>
+            </tr>
+            <tr *ngFor="let articulo of listaArticulos">
+                <td>
+                    <img [src]="articulo.fotografia" alt="{{ articulo.nombre }}" width="50" height="50">
+                </td>
+                <td>{{ articulo.nombre }}</td>
+                <td>{{ articulo.precioVenta}} €</td>
+            </tr>
+        </tbody>
+    </table>
+</div>

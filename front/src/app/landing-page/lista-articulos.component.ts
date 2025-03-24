@@ -25,6 +25,21 @@ export class ListaArticulosComponent {
     console.log("Codificado:", codificado);
   }
 
+  borrar(articulo: Articulo) {
+
+    this.articuloRestService.borrar(articulo).subscribe((datos) => {
+      this.articuloRestService.buscarTodos().subscribe((datos) => {
+        this.listaArticulos = datos;
+      })
+    })
+  }
+
+  agregarCarrito(id: number) {
+    this.articuloRestService.agregarCarrito(id).subscribe((datos) => {
+      this.listaArticulos = datos;
+    })
+
+  }
 
 }
 
