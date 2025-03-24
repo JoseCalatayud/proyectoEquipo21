@@ -101,7 +101,7 @@ public class VentaService {
         }
         // 4. Comprobar que la venta tiene detalles
         if (venta.getDetalles().isEmpty()) {
-            throw new IllegalArgumentException("La venta debe tener al menos un detalle");
+            throw new IllegalStateException("La venta debe tener al menos un detalle");
         }
         // 5. Guardar la venta
         ventaRepository.save(venta);

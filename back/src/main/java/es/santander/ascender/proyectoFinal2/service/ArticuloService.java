@@ -106,10 +106,12 @@ public class ArticuloService {
     }
 
     public ArticuloResponseDTO crear(ArticuloRequestDTO articuloDTO) {
+        validarCampos(articuloDTO);
         if (articuloRepository.existsByCodigoBarras(articuloDTO.getCodigoBarras())) {
             throw new IllegalArgumentException(
                     "Ya existe un artículo con el código de barras: " + articuloDTO.getCodigoBarras());
         }
+
 
         Articulo articulo = new Articulo(
                 articuloDTO.getNombre(),
@@ -125,6 +127,8 @@ public class ArticuloService {
         Articulo articuloGuardado = articuloRepository.save(articulo);
         return convertArticuloToArticuloRespuestaDTO(articuloGuardado);
     }
+
+    
 
     public ArticuloResponseDTO actualizar(Long id, ArticuloUpdateRequestDTO articuloActualizacionDTO) {
         Optional<Articulo> articuloExistenteOptional = articuloRepository.findById(id);
@@ -214,5 +218,25 @@ public class ArticuloService {
         boolean isAdmin = auth.getAuthorities().stream()
                 .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_ADMIN"));
         return isAdmin;
+    }
+    private void validarCampos(ArticuloRequestDTO articuloDTO) {
+        if (articuloDTO.getNombre() == null || articuloDTO.getNombre().isEmpty()) {
+            throw new IllegalArgumentException("El nombre del artículo no puede ser nulo o vacío");
+        }
+        if (articuloDTO.getCodigoBarras() == null || articuloDTO.getCodigoBarras().isEmpty()) {
+            throw new IllegalArgumentException("El código de barras del artículo no puede ser nulo o vacío");
+        }
+        if (articuloDTO.getPrecioVenta() == null || articuloDTO.getPrecioVenta() <= 0) {
+            throw new IllegalArgumentException("El precio de venta del artículo no puede ser nulo o menor o igual a 0");
+        }
+        if (articuloDTO.getFamilia() == null || articuloDTO.getFamilia().isEmpty()) {
+            throw new IllegalArgumentException("La familia del artículo no puede ser nula o vacía");
+        }
+        if (articuloDTO.getDescripcion() == null || articuloDTO.getDescripcion().isEmpty()) {
+            throw new IllegalArgumentException("La descripción del artículo no puede ser nula o vacía");
+        }
+        if (articuloDTO.getFotografia() == null || articuloDTO.getFotografia().isEmpty()) {
+            throw new IllegalArgumentException("La fotografía del artículo no puede ser nula o vacía");
+        }
     }
 }
