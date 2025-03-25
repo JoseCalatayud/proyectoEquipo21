@@ -1,6 +1,6 @@
-<div>Artículo:
-    <table>Artículo:
-        <thead>Artículo:
+<div class="container">Artículo:
+    <div class="table">Artículo:
+        <thead class="thead-dark">Artículo:
             <tr>
                 <th>Nombre</th>
                 <th>Cantidad</th>
@@ -8,11 +8,12 @@
             </tr>
         </thead>
         <tbody>
-            <!--  <tr *ngFor="let articulo of listaArticulos">
+            <tr *ngFor="let articulo of listaArticulos">
                 <td>{{articulo.nombre}}</td>
-                <td>{{articulo.cantidad}}</td>
-                <td>{{articulo.precio}}</td>
-            </tr>-->
+                <td>{{articulo.stock}}</td>
+                <td>{{articulo.precioVenta}}</td>
+            </tr>
         </tbody>
-    </table>
+    </div>
+    <input type="button" (click)="add()"/>
 </div>

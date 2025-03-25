@@ -7,7 +7,8 @@ export class Articulo {
         public fotografia: string,
         public precioVenta: number,
         public codigoBarras: string,
-        public stock: number) {
+        public stock: number,
+        public borrado: boolean) {
 
     }
 

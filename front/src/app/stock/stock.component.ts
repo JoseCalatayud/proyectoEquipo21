@@ -14,7 +14,9 @@ import { CommonModule, NgFor } from '@angular/common';
 export class StockComponent {
 
   listaArticulos: Articulo[] = [];
+
   articulo: Articulo = {} as Articulo;
+
   constructor(private articuloRestService: ArticuloRestService) {
     this.articuloRestService.buscarTodos().subscribe((datos) => {
       this.listaArticulos = datos;
@@ -24,15 +26,35 @@ export class StockComponent {
     const codificado = btoa("admin:admin123");
 
     console.log("Codificado:", codificado);
+
+  }
+
+  activo() {
+
+    if (this.articulo.borrado) {
+      return "No disponible";
+    } else {
+      return "Disponible";
+    }
   }
 
   borrar(articulo: Articulo) {
 
     this.articuloRestService.borrar(articulo).subscribe((datos) => {
       this.articuloRestService.buscarTodos().subscribe((datos) => {
+        console.log(datos);
         this.listaArticulos = datos;
       })
     })
+  }
+
+  activar(articulo: Articulo) {
+    this.articuloRestService.activar(articulo).subscribe((datos) =>
+      this.articuloRestService.buscarTodos().subscribe((datos) => {
+        console.log(datos);
+        this.listaArticulos = datos;
+      })
+    )
   }
 
   editar(articulo: Articulo) {

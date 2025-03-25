@@ -19,7 +19,12 @@ export class ArticuloRestService {
   }
 
   public borrar(articulo: Articulo): Observable<Articulo> {
-    return this.httpClient.delete<Articulo>(`http://localhost:4200/api/articulos/${articulo.id}`)
+    return this.httpClient.post<Articulo>(`http://localhost:4200/api/articulos/borrar/${articulo.id}`, articulo)
+
+  }
+
+  public activar(articulo: Articulo): Observable<Articulo> {
+    return this.httpClient.post<Articulo>(`http://localhost:4200/api/articulos/activar/${articulo.id}`, articulo)
 
   }
 

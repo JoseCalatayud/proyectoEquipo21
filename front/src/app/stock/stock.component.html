@@ -12,23 +12,31 @@
                         <th>PRECIOVENTA</th>
                         <th>C.BARRAS</th>
                         <th>STOCK</th>
+                        <th>DISPONIBLE</th>
                         <th>CREAR</th>
                         <th>AÑADIR</th>
                         <th>EDITAR</th>
                         <th>ELIMINAR</th>
+                        <th>ACTIVAR</th>
                     </tr>
                 </thead>
                 <tbody class="table-info-subtle">
                     <tr>
-                        <td><input type="number" id="id" [(ngModel)]="articulo.id" name="id" readonly placeholder="ID autoasignado"></td>
+                        <td><input type="number" id="id" [(ngModel)]="articulo.id" name="id" readonly
+                                placeholder="ID autoasignado"></td>
                         <td><input type="text" id="nombre" [(ngModel)]="articulo.nombre" name="nombre"></td>
-                        <td><input type="text" id="descripcion" [(ngModel)]="articulo.descripcion" name="descripcion"></td>
+                        <td><input type="text" id="descripcion" [(ngModel)]="articulo.descripcion" name="descripcion">
+                        </td>
                         <td><input type="text" id="familia" [(ngModel)]="articulo.familia" name="familia"></td>
                         <td><input type="text" id="fotografia" [(ngModel)]="articulo.fotografia" name="fotografia"></td>
-                        <td><input type="text" id="precioVenta" [(ngModel)]="articulo.precioVenta" name="precioVenta"></td>
-                        <td><input type="text" id="codigoBarras" [(ngModel)]="articulo.codigoBarras" name="codigoBarras"></td>
-                        <td><input type="text" id="stock" [(ngModel)]="articulo.stock" name="stock" readonly placeholder="Stock de nuevo artículo 0"></td>
+                        <td><input type="text" id="precioVenta" [(ngModel)]="articulo.precioVenta" name="precioVenta">
+                        </td>
+                        <td><input type="text" id="codigoBarras" [(ngModel)]="articulo.codigoBarras"
+                                name="codigoBarras"></td>
+                        <td><input type="text" id="stock" [(ngModel)]="articulo.stock" name="stock" readonly
+                                placeholder="Stock de nuevo artículo 0"></td>
                         <td><button (click)="insertar(articulo)" class="btn btn-outline-danger w-100">🗹</button></td>
+                        <td></td>
                         <td></td>
                         <td></td>
                         <td></td>
@@ -42,10 +50,15 @@
                         <td>{{articulo.precioVenta}} €</td>
                         <td>{{articulo.codigoBarras}}</td>
                         <td>{{articulo.stock}}</td>
+                        <td>{{articulo.borrado?'No disponible':'Disponible'}}</td>
                         <td></td>
-                        <td> <button (click)="agregarCarrito(articulo.id)" class="btn btn-outline-success w-100">📂</button></td>
-                        <td> <button (click)="editar(articulo)" class="btn btn-outline-info w-100">𓂃🖉</button></td>
-                        <td><button (click)="borrar(articulo)" class="btn btn-outline-danger w-100">Eliminar</button> </td>
+                        <td> <button (click)="agregarCarrito(articulo.id)"
+                                class="btn btn-outline-success w-100">📂</button></td>
+                        <td> <button (click)="editar(articulo)" class="btn btn-outline-info w-100">🖉</button></td>
+                        <td><button (click)="borrar(articulo)" class="btn btn-outline-danger w-100">Eliminar</button>
+                        </td>
+                        <td><button (click)="activar(articulo)" class="btn btn-outline-danger w-100">Activar</button>
+                        </td>
                     </tr>
 
                 </tbody>
