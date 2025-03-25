@@ -1,11 +1,11 @@
 import { Component } from '@angular/core';
 import { ArticuloRestService } from '../articulo-rest.service';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { Articulo } from '../articulo';
 
 @Component({
   selector: 'app-detalle',
-  imports: [],
+  imports: [RouterLink],
   templateUrl: './detalle.component.html',
   styleUrl: './detalle.component.scss'
 })
