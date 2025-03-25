@@ -29,7 +29,7 @@
                             <td>{{ articulo.stock }}</td>
                             <td>
                                 <!-- Botón de añadir con color celeste -->
-                                <button class="btn" (click)="agregarCarrito(articulo.id)" style="background-color: #86c7ed; color: #1836b2;">📂</button>
+                                <button class="btn" (click)="agregarCarrito(articulo)" style="background-color: #86c7ed; color: #1836b2;">📂</button>
                             </td>
                             <td>
                                 <!-- Botón de ver detalle con color morado -->
@@ -47,22 +47,27 @@
                 <tbody>
                     <tr>
                         <td class="p-3">
-                            <button class="btn p-3 w-100" [routerLink]="'/carrito'" style="background-color: #1836b2; color: white; font-weight: bold;">CARRITO</button>
+                            <button class="btn p-3 w-100" [routerLink]="'/carrito'" style="background-color: #1836b2; color: white; font-weight: bold;">Carrito de Venta</button>
                         </td>
                     </tr>
                     <tr>
                         <td class="p-3">
-                            <button class="btn p-3 w-100" [routerLink]="'/stock'" style="background-color: #a066cb; color: white; font-weight: bold;">STOCK</button>
+                            <button class="btn p-3 w-100" [routerLink]="'/stock'" style="background-color: #a066cb; color: white; font-weight: bold;">Articulos</button>
                         </td>
                     </tr>
                     <tr>
                         <td class="p-3">
-                            <button class="btn p-3 w-100" [routerLink]="'/stock'" style="background-color: #86c7ed; color: #1836b2; font-weight: bold;">ABASTECIMIENTO</button>
+                            <button class="btn p-3 w-100" [routerLink]="'/stock'" style="background-color: #86c7ed; color: #1836b2; font-weight: bold;">Compra de articulos</button>
                         </td>
                     </tr>
                     <tr>
                         <td class="p-3">
-                            <button class="btn p-3 w-100" [routerLink]="'/stock'" style="background-color: #86c7ed; color: #1836b2; font-weight: bold;">HISTÓRICO</button>
+                            <button class="btn p-3 w-100" [routerLink]="'/stock'" style="background-color: #1836b2; color: white; font-weight: bold;">Detalle de compras</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="p-3">
+                            <button class="btn p-3 w-100" [routerLink]="'/stock'" style="background-color: #1836b2; color: white; font-weight: bold;">Detalle de ventas</button>
                         </td>
                     </tr>
                 </tbody>

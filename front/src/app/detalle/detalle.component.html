@@ -1,18 +1,31 @@
-<div class="container-lg bg-primary-subtle d-flex">
-    <div class="col-6">
-        <p> {{articuloDetalle.fotografia}} </p>
-    </div>
-    <div class="container col-4">
-        <p class="fs-1"> {{articuloDetalle.familia}} </p>
-        <p class="fs-2"> {{articuloDetalle.nombre}}</p>
-        <p class="fs-2">Precio: {{articuloDetalle.precioVenta}}€
-            <button (click)="agregarCarrito(articuloDetalle.id)" class="btn btn-outline-primary ms-3">📂</button>
-        </p>
-        <p class="fs-4"> {{articuloDetalle.descripcion}} </p>
-    </div>
-    <div class="container col-2 ms-auto mt-5">
-        <p><button class="btn btn-success">Button 1</button></p>
-        <p><button class="btn btn-success">Button 2</button></p>
-        <p><button class="btn btn-success">Button 3</button></p>
+<div class="container-lg bg-primary-subtle d-flex flex-column p-4 rounded-3">
+    <!-- Detalles del artículo -->
+    <div class="row">
+        <!-- Imagen del artículo -->
+        <div class="col-6">
+            <img [src]="articuloDetalle.fotografia" alt="Fotografía del artículo" class="img-fluid rounded-3 shadow-lg" />
+        </div>
+
+        <!-- Detalles del artículo -->
+        <div class="col-4">
+            <p class="fs-1" style="color: #1836b2;">{{articuloDetalle.familia}}</p>
+            <p class="fs-2" style="color: #a066cb;">{{articuloDetalle.nombre}}</p>
+            <p class="fs-2" style="color: #1836b2;">Precio: {{articuloDetalle.precioVenta}} €
+                <button (click)="agregarCarrito(articuloDetalle.id)" class="btn" style="background-color: #1836b2; color: white; border: none; width: 100%;">📂</button>
+            </p>
+            <p class="fs-4" style="color: #1836b2;">{{articuloDetalle.descripcion}}</p>
+        </div>
+
+        <!-- Botones de acciones (Modificar, Eliminar, Activar) -->
+        <div class="col-2 ms-auto mt-5">
+            <!-- Botón Modificar -->
+            <p><button class="btn" style="background-color: #1836b2; color: white; border: none; width: 100%; margin-bottom: 10px;">🖉 Modificar</button></p>
+            
+            <!-- Botón Eliminar -->
+            <p><button class="btn" style="background-color: #a066cb; color: white; border: none; width: 100%; margin-bottom: 10px;">Eliminar</button></p>
+            
+            <!-- Botón Activar -->
+            <p><button class="btn" style="background-color: #86c7ed; color: white; border: none; width: 100%; margin-bottom: 10px;">Activar</button></p>
+        </div>
     </div>
 </div>
