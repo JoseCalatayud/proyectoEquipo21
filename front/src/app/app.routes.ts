@@ -4,6 +4,7 @@ import { LoginComponent } from './login/login.component';
 import { CarritoComponent } from './carrito/carrito.component';
 import { StockComponent } from './stock/stock.component';
 import { DetalleComponent } from './detalle/detalle.component';
+import { HistoricoVentasComponent } from './historico-ventas/historico-ventas.component';
 
 export const routes: Routes = [
 
@@ -13,6 +14,7 @@ export const routes: Routes = [
     { path: "detalle/:id", component: DetalleComponent },
     { path: "listaArticulos", component: ListaArticulosComponent },
     { path: "stock", component: StockComponent },
+    { path: "detalleVenta", component: HistoricoVentasComponent },
     { path: "", component: LoginComponent },
 
 ];

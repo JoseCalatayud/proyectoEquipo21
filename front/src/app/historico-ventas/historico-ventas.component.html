@@ -1,0 +1,66 @@
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <!-- Div para la Tabla (12 columnas) -->
+        <div class="col-md-12 d-flex justify-content-center">
+            <div class="overflow-scroll" style="max-height: 1080px; width: 100%; overflow-x: auto;">
+                <table class="table table-bordered shadow-lg rounded">
+                    <!-- Encabezado de la tabla -->
+                    <thead class="sticky-top" style="background-color: #a066cb; color: white;">
+                        <tr>
+                            <th style="text-transform: capitalize;">ID</th>
+                            <th style="text-transform: capitalize;">Usuario</th>
+                            <th style="text-transform: capitalize;">Total</th>
+                            <th style="text-transform: capitalize;">Detalles</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let venta of listaVentas">
+                            <td>{{ venta.id }}</td>
+                            <td>{{ venta.usuario.username }}</td>
+                            <td>{{ venta.total }} €</td>
+                            <td>
+                                <ul>
+                                    <li *ngFor="let detalle of venta.detalles">
+                                        {{ detalle.nombreArticulo }} - Cantidad: {{ detalle.cantidad }} - Subtotal: {{ detalle.subtotal }} €
+                                    </li>
+                                </ul>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <!-- Columna derecha (botones de navegación) -->
+        <div class="col-md-4 d-flex align-items-center justify-content-center">
+            <div class="table">
+                <tbody>
+                    <tr>
+                        <td class="p-3">
+                            <button class="btn p-3 w-100" [routerLink]="'/carrito'" style="background-color: #1836b2; color: white; font-weight: bold;">Carrito de Venta</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="p-3">
+                            <button class="btn p-3 w-100" [routerLink]="'/stock'" style="background-color: #a066cb; color: white; font-weight: bold;">Articulos</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="p-3">
+                            <button class="btn p-3 w-100" [routerLink]="'/historico-compras'" style="background-color: #86c7ed; color: #1836b2; font-weight: bold;">Compra de articulos</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="p-3">
+                            <button class="btn p-3 w-100" [routerLink]="'/historico-compras'" style="background-color: #1836b2; color: white; font-weight: bold;">Detalle de compras</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="p-3">
+                            <button class="btn p-3 w-100" [routerLink]="'/historico-ventas'" style="background-color: #1836b2; color: white; font-weight: bold;">Detalle de ventas</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </div>
+        </div>
+    </div>
+</div>
