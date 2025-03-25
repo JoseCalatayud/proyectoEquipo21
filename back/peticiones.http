@@ -4,3 +4,18 @@ Authorization: Basic admin admin1234
 ###
 GET http://localhost:8080/api/articulos
 Authorization: Basic  admin admin123
+
+###
+
+POST http://localhost:8080/api/articulos
+Authorization: Basic  admin  admin123
+content-type: application/json
+
+{
+"nombre": "string",
+"descripcion": "string",
+"codigoBarras": "string",
+"familia": "string",
+"fotografia": "string",
+"precioVenta": "0.1"
+}

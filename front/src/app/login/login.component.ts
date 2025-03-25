@@ -24,4 +24,8 @@ export class LoginComponent {
     this.usuarioRestService.validar(this.usuario, this.clave);
   }
 
+  fondo(): string {
+    return '/fondolanding.png';
+  }
 }
+

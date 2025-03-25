@@ -1,27 +1,57 @@
-<div>Artículo:
-    <table>Artículo:
-        <thead>Artículo:
-            <tr>
-                <th>Fotografía</th>
-                <th>Nombre</th>
-                <th>Precio de Venta</th>
-            </tr>
+<!--<div class="container">Artículo:
+    <div class="table">Artículo:
+        <thead class="thead-dark">Artículo:
+
+            <th>Nombre</th>
+            <th>Cantidad</th>
+            <th>Precio</th>
+
         </thead>
         <tbody>
             <tr *ngFor="let articulo of listaArticulos">
-                <td>
-                    <img [src]="articulo.fotografia" alt="{{ articulo.nombre }}" width="50" height="50">
-                </td>
-                <td>{{ articulo.nombre }}</td>
-                <td>{{ articulo.precioVenta}} €</td>
-            </tr>
-            <tr *ngFor="let articulo of listaArticulos">
-                <td>
-                    <img [src]="articulo.fotografia" alt="{{ articulo.nombre }}" width="50" height="50">
-                </td>
-                <td>{{ articulo.nombre }}</td>
-                <td>{{ articulo.precioVenta}} €</td>
+                <td>{{articulo.nombre}}</td>
+                <td>{{articulo.stock}}</td>
+                <td>{{articulo.precioVenta}}</td>
             </tr>
         </tbody>
-    </table>
+    </div>
+    <input type="button" (click)="add()"/>
+</div>-->
+
+<div class="container mt-4">
+    <h2 class="mb-3 text-white text-center p-3 rounded" style="background-color: #1836b2;">
+        🛒 Lista de Artículos
+    </h2>
+
+    <div class="table-responsive">
+        <table class="table shadow-lg rounded text-center">
+            <thead style="background-color: #a066cb; color: white;">
+                <tr>
+                    <th>Nombre</th>
+                    <th>Cantidad</th>
+                    <th>Precio</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let itemCarrito of listaCarrito" class="align-middle">
+                    <td>{{ itemCarrito.nombre }}</td>
+                    <td>{{itemCarrito.cantidad}} </td>
+                    <td class="fw-bold" style="color: #1836b2;">
+                        {{ itemCarrito.precio }} €
+                    </td>
+                </tr>
+                <tr>
+                    <td><button (click)="pagar()">Pagar</button></td>
+                    <td>Subtotal: </td>
+                    <td>{{ subtotal }} €</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <!--
+    <button class="btn mt-3 px-4 fw-bold text-white" style="background-color: #86c7ed;" (click)="add()">
+        ➕ Agregar Artículo
+    </button>
+
+-->
 </div>
