@@ -48,5 +48,9 @@ export class ArticuloRestService {
   public verDetalle(id: number): Observable<Articulo> {
     return this.httpClient.get<Articulo>(`http://localhost:4200/api/articulos/${id}`)
   }
+  public actualizarStock(infoStock:any): Observable<Articulo[]> {
+    return this.httpClient.post<Articulo[]>(`http://localhost:4200/api/ventas/crear`,infoStock)
+  }
+
 
 }

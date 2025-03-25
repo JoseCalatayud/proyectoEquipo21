@@ -1,4 +1,4 @@
 export class Carrito {
 
-    constructor(public nombre:string,public cantidad:number, public precio:number) {}
+    constructor(public codigoBarras:string,public nombre:string,public cantidad:number, public precio:number) {}
 }
