@@ -1,11 +1,11 @@
-<div class="container">Artículo:
-    <div class="table">Artículo:
+<div class="container">
+    <div class="table">
         <thead class="thead-dark">Artículo:
-            <tr>
-                <th>Nombre</th>
-                <th>Cantidad</th>
-                <th>Precio</th>
-            </tr>
+
+            <th>Nombre</th>
+            <th>Cantidad</th>
+            <th>Precio</th>
+
         </thead>
         <tbody>
             <tr *ngFor="let articulo of listaArticulos">
@@ -15,5 +15,5 @@
             </tr>
         </tbody>
     </div>
-    <input type="button" (click)="add()"/>
+    <input type="button" (click)="add()" value="añadir" />
 </div>
