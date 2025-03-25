@@ -123,7 +123,7 @@ public class VentaControllerIntegrationTest {
         List<DetalleVentaRequestDTO> detalles = new ArrayList<>();
         
         DetalleVentaRequestDTO detalle = new DetalleVentaRequestDTO();
-        detalle.setIdArticulo(articulo1.getId());
+        detalle.setCodigoBarras(articulo1.getCodigoBarras());
         detalle.setCantidad(2);
         detalles.add(detalle);
         
@@ -186,7 +186,7 @@ public class VentaControllerIntegrationTest {
         List<DetalleVentaRequestDTO> detalles = new ArrayList<>();
         
         DetalleVentaRequestDTO detalle = new DetalleVentaRequestDTO();
-        detalle.setIdArticulo(articulo1.getId());
+        detalle.setCodigoBarras(articulo1.getCodigoBarras());
         detalle.setCantidad(1);
         detalles.add(detalle);
         
