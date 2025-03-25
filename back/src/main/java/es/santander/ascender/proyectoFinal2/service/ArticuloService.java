@@ -245,8 +245,6 @@ public class ArticuloService {
         if (articuloDTO.getDescripcion() == null || articuloDTO.getDescripcion().isEmpty()) {
             throw new IllegalArgumentException("La descripción del artículo no puede ser nula o vacía");
         }
-        if (articuloDTO.getFotografia() == null || articuloDTO.getFotografia().isEmpty()) {
-            throw new IllegalArgumentException("La fotografía del artículo no puede ser nula o vacía");
-        }
+        
     }
 }

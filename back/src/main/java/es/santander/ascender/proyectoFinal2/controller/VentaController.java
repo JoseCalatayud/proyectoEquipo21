@@ -32,6 +32,11 @@ public class VentaController {
     public ResponseEntity<VentaResponseDTO> crearVenta(@Valid @RequestBody VentaRequestDTO ventaRequestDTO) {
         return ResponseEntity.ok(ventaService.crearVenta(ventaRequestDTO));
     }
+    @PostMapping("/crearCodigoBarras")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')") // Both ADMIN and USER can create sales
+    public ResponseEntity<VentaResponseDTO> crearVentaPorCodigoBarras(@Valid @RequestBody VentaRequestDTO ventaRequestDTO) {
+        return ResponseEntity.ok(ventaService.crearVenta(ventaRequestDTO));
+    }
 
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN')") // Both ADMIN and USER can get a sale by ID

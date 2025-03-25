@@ -76,7 +76,7 @@ public class VentaService {
         }
         Set<Long> articulosIds = new HashSet<>();
         for (DetalleVentaRequestDTO detalleDTO : ventaRequestDTO.getDetalles()) {
-            if (!articulosIds.add(detalleDTO.getIdArticulo())) {
+            if (!articulosIds.add(articuloRepository.findByCodigoBarras(detalleDTO.getCodigoBarras()).get().getId())) {
                 throw new IllegalArgumentException("No se permite duplicar artículos en la misma venta");
             }
         }
@@ -85,10 +85,10 @@ public class VentaService {
         // 3. Procesar cada detalle de venta
         for (DetalleVentaRequestDTO detalleDTO : ventaRequestDTO.getDetalles()) {
             // 3.1. Buscar articulo.
-            Articulo articulo = articuloRepository.findById(detalleDTO.getIdArticulo())
+            Articulo articulo = articuloRepository.findByCodigoBarras(detalleDTO.getCodigoBarras())
                     .orElseThrow(() -> new IllegalArgumentException("No existe el articulo"));
             // 3.2. Comprobar stock.
-            if (!articuloService.hayStockSuficiente(detalleDTO.getIdArticulo(), detalleDTO.getCantidad())) {
+            if (!articuloService.hayStockSuficiente(articuloRepository.findByCodigoBarras(detalleDTO.getCodigoBarras()).get().getId(), detalleDTO.getCantidad())) {
                 throw new StockInsuficienteException(articulo.getNombre(), articulo.getStock(),
                         detalleDTO.getCantidad());
             }
@@ -97,7 +97,50 @@ public class VentaService {
             // 3.4. Agregar detalle a venta
             venta.agregarDetalle(detalleVenta);
             // 3.5. Actualizar stock
-            articuloService.actualizarStock(detalleDTO.getIdArticulo(), -detalleDTO.getCantidad());
+            articuloService.actualizarStock(articuloRepository.findByCodigoBarras(detalleDTO.getCodigoBarras()).get().getId(), -detalleDTO.getCantidad());
+        }
+        // 4. Comprobar que la venta tiene detalles
+        if (venta.getDetalles().isEmpty()) {
+            throw new IllegalStateException("La venta debe tener al menos un detalle");
+        }
+        // 5. Guardar la venta
+        ventaRepository.save(venta);
+        return convertirVentaEnVentaResponseDTO(venta);
+    }
+    public VentaResponseDTO crearVentaCodigoBarras(VentaRequestDTO ventaRequestDTO) {
+        // 1. Obtener el usuario autenticado
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || !auth.isAuthenticated()) {
+            throw new NoSuchElementException("Usuario no autenticado");
+        }
+        Optional<Usuario> usuarioOptional = usuarioRepository.findByUsername(auth.getName());
+        if (usuarioOptional.isEmpty()) {
+            throw new NoSuchElementException("Usuario no encontrado");
+        }
+        Set<String> articulosCodigoBarras = new HashSet<>();
+        for (DetalleVentaRequestDTO detalleDTO : ventaRequestDTO.getDetalles()) {
+            if (!articulosCodigoBarras.add(detalleDTO.getCodigoBarras())) {
+                throw new IllegalArgumentException("No se permite duplicar artículos en la misma venta");
+            }
+        }
+        // 2. Crear venta
+        Venta venta = new Venta(usuarioOptional.get());
+        // 3. Procesar cada detalle de venta
+        for (DetalleVentaRequestDTO detalleDTO : ventaRequestDTO.getDetalles()) {
+            // 3.1. Buscar articulo.
+            Articulo articulo = articuloRepository.findByCodigoBarras(detalleDTO.getCodigoBarras())
+                    .orElseThrow(() -> new IllegalArgumentException("No existe el articulo"));
+            // 3.2. Comprobar stock.
+            if (!articuloService.hayStockSuficiente(articulo.getId(), detalleDTO.getCantidad())) {
+                throw new StockInsuficienteException(articulo.getNombre(), articulo.getStock(),
+                        detalleDTO.getCantidad());
+            }
+            // 3.3. Crear detalle venta
+            DetalleVenta detalleVenta = new DetalleVenta(articulo, detalleDTO.getCantidad());
+            // 3.4. Agregar detalle a venta
+            venta.agregarDetalle(detalleVenta);
+            // 3.5. Actualizar stock
+            articuloService.actualizarStock(articuloRepository.findByCodigoBarras(detalleDTO.getCodigoBarras()).get().getId(), -detalleDTO.getCantidad());
         }
         // 4. Comprobar que la venta tiene detalles
         if (venta.getDetalles().isEmpty()) {
@@ -228,13 +271,5 @@ public class VentaService {
         boolean isAdmin = auth.getAuthorities().stream()
                 .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_ADMIN"));
         return isAdmin;
-    }
-    private Usuario obtenerUsuarioAutenticado() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth == null || !auth.isAuthenticated()) {
-            throw new NoSuchElementException("Usuario no autenticado");
-        }
-        return usuarioRepository.findByUsername(auth.getName())
-                .orElseThrow(() -> new NoSuchElementException("Usuario no encontrado"));
     }
 }
