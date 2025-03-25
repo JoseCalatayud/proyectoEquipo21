@@ -1,0 +1,167 @@
+  // Productos por familia
+
+                
+                    //ELECTRÓNICA
+"Smart TV 32\"": 	
+	https://st.depositphotos.com/1000128/5054/i/600/depositphotos_50545025-stock-photo-smart-tv.jpg
+
+"Smart TV 43\""
+"Smart TV 50\"" 
+"Smart TV 55\"" 
+"Smart TV 65\""  
+                  
+"Reproductor DVD": 
+	https://static5.depositphotos.com/1001735/511/i/600/depositphotos_5113213-stock-photo-isolated-generic-dvd-player.jpg
+
+"Home Cinema": 
+	https://st.depositphotos.com/1515224/1692/i/600/depositphotos_16920651-stock-photo-home-cinema.jpg
+
+"Barra de Sonido": 
+	https://img.freepik.com/psd-gratis/altavoz-tecnologico-aislado_23-2151196893.jpg?t=st=1742830429~exp=1742834029~hmac=a31d259d94741f50d4322e049e9675329e2e421321eaa05a34cd58a3562d3fd2&w=996
+
+"Proyector LED":
+	https://depositphotos.com/es/photo/projector-for-video-full-hd-110202700.html
+	
+"Auriculares Inalámbricos":
+	https://static6.depositphotos.com/1081688/580/i/380/depositphotos_5800154-stock-photo-wireless-headphones.jpg
+	
+
+
+
+                    // ELECTRODOMÉSTICOS
+
+"Frigorífico Combi": 
+	https://st.depositphotos.com/1050267/4374/i/600/depositphotos_43742783-stock-photo-metallic-refrigerator.jpg
+
+"Lavavajillas": 
+	https://st3.depositphotos.com/5556168/13356/i/600/depositphotos_133567832-stock-photo-dishwasher-isolated-on-a-white.jpg
+
+"Lavadora":
+	https://depositphotos.com/es/photo/washing-machine-laundry-basket-isolated-grey-253676464.html
+	https://st.depositphotos.com/1001877/5138/i/380/depositphotos_51380101-stock-photo-washing-machine.jpg
+
+"Secadora":
+	https://st2.depositphotos.com/1001877/5180/i/380/depositphotos_51808427-stock-photo-washing-machine.jpg
+	
+"Horno Eléctrico":
+	https://st5.depositphotos.com/88369228/76003/i/380/depositphotos_760035022-stock-photo-modern-oven-white-background-illustration.jpg
+	
+"Microondas":
+	https://static8.depositphotos.com/1000128/964/i/380/depositphotos_9649164-stock-photo-microwave-oven.jpg
+	
+"Vitrocerámica":
+	https://st2.depositphotos.com/1187563/9737/i/600/depositphotos_97375218-stock-photo-induction-cooktop-stove.jpg
+	
+	
+"Campana Extractora":
+	https://st4.depositphotos.com/2822381/20217/i/150/depositphotos_202177570-stock-photo-modern-stainless-kitchen-hood-isolated.jpg
+	
+"Aspiradora Robot":
+	https://st3.depositphotos.com/1000865/13131/i/600/depositphotos_131313706-stock-photo-robotic-vacuum-cleaner.jpg
+
+"Freidora de Aire":
+	https://st4.depositphotos.com/4283545/21916/i/600/depositphotos_219161138-stock-photo-studio-shot-digital-air-fryer.jpg
+	
+
+
+
+                    // INFORMÁTICA
+"Portátil Gaming": 
+	https://st.depositphotos.com/1000128/5019/i/600/depositphotos_50198727-stock-photo-gamer-laptop-with-video-game.jpg
+	
+"Portátil Ultrabook":
+	https://st.depositphotos.com/1635204/3253/i/600/depositphotos_32531935-stock-photo-laptop-with-blank-screen-isolated.jpg
+	
+"PC Sobremesa":
+	https://st.depositphotos.com/1515224/1320/i/600/depositphotos_13209109-stock-photo-computer.jpg
+
+"Monitor 24\"":
+
+	https://st3.depositphotos.com/1000350/14068/i/600/depositphotos_140689852-stock-photo-computer-monitor-isolated-on-white.jpg
+
+"Monitor 27\"":
+	https://st.depositphotos.com/1006593/2674/i/380/depositphotos_26745937-stock-photo-computer-monitor-with-clipping-path.jpg
+
+"Teclado Mecánico":
+	https://m.media-amazon.com/images/I/61Q56A7UfNL.jpg
+	
+"Ratón Gaming":
+	https://st4.depositphotos.com/36716422/38552/i/600/depositphotos_385524716-stock-photo-black-gaming-computer-mouse-isolated.jpg
+
+"Webcam HD": 
+	https://st.depositphotos.com/1001972/1586/i/600/depositphotos_15863257-stock-photo-web-camera.jpg
+	
+"Disco Duro SSD":
+	https://s.alicdn.com/@sc04/kf/HTB1a5oivHZnBKNjSZFKq6AGOVXad.jpg_720x720q50.jpg
+	
+"Impresora Multifunción":
+	https://st4.depositphotos.com/5624298/22967/i/380/depositphotos_229674546-stock-photo-printer-copier-scanner-office-table.jpg
+	
+                    
+
+
+	// TELEFONÍA
+"Smartphone Android":
+	https://static8.depositphotos.com/1010782/858/v/600/depositphotos_8580789-stock-illustration-android-operating-system-for-smartphones.jpg
+
+"iPhone": 
+	https://st2.depositphotos.com/16117492/42536/v/600/depositphotos_425367520-stock-illustration-tashkent-uzbekistan-november-7-2020.jpg
+	
+"Teléfono Inalámbrico":
+	https://static3.depositphotos.com/1000286/112/i/600/depositphotos_1121078-stock-photo-isolated-phone.jpg
+	
+"Smartwatch":
+	https://st5.depositphotos.com/86022176/79611/v/600/depositphotos_796116550-stock-illustration-smartwatch-wristwatch-isolated-realistic-vector.jpg
+
+"Auriculares Bluetooth":
+	https://st4.depositphotos.com/1012146/31539/i/380/depositphotos_315398592-stock-photo-wireless-headphones.jpg
+ 
+"Cargador Inalámbrico":
+	https://st4.depositphotos.com/22443688/25070/i/600/depositphotos_250705064-stock-photo-moscow-russia-march-2019-black.jpg
+
+"Altavoz Bluetooth":
+	https://st5.depositphotos.com/13942364/78094/i/600/depositphotos_780943956-stock-photo-black-wireless-speaker-isolated-white.jpg
+	
+"Power Bank":
+	https://st5.depositphotos.com/3077025/63286/i/600/depositphotos_632866254-stock-photo-fully-charged-portable-powerbank-two.jpg
+
+"Funda Móvil":
+	https://st2.depositphotos.com/3667099/5413/i/600/depositphotos_54137043-stock-photo-mobile-phone-case.jpg
+
+"Protector Pantalla":
+	https://st2.depositphotos.com/1005844/11764/i/600/depositphotos_117643498-stock-photo-smartphone-with-a-protection-film.jpg
+
+
+
+
+                    // AUDIO/VIDEO
+"Cámara Reflex":
+	https://st3.depositphotos.com/1439888/17117/i/600/depositphotos_171172896-stock-photo-digital-single-lens-reflex-camera.jpg
+
+"Cámara Deportiva":
+	https://st4.depositphotos.com/1013423/25281/i/600/depositphotos_252815494-stock-photo-a-full-sports-camera.jpg
+
+"Micrófono USB":
+	https://st.depositphotos.com/1177973/2654/i/600/depositphotos_26548869-stock-photo-computer-microphone-isolated-on-white.jpg
+	
+"Altavoces PC":
+	https://static5.depositphotos.com/1020634/408/i/600/depositphotos_4086410-stock-photo-computer-speakers.jpg
+	
+"Radio Digital":
+	https://static8.depositphotos.com/1001972/965/i/600/depositphotos_9656195-stock-photo-portable-radio-receiver.jpg
+	 
+"Amplificador Audio":
+	https://m.media-amazon.com/images/I/61CpgL3vvsL._AC_UL320_.jpg
+	
+"Tocadiscos":
+	https://static4.depositphotos.com/1009925/366/i/600/depositphotos_3667232-stock-photo-turntable-front-view.jpg
+	
+"Reproductor MP3":
+	https://st3.depositphotos.com/6449272/34826/i/600/depositphotos_348262804-stock-photo-london-united-kingdom-february-24th.jpg
+
+"Grabadora Digital":
+	https://st4.depositphotos.com/1187563/20997/i/600/depositphotos_209970720-stock-photo-journalist-digital-voice-recorder-dictaphone.jpg
+
+"Mesa Mezclas":
+	https://st2.depositphotos.com/1401136/11250/i/600/depositphotos_112508842-stock-illustration-professional-table-dj-mixer-music.jpg
+	
