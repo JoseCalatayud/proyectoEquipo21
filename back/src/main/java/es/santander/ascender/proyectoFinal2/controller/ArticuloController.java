@@ -79,6 +79,15 @@ public class ArticuloController {
         return ResponseEntity.ok(response);
 
     }
+    @PostMapping("/activar/{id}")    
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> activarArticulo(@PathVariable Long id) {
+        articuloService.activarArticulo(id);
+        Map<String, Object> response = new HashMap<>();
+        response.put("mensaje", "Artículo activado correctamente");
+        return ResponseEntity.ok(response);
+
+    }
 
     
 }

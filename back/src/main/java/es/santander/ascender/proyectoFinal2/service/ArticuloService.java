@@ -160,6 +160,16 @@ public class ArticuloService {
         articulo.setBorrado(true);
         articuloRepository.save(articulo);
     }
+    public void activarArticulo(Long id) {
+        Optional<Articulo> articuloOptional = articuloRepository.findById(id);
+
+        if (articuloOptional.isEmpty()) {
+            throw new NoSuchElementException("No existe el artículo con ID: " + id);
+        }
+        Articulo articulo = articuloOptional.get();
+        articulo.setBorrado(false);
+        articuloRepository.save(articulo);
+    }
 
     @Transactional(readOnly = true)
     public boolean existeArticulo(String codigoBarras) {
