@@ -5,6 +5,7 @@ import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CommonModule, NgFor } from '@angular/common';
 import { CarritoService } from '../carrito.service';
+import { Carrito } from '../carrito';
 
 
 @Component({
@@ -13,24 +14,34 @@ import { CarritoService } from '../carrito.service';
   templateUrl: './carrito.component.html',
   styleUrl: './carrito.component.scss'
 })
-export class CarritoComponent {
-  listaArticulos: Articulo[] = [];
+export class CarritoComponent implements OnInit {
+  listaCarrito: Carrito[] = [];
+  subtotal: number = 0;
 
-  constructor(private articuloRestService: ArticuloRestService,private carritoService: CarritoService) {
+  constructor(private articuloRestService: ArticuloRestService, private carritoService: CarritoService) {
 
 
-    this.listaArticulos=carritoService.articulos;
-   }
-
-  agregarCarrito(id: number) {
-    this.articuloRestService.agregarCarrito(id).subscribe((datos) => {
-      this.listaArticulos = datos;
-    })
+    this.listaCarrito = carritoService.listaCarrito;
   }
 
-  add() {
+  ngOnInit(): void {
+    this.calcularSubtotal();
+  }
 
-    this.carritoService.addCarrito(new Articulo(1,"gfdsg","dadafds","dfgsdfg","cdfag",1,"fdsg",2,true))
+  calcularSubtotal() {
+    this.subtotal = 0; // Reset subtotal before recalculating
+    for (const item of this.listaCarrito) {
+      this.subtotal += item.precio * item.cantidad;
+    }
+  }
+  vaciarCarrito() {
+    this.carritoService.listaCarrito = [];
+    this.listaCarrito = [];
+    this.calcularSubtotal();
+  }
+  pagar() {
+    alert("Pago efectuado");
+    this.vaciarCarrito();
   }
 }
 

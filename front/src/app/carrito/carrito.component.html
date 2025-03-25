@@ -33,18 +33,25 @@
                 </tr>
             </thead>
             <tbody>
-                <tr *ngFor="let articulo of listaArticulos" class="align-middle">
-                    <td>{{ articulo.nombre }}</td>
-                    <td>{{ articulo.stock }}</td>
+                <tr *ngFor="let itemCarrito of listaCarrito" class="align-middle">
+                    <td>{{ itemCarrito.nombre }}</td>
+                    <td>{{itemCarrito.cantidad}} </td>
                     <td class="fw-bold" style="color: #1836b2;">
-                        ${{ articulo.precioVenta | number:'1.2-2' }}
+                        {{ itemCarrito.precio }} €
                     </td>
+                </tr>
+                <tr>
+                    <td><button (click)="pagar()">Pagar</button></td>
+                    <td>Subtotal: </td>
+                    <td>{{ subtotal }} €</td>
                 </tr>
             </tbody>
         </table>
     </div>
-
+    <!--
     <button class="btn mt-3 px-4 fw-bold text-white" style="background-color: #86c7ed;" (click)="add()">
         ➕ Agregar Artículo
     </button>
+
+-->
 </div>
