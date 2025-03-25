@@ -38,10 +38,16 @@ export class CarritoComponent implements OnInit {
     this.carritoService.listaCarrito = [];
     this.listaCarrito = [];
     this.calcularSubtotal();
+
   }
   pagar() {
     alert("Pago efectuado");
-    this.vaciarCarrito();
+   
+    this.articuloRestService.actualizarStock(this.listaCarrito).subscribe((datos=> {
+      console.log(datos);
+      this.vaciarCarrito();
+    }));
   }
+
 }
 

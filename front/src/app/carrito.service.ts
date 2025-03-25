@@ -14,7 +14,6 @@ export class CarritoService {
 
   }
 
-
   addCarrito(articulo: Articulo) {
 
     let carritoEncontrado:Carrito| undefined=this.listaCarrito.find(c => c.nombre == articulo.nombre)
@@ -23,19 +22,10 @@ export class CarritoService {
       carritoEncontrado.cantidad++;
      
     }else {
-      let c: Carrito = new Carrito(articulo.nombre, 1, articulo.precioVenta);
+      let c: Carrito = new Carrito(articulo.codigoBarras,articulo.nombre, 1, articulo.precioVenta);
       this.listaCarrito.push(c);
     }
-   
-
-
-
 
   }
-  /*
-  remove(articulo:Articulo) {
-    this.articulos.splice(this.articulos.indexOf(articulo), 1);
-  }
-*/
 
 }
