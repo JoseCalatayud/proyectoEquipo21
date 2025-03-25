@@ -1,30 +1,20 @@
-<!--<div class="container">Artículo:
-    <div class="table">Artículo:
-        <thead class="thead-dark">Artículo:
-
-            <th>Nombre</th>
-            <th>Cantidad</th>
-            <th>Precio</th>
-
-        </thead>
-        <tbody>
-            <tr *ngFor="let articulo of listaArticulos">
-                <td>{{articulo.nombre}}</td>
-                <td>{{articulo.stock}}</td>
-                <td>{{articulo.precioVenta}}</td>
-            </tr>
-        </tbody>
-    </div>
-    <input type="button" (click)="add()"/>
-</div>-->
-
 <div class="container mt-4">
+    <!-- Título de la página con fondo personalizado -->
     <h2 class="mb-3 text-white text-center p-3 rounded" style="background-color: #1836b2;">
         🛒 Lista de Artículos
     </h2>
 
+    <!-- Botón para regresar al inicio -->
+    <div class="d-flex justify-content-start mb-3">
+        <button class="btn" style="background-color: #1836b2; color: white; border: none;" [routerLink]="['/listado']">
+            Volver al inicio
+        </button>
+    </div>
+
     <div class="table-responsive">
+        <!-- Tabla con sombra y bordes redondeados -->
         <table class="table shadow-lg rounded text-center">
+            <!-- Encabezado de la tabla con color morado -->
             <thead style="background-color: #a066cb; color: white;">
                 <tr>
                     <th>Nombre</th>
@@ -33,25 +23,27 @@
                 </tr>
             </thead>
             <tbody>
+                <!-- Listado de artículos en el carrito -->
                 <tr *ngFor="let itemCarrito of listaCarrito" class="align-middle">
                     <td>{{ itemCarrito.nombre }}</td>
-                    <td>{{itemCarrito.cantidad}} </td>
+                    <td>{{ itemCarrito.cantidad }}</td>
                     <td class="fw-bold" style="color: #1836b2;">
                         {{ itemCarrito.precio }} €
                     </td>
                 </tr>
+
+                <!-- Fila de pago con subtotal -->
                 <tr>
-                    <td><button (click)="pagar()">Pagar</button></td>
-                    <td>Subtotal: </td>
-                    <td>{{ subtotal }} €</td>
+                    <td colspan="2" class="text-end">
+                        <button (click)="pagar()" class="btn" style="background-color: #1836b2; color: white; border: none;">
+                            Pagar
+                        </button>
+                    </td>
+                    <td class="fw-bold" style="color: #1836b2;">
+                        Subtotal: {{ subtotal }} €
+                    </td>
                 </tr>
             </tbody>
         </table>
     </div>
-    <!--
-    <button class="btn mt-3 px-4 fw-bold text-white" style="background-color: #86c7ed;" (click)="add()">
-        ➕ Agregar Artículo
-    </button>
-
--->
 </div>

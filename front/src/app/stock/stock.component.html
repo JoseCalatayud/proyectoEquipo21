@@ -3,7 +3,8 @@
         <div class="col-12">
             <div class="d-flex justify-content-start mb-3">
                 <!-- Botón para regresar al inicio -->
-                <button class="btn" style="background-color: #1836b2; color: white; border: none;" [routerLink]="['/listado']">Volver al inicio</button>
+                <button class="btn" style="background-color: #1836b2; color: white; border: none;"
+                [routerLink]="['/listado']">Volver al inicio</button>
             </div>
 
             <div class="table-responsive">
@@ -54,7 +55,7 @@
                             <td>{{articulo.stock}}</td>
                             <td>{{articulo.borrado ? 'No disponible' : 'Disponible'}}</td>
                             <td><button (click)="agregarCarrito(articulo.id)" class="btn" style="background-color: #1836b2; color: white; border: none; width: 100%;">📂</button></td>
-                            <td><button (click)="editar(articulo)" class="btn" style="background-color: #a066cb; color: white; border: none; width: 100%;">🖉 Modificar</button></td>
+                            <td><button (click)="editar(articulo)" class="btn" style="background-color: #a066cb; color: white; border: none; width: 100%;">🖉 </button></td>
                             <td><button (click)="borrar(articulo)" class="btn" style="background-color: #a066cb; color: white; border: none; width: 100%;">Eliminar</button></td>
                             <td><button (click)="activar(articulo)" class="btn" style="background-color: #86c7ed; color: white; border: none; width: 100%;">Activar</button></td>
                         </tr>
