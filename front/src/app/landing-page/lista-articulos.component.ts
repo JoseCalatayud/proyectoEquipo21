@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ArticuloRestService } from '../articulo-rest.service';
 import { Articulo } from '../articulo';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CommonModule, NgFor } from '@angular/common';
 
@@ -14,7 +14,8 @@ import { CommonModule, NgFor } from '@angular/common';
 export class ListaArticulosComponent {
   listaArticulos: Articulo[] = [];
 
-  constructor(private articuloRestService: ArticuloRestService) {
+  
+  constructor(private articuloRestService: ArticuloRestService,private router:Router) {
     this.articuloRestService.buscarTodos().subscribe((datos) => {
       this.listaArticulos = datos;
     })
@@ -38,6 +39,17 @@ export class ListaArticulosComponent {
     this.articuloRestService.agregarCarrito(id).subscribe((datos) => {
       this.listaArticulos = datos;
     })
+
+  }
+
+  verDetalle(id: number) {
+
+    this.router.navigate(["/detalle",id]);
+    /*
+    this.articuloRestService.verDetalle(id).subscribe((datos) => {
+      this.listaArticulos = datos;
+    })
+    */
 
   }
 
