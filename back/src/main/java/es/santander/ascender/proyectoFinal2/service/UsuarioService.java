@@ -2,7 +2,6 @@ package es.santander.ascender.proyectoFinal2.service;
 
 import es.santander.ascender.proyectoFinal2.dto.usuario.UsuarioRequestDTO;
 import es.santander.ascender.proyectoFinal2.dto.usuario.UsuarioResponseDTO;
-import es.santander.ascender.proyectoFinal2.exception.MyBadDataException;
 import es.santander.ascender.proyectoFinal2.model.RolUsuario;
 import es.santander.ascender.proyectoFinal2.model.Usuario;
 import es.santander.ascender.proyectoFinal2.repository.UsuarioRepository;
