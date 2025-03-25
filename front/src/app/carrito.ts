@@ -1,4 +1,9 @@
+// src/app/carrito.ts
 export class Carrito {
-
-    constructor(public codigoBarras:string,public nombre:string,public cantidad:number, public precio:number) {}
-}
+    id: number = 0; // Added id property
+    nombre: string = "";
+    codigoBarras: string = "";
+    precio: number = 0;
+    cantidad: number = 0;
+  }
+  

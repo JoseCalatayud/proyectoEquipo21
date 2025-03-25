@@ -2,12 +2,14 @@ import { Component } from '@angular/core';
 import { ArticuloRestService } from '../articulo-rest.service';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { Articulo } from '../articulo';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-detalle',
-  imports: [RouterLink],
+  imports: [RouterLink, CommonModule],
   templateUrl: './detalle.component.html',
-  styleUrl: './detalle.component.scss'
+  styleUrl: './detalle.component.scss',
+  standalone: true // Agregado: standalone: true
 })
 export class DetalleComponent {
   articuloDetalle: Articulo = {} as Articulo;

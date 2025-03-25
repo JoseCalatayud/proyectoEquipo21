@@ -2,7 +2,7 @@
     <!-- Título con estilo -->
     <h2 class="text-center py-3 shadow-sm" 
         style="background-color: #a066cb; color: white; font-weight: bold; border-radius: 10px;">
-      🛒 Detalle de Ventas Realizadas
+      📜 Histórico de Compras Realizadas
     </h2>
   
     <div class="row justify-content-center">
@@ -12,20 +12,20 @@
             <!-- Encabezado fijo -->
             <thead class="sticky-top" style="background-color: #a066cb; color: white;">
               <tr>
-                <th>ID Venta</th>
+                <th>ID Compra</th>
                 <th>Total</th>
                 <th>Usuario</th>
                 <th>Detalles</th>
               </tr>
             </thead>
             <tbody>
-              <tr *ngFor="let venta of listaVentas">
-                <td><strong>#{{ venta.id }}</strong></td>
-                <td style="color: #1836b2; font-weight: bold;">{{ venta.total }} €</td>
-                <td>{{ venta.usuario.username }}</td>
+              <tr *ngFor="let compra of listaCompras">
+                <td><strong>#{{ compra.id }}</strong></td>
+                <td style="color: #1836b2; font-weight: bold;">{{ compra.total }} €</td>
+                <td>{{ compra.usuario.username }}</td>
                 <td>
                   <ul class="list-unstyled">
-                    <li *ngFor="let detalle of venta.detalles" class="p-1">
+                    <li *ngFor="let detalle of compra.detalles" class="p-1">
                       <span style="color: #a066cb; font-weight: bold;">{{ detalle.nombreArticulo }}</span> - 
                       <span style="color: #1836b2;">Cantidad: {{ detalle.cantidad }}</span> - 
                       <span style="font-weight: bold;">Subtotal: {{ detalle.subtotal }} €</span>
@@ -47,4 +47,3 @@
       </div>
     </div>
   </div>
-  

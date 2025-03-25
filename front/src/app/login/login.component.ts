@@ -9,7 +9,8 @@ import { AutenticacionService } from '../autenticacion.service';
   selector: 'app-login',
   imports: [RouterLink, FormsModule, NgFor, CommonModule],
   templateUrl: './login.component.html',
-  styleUrl: './login.component.scss'
+  styleUrl: './login.component.scss',
+  standalone: true // Agregado: standalone: true
 })
 export class LoginComponent {
   usuario: string = "";
@@ -25,7 +26,6 @@ export class LoginComponent {
   }
 
   fondo(): string {
-    return '/fondolanding.png';
+    return '/LogoSTOQO.png';
   }
 }
-

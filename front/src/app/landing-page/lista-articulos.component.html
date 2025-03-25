@@ -1,77 +1,64 @@
 <div class="container mt-4">
-    <div class="row justify-content-center">
-        <!-- Div for Image (8 columns) -->
-        <div class="col-md-8 d-flex justify-content-center">
-            <div class="overflow-scroll" style="max-height: 1080px; width: 150%; overflow-x: auto;">
-                <table class="table table-bordered shadow-lg rounded">
-                    <!-- Encabezado de la tabla con fondo morado y texto en blanco -->
-                    <thead class="sticky-top" style="background-color: #a066cb; color: white;">
-                        <tr>
-                            <th style="text-transform: capitalize;">Fotografía</th>
-                            <th style="text-transform: capitalize;">Nombre</th>
-                            <th style="text-transform: capitalize;">Descripción</th>
-                            <th style="text-transform: capitalize;">Familia</th>
-                            <th style="text-transform: capitalize;">Precio venta</th>
-                            <th style="text-transform: capitalize;">Stock</th>
-                            <th style="text-transform: capitalize;">Añadir</th>
-                            <th style="text-transform: capitalize;">Ver detalle</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr *ngFor="let articulo of listaArticulos">
-                            <td>
-                                <img [src]="articulo.fotografia" alt="Imagen de producto" class="img-fluid" style="max-width: 100px; max-height: 100px;">
-                            </td>
-                            <td>{{ articulo.nombre }}</td>
-                            <td>{{ articulo.descripcion }}</td>
-                            <td>{{ articulo.familia }}</td>
-                            <td style="color: #1836b2;">{{ articulo.precioVenta }} €</td>
-                            <td>{{ articulo.stock }}</td>
-                            <td>
-                                <!-- Botón de añadir con color celeste -->
-                                <button class="btn" (click)="agregarCarrito(articulo)" style="background-color: #86c7ed; color: #1836b2;">📂</button>
-                            </td>
-                            <td>
-                                <!-- Botón de ver detalle con color morado -->
-                                <button class="btn" (click)="verDetalle(articulo.id)" [routerLink]="'/detalle'" style="background-color: #a066cb; color: white;">🔍</button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+    <!-- Encabezado con título y logo -->
+    <div class="d-flex justify-content-between align-items-center p-3 shadow-sm rounded" 
+         style="background-color: #a066cb; color: white; font-family: 'Fira Sans', sans-serif;">
+      <h2 class="m-0">📦 Listado de Artículos</h2>
+      <img src="LogoSTOQO.png" alt="Logo STOQO" style="height: 50px;">
+    </div>
+    
+    <div class="row mt-3">
+      <!-- Tabla de Artículos -->
+      <div class="col-md-9">
+        <div class="overflow-auto" style="max-height: 600px;">
+          <table class="table table-bordered shadow-lg rounded">
+            <thead class="sticky-top" style="background-color: #a066cb; color: white;">
+              <tr>
+                <th>Fotografía</th>
+                <th>Nombre</th>
+                <th>Descripción</th>
+                <th>Familia</th>
+                <th>Precio Venta</th>
+                <th>Stock</th>
+                <th>Añadir</th>
+                <th>Ver Detalle</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let articulo of listaArticulos">
+                <td><img [src]="articulo.fotografia" class="img-fluid rounded" style="max-width: 80px;"></td>
+                <td>{{ articulo.nombre }}</td>
+                <td>{{ articulo.descripcion }}</td>
+                <td>{{ articulo.familia }}</td>
+                <td style="color: #1836b2; font-weight: bold;">{{ articulo.precioVenta }} €</td>
+                <td>{{ articulo.stock }}</td>
+                <td>
+                  <button class="btn btn-sm" (click)="agregarCarrito(articulo)" 
+                          style="background-color: #86c7ed; color: #1836b2; font-size: 0.9rem; padding: 6px 12px;">📂</button>
+                </td>
+                <td>
+                  <button class="btn btn-sm" (click)="verDetalle(articulo.id)" [routerLink]="['/detalle', articulo.id]" 
+                          style="background-color: #a066cb; color: white; font-size: 0.9rem; padding: 6px 12px;">🔍</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
-
-        <!-- Columna derecha (botones de navegación) -->
-        <div class="col-md-4 d-flex align-items-center justify-content-center">
-            <div class="table">
-                <tbody>
-                    <tr>
-                        <td class="p-3">
-                            <button class="btn p-3 w-100" [routerLink]="'/carrito'" style="background-color: #1836b2; color: white; font-weight: bold;">Carrito de Venta</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="p-3">
-                            <button class="btn p-3 w-100" [routerLink]="'/stock'" style="background-color: #a066cb; color: white; font-weight: bold;">Articulos</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="p-3">
-                            <button class="btn p-3 w-100" [routerLink]="'/stock'" style="background-color: #86c7ed; color: #1836b2; font-weight: bold;">Compra de articulos</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="p-3">
-                            <button class="btn p-3 w-100" [routerLink]="'/stock'" style="background-color: #1836b2; color: white; font-weight: bold;">Detalle de compras</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="p-3">
-                            <button class="btn p-3 w-100" [routerLink]="'/stock'" style="background-color: #1836b2; color: white; font-weight: bold;">Detalle de ventas</button>
-                        </td>
-                    </tr>
-                </tbody>
-            </div>
-        </div>
+      </div>
+      
+      <!-- Panel de Botones -->
+      <div class="col-md-3 d-flex flex-column gap-3">
+        <button class="btn btn-sm p-2 shadow-sm" [routerLink]="'/listado'" 
+                style="background-color: #86c7ed; color: #1836b2; font-weight: bold; font-size: 0.9rem;">🏠 Inicio</button>
+        <button class="btn btn-sm p-2 shadow-sm" [routerLink]="'/carrito'" 
+                style="background-color: #1836b2; color: white; font-weight: bold; font-size: 0.9rem;">🛒 Carrito de Venta</button>
+        <button class="btn btn-sm p-2 shadow-sm" [routerLink]="'/stock'" 
+                style="background-color: #a066cb; color: white; font-weight: bold; font-size: 0.9rem;">📦 Artículos</button>
+        <button class="btn btn-sm p-2 shadow-sm" [routerLink]="'/stock'" 
+                style="background-color: #86c7ed; color: #1836b2; font-weight: bold; font-size: 0.9rem;">🛍️ Compra de Artículos</button>
+        <button class="btn btn-sm p-2 shadow-sm" [routerLink]="'/stock'" 
+                style="background-color: #1836b2; color: white; font-weight: bold; font-size: 0.9rem;">📜 Detalle de Compras</button>
+        <button class="btn btn-sm p-2 shadow-sm" [routerLink]="'/historicoVenta'" 
+                style="background-color: #1836b2; color: white; font-weight: bold; font-size: 0.9rem;">📊 Detalle de Ventas</button>
+      </div>
     </div>
 </div>

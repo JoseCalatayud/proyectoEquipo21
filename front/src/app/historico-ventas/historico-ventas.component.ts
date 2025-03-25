@@ -1,47 +1,33 @@
+// /Users/andrescalderon/Desktop/Valeria/Ascender/proyectoEquipo21/front/src/app/historico-ventas/historico-ventas.component.ts
 import { Component, OnInit } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { DetalleVenta } from '../detalle-venta'; // Importamos DetalleVenta
-
-interface Venta {
-  id: number;
-  total: number;
-  usuario: {
-    id: number;
-    username: string;
-  };
-  detalles: DetalleVenta[]; // Usamos DetalleVenta[]
-}
+import { VentaRestService, Venta } from '../venta-rest.service'; // Importamos VentaRestService y Venta
 
 @Component({
   selector: 'app-historico-ventas',
   templateUrl: './historico-ventas.component.html',
   styleUrls: ['./historico-ventas.component.scss'],
   imports: [CommonModule, RouterLink],
-  standalone: true
+  standalone: true // Agregado: standalone: true
 })
 export class HistoricoVentasComponent implements OnInit {
   listaVentas: Venta[] = [];
 
-  constructor(private http: HttpClient) { }
+  constructor(private ventaRestService: VentaRestService) { } // Inyectamos VentaRestService
 
   ngOnInit(): void {
     this.cargarVentas();
   }
 
   cargarVentas() {
-    const headers = new HttpHeaders({
-      'Authorization': 'Basic ' + btoa('admin:admin123') // Reemplaza con tu lógica de autenticación
-    });
-
-    this.http.get<Venta[]>('/api/ventas/listar', { headers }).subscribe(
-      (data) => {
+    this.ventaRestService.listarVentas().subscribe({
+      next: (data) => {
         this.listaVentas = data;
       },
-      (error) => {
+      error: (error) => {
         console.error('Error al cargar las ventas:', error);
       }
-    );
+    });
   }
 }

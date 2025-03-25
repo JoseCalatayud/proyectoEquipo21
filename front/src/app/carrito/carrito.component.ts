@@ -12,7 +12,8 @@ import { Carrito } from '../carrito';
   selector: 'app-carrito',
   imports: [RouterLink, FormsModule, NgFor, CommonModule],
   templateUrl: './carrito.component.html',
-  styleUrl: './carrito.component.scss'
+  styleUrl: './carrito.component.scss',
+  standalone: true // Agregado: standalone: true
 })
 export class CarritoComponent implements OnInit {
   listaCarrito: Carrito[] = [];
@@ -41,12 +42,19 @@ export class CarritoComponent implements OnInit {
 
   }
   pagar() {
-    alert("Pago efectuado");
-   
-    this.articuloRestService.actualizarStock(this.listaCarrito).subscribe((datos=> {
-      console.log(datos);
-      this.vaciarCarrito();
-    }));
+    this.articuloRestService.crearVenta(this.listaCarrito).subscribe({
+      next: (datos) => {
+        console.log('Venta creada correctamente:', datos);
+        alert("Pago efectuado y stock actualizado");
+        this.vaciarCarrito();
+        // Aquí puedes agregar lógica adicional si la actualización fue exitosa
+      },
+      error: (error) => {
+        console.error('Error al crear la venta:', error);
+        alert("Error al crear la venta");
+        // Aquí puedes agregar lógica para manejar el error
+      }
+    });
   }
 
 }

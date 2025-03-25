@@ -1,15 +1,11 @@
 export class Articulo {
-
-    constructor(public id: number,
-        public nombre: string,
-        public descripcion: string,
-        public familia: string,
-        public fotografia: string,
-        public precioVenta: number,
-        public codigoBarras: string,
-        public stock: number,
-        public borrado: boolean) {
-
-    }
-
+    id: number = 0;
+    nombre: string = "";
+    descripcion: string = "";
+    familia: string = "";
+    fotografia: string = "";
+    precioVenta: number = 0;
+    codigoBarras: string = "";
+    stock: number = 0;
+    borrado: boolean = false; // Agregamos la propiedad borrado
 }

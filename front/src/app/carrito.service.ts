@@ -1,31 +1,22 @@
 import { Injectable } from '@angular/core';
-import { Articulo } from './articulo';
 import { Carrito } from './carrito';
+import { Articulo } from './articulo';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CarritoService {
-
   listaCarrito: Carrito[] = [];
 
-
-  constructor() {
-
-  }
+  constructor() { }
 
   addCarrito(articulo: Articulo) {
-
-    let carritoEncontrado:Carrito| undefined=this.listaCarrito.find(c => c.nombre == articulo.nombre)
-
-    if (carritoEncontrado) {
-      carritoEncontrado.cantidad++;
-     
-    }else {
-      let c: Carrito = new Carrito(articulo.codigoBarras,articulo.nombre, 1, articulo.precioVenta);
-      this.listaCarrito.push(c);
-    }
-
+    let item = new Carrito();
+    item.id = articulo.id;
+    item.nombre = articulo.nombre;
+    item.codigoBarras = articulo.codigoBarras;
+    item.precio = articulo.precioVenta;
+    item.cantidad = 1;
+    this.listaCarrito.push(item);
   }
-
 }

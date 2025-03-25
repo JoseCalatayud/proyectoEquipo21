@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ArticuloRestService } from '../articulo-rest.service';
 import { Articulo } from '../articulo';
-import { Router, RouterLink } from '@angular/router';
+import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CommonModule, NgFor } from '@angular/common';
 import { CarritoService } from '../carrito.service';
@@ -10,54 +10,29 @@ import { CarritoService } from '../carrito.service';
   selector: 'app-lista-articulos',
   imports: [RouterLink, FormsModule, NgFor, CommonModule],
   templateUrl: './lista-articulos.component.html',
-  styleUrl: './lista-articulos.component.scss'
+  styleUrl: './lista-articulos.component.scss',
+  standalone: true // Agregado: standalone: true
 })
-export class ListaArticulosComponent {
+export class ListaArticulosComponent implements OnInit {
   listaArticulos: Articulo[] = [];
 
-  
-  constructor(private articuloRestService: ArticuloRestService,private router:Router,private carritoService:CarritoService) {
-    this.articuloRestService.buscarTodos().subscribe((datos) => {
-      this.listaArticulos = datos;
-    })
+  constructor(private articuloRestService: ArticuloRestService, private carritoService: CarritoService) { }
 
-    console.log("hola");
-    const codificado = btoa("admin:admin123");
-
-    console.log("Codificado:", codificado);
+  ngOnInit(): void {
+    this.cargarArticulos();
   }
 
-  borrar(articulo: Articulo) {
-
-    this.articuloRestService.borrar(articulo).subscribe((datos) => {
-      this.articuloRestService.buscarTodos().subscribe((datos) => {
-        this.listaArticulos = datos;
-      })
-    })
+  cargarArticulos() {
+    this.articuloRestService.buscarTodos().subscribe(data => {
+      this.listaArticulos = data;
+    });
   }
 
   agregarCarrito(articulo: Articulo) {
-
     this.carritoService.addCarrito(articulo);
-    /*
-    this.articuloRestService.agregarCarrito(id).subscribe((datos) => {
-      this.listaArticulos = datos;
-    })
-*/
   }
 
   verDetalle(id: number) {
-
-    this.router.navigate(["/detalle",id]);
-    /*
-    this.articuloRestService.verDetalle(id).subscribe((datos) => {
-      this.listaArticulos = datos;
-    })
-    */
-
+    console.log("Ver detalle del artículo con ID:", id);
   }
-
 }
-
-
-
