@@ -1,55 +1,68 @@
-<div class="container mt-2">
+<div class="container mt-4">
     <div class="row justify-content-center">
         <!-- Div for Image (8 columns) -->
         <div class="col-md-8 d-flex justify-content-center">
             <div class="overflow-scroll" style="max-height: 1080px; width: 150%; overflow-x: auto;">
-                <div class="table">
-                    <thead class="table-info">
+                <table class="table table-bordered shadow-lg rounded">
+                    <!-- Encabezado de la tabla con fondo morado y texto en blanco -->
+                    <thead class="sticky-top" style="background-color: #a066cb; color: white;">
                         <tr>
-                            <th>FOTOGRAFIA</th>
-                            <th>NOMBRE</th>
-                            <th>DESCRIPCION</th>
-                            <th>FAMILIA</th>
-                            <th>PRECIOVENTA</th>
-                            <th>STOCK</th>
-                            <th>Añadir</th>
-                            <th>Ver detalle</th>
+                            <th style="text-transform: capitalize;">Fotografía</th>
+                            <th style="text-transform: capitalize;">Nombre</th>
+                            <th style="text-transform: capitalize;">Descripción</th>
+                            <th style="text-transform: capitalize;">Familia</th>
+                            <th style="text-transform: capitalize;">Precio venta</th>
+                            <th style="text-transform: capitalize;">Stock</th>
+                            <th style="text-transform: capitalize;">Añadir</th>
+                            <th style="text-transform: capitalize;">Ver detalle</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr *ngFor="let articulo of listaArticulos">
-                            <td>{{articulo.fotografia}}</td>
-                            <td>{{articulo.nombre}}</td>
-                            <td>{{articulo.descripcion}}</td>
-                            <td>{{articulo.familia}}</td>
-                            <td>{{articulo.precioVenta}} €</td>
-                            <td>{{articulo.stock}}</td>
-                            <td> <button class="btn btn-outline-success w-100"
-                                    (click)="agregarCarrito(articulo.id)">📂</button></td>
-                            <td> <button class="btn btn-outline-info w-100" (click)="verDetalle(articulo.id)"
-                                    [routerLink]="'/detalle'">🔍</button></td>
+                            <td>
+                                <img [src]="articulo.fotografia" alt="Imagen de producto" class="img-fluid" style="max-width: 100px; max-height: 100px;">
+                            </td>
+                            <td>{{ articulo.nombre }}</td>
+                            <td>{{ articulo.descripcion }}</td>
+                            <td>{{ articulo.familia }}</td>
+                            <td style="color: #1836b2;">{{ articulo.precioVenta }} €</td>
+                            <td>{{ articulo.stock }}</td>
+                            <td>
+                                <!-- Botón de añadir con color celeste -->
+                                <button class="btn" (click)="agregarCarrito(articulo.id)" style="background-color: #86c7ed; color: #1836b2;">📂</button>
+                            </td>
+                            <td>
+                                <!-- Botón de ver detalle con color morado -->
+                                <button class="btn" (click)="verDetalle(articulo.id)" [routerLink]="'/detalle'" style="background-color: #a066cb; color: white;">🔍</button>
+                            </td>
                         </tr>
-
                     </tbody>
-                </div>
+                </table>
             </div>
         </div>
+
+        <!-- Columna derecha (botones de navegación) -->
         <div class="col-md-4 d-flex align-items-center justify-content-center">
             <div class="table">
                 <tbody>
                     <tr>
-                        <td class="p-3"><button class="btn btn-success p-3" [routerLink]="'/carrito'">CARRITO</button>
+                        <td class="p-3">
+                            <button class="btn p-3 w-100" [routerLink]="'/carrito'" style="background-color: #1836b2; color: white; font-weight: bold;">CARRITO</button>
                         </td>
                     </tr>
                     <tr>
-                        <td class="p-3"><button class="btn btn-warning p-3" [routerLink]="'/stock'">STOCK</button></td>
+                        <td class="p-3">
+                            <button class="btn p-3 w-100" [routerLink]="'/stock'" style="background-color: #a066cb; color: white; font-weight: bold;">STOCK</button>
+                        </td>
                     </tr>
                     <tr>
-                        <td class="p-3"><button class="btn btn-secondary p-3"
-                                [routerLink]="'/stock'">ABASTECIMIENTO</button></td>
+                        <td class="p-3">
+                            <button class="btn p-3 w-100" [routerLink]="'/stock'" style="background-color: #86c7ed; color: #1836b2; font-weight: bold;">ABASTECIMIENTO</button>
+                        </td>
                     </tr>
                     <tr>
-                        <td class="p-3"><button class="btn btn-primary p-3" [routerLink]="'/stock'">HISTÓRICO</button>
+                        <td class="p-3">
+                            <button class="btn p-3 w-100" [routerLink]="'/stock'" style="background-color: #86c7ed; color: #1836b2; font-weight: bold;">HISTÓRICO</button>
                         </td>
                     </tr>
                 </tbody>

@@ -1,4 +1,4 @@
-<div class="container">Artículo:
+<!--<div class="container">Artículo:
     <div class="table">Artículo:
         <thead class="thead-dark">Artículo:
             <tr>
@@ -16,4 +16,35 @@
         </tbody>
     </div>
     <input type="button" (click)="add()"/>
+</div>-->
+
+<div class="container mt-4">
+    <h2 class="mb-3 text-white text-center p-3 rounded" style="background-color: #1836b2;">
+        🛒 Lista de Artículos
+    </h2>
+
+    <div class="table-responsive">
+        <table class="table shadow-lg rounded text-center">
+            <thead style="background-color: #a066cb; color: white;">
+                <tr>
+                    <th>Nombre</th>
+                    <th>Cantidad</th>
+                    <th>Precio</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let articulo of listaArticulos" class="align-middle">
+                    <td>{{ articulo.nombre }}</td>
+                    <td>{{ articulo.stock }}</td>
+                    <td class="fw-bold" style="color: #1836b2;">
+                        ${{ articulo.precioVenta | number:'1.2-2' }}
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <button class="btn mt-3 px-4 fw-bold text-white" style="background-color: #86c7ed;" (click)="add()">
+        ➕ Agregar Artículo
+    </button>
 </div>
