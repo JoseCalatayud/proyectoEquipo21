@@ -1,0 +1,113 @@
+<!-- src/app/components/producto-editar/producto-editar.component.html -->
+<div class="producto-editar-container">
+  <header class="producto-header">
+    <h1>Editar Producto</h1>
+    <button class="btn btn-secondary" (click)="volver()">Volver</button>
+  </header>
+
+  <div *ngIf="loading" class="loading-container">
+    <div class="spinner-border text-primary" role="status">
+      <span class="sr-only">Cargando...</span>
+    </div>
+    <p>Cargando datos del producto...</p>
+  </div>
+
+  <div *ngIf="error" class="alert alert-danger">
+    {{ error }}
+  </div>
+
+  <form *ngIf="!loading && !error && producto" [formGroup]="productoForm" (ngSubmit)="onSubmit()" class="producto-form">
+    <div class="form-group">
+      <label for="nombre">Nombre *</label>
+      <input
+        type="text"
+        id="nombre"
+        formControlName="nombre"
+        class="form-control"
+        [ngClass]="{'is-invalid': productoForm.get('nombre')?.touched && productoForm.get('nombre')?.errors}"
+      >
+      <div *ngIf="productoForm.get('nombre')?.touched && productoForm.get('nombre')?.errors" class="invalid-feedback">
+        El nombre es obligatorio
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="descripcion">Descripción *</label>
+      <textarea
+        id="descripcion"
+        formControlName="descripcion"
+        class="form-control"
+        rows="3"
+        [ngClass]="{'is-invalid': productoForm.get('descripcion')?.touched && productoForm.get('descripcion')?.errors}"
+      ></textarea>
+      <div *ngIf="productoForm.get('descripcion')?.touched && productoForm.get('descripcion')?.errors" class="invalid-feedback">
+        La descripción es obligatoria
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="familia">Familia *</label>
+      <select
+        id="familia"
+        formControlName="familia"
+        class="form-control"
+        [ngClass]="{'is-invalid': productoForm.get('familia')?.touched && productoForm.get('familia')?.errors}"
+      >
+        <option value="">Seleccione una familia</option>
+        <option *ngFor="let familia of familias" [value]="familia">{{ familia }}</option>
+      </select>
+      <div *ngIf="productoForm.get('familia')?.touched && productoForm.get('familia')?.errors" class="invalid-feedback">
+        La familia es obligatoria
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="fotografia">URL de la fotografía</label>
+      <input
+        type="text"
+        id="fotografia"
+        formControlName="fotografia"
+        class="form-control"
+      >
+    </div>
+
+    <div class="form-group">
+      <label for="precioVenta">Precio de venta *</label>
+      <div class="input-group">
+        <div class="input-group-prepend">
+          <span class="input-group-text">€</span>
+        </div>
+        <input
+          type="number"
+          id="precioVenta"
+          formControlName="precioVenta"
+          class="form-control"
+          step="0.01"
+          min="0.01"
+          [ngClass]="{'is-invalid': productoForm.get('precioVenta')?.touched && productoForm.get('precioVenta')?.errors}"
+        >
+      </div>
+      <div *ngIf="productoForm.get('precioVenta')?.touched && productoForm.get('precioVenta')?.errors" class="invalid-feedback">
+        El precio de venta es obligatorio y debe ser mayor que 0
+      </div>
+    </div>
+
+    <div class="form-group info-readonly">
+      <label>Código de barras</label>
+      <p class="form-control-static">{{ producto.codigoBarras }}</p>
+    </div>
+
+    <div class="form-group info-readonly">
+      <label>Stock actual</label>
+      <p class="form-control-static">{{ producto.stock }}</p>
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary" [disabled]="productoForm.invalid || loading">
+        <span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>
+        Guardar cambios
+      </button>
+      <button type="button" class="btn btn-outline-secondary" (click)="volver()">Cancelar</button>
+    </div>
+  </form>
+</div>

@@ -1,0 +1,101 @@
+<!-- src/app/components/compras-historial/compras-historial.component.html -->
+<div class="compras-historial-container">
+  <header class="compras-header">
+    <h1>Historial de Compras</h1>
+    <div class="botones-header">
+      <button class="btn btn-secondary" routerLink="/compras">Volver al Menú</button>
+    </div>
+  </header>
+
+  <div class="filtros-container">
+    <div class="filtro-fecha">
+      <label for="fechaInicio">Desde:</label>
+      <input
+        type="date"
+        id="fechaInicio"
+        class="form-control"
+        [(ngModel)]="filtroFechaInicio"
+      >
+    </div>
+    <div class="filtro-fecha">
+      <label for="fechaFin">Hasta:</label>
+      <input
+        type="date"
+        id="fechaFin"
+        class="form-control"
+        [(ngModel)]="filtroFechaFin"
+      >
+    </div>
+    <div class="filtro-botones">
+      <button class="btn btn-primary" (click)="filtrarPorFechas()">Filtrar</button>
+      <button class="btn btn-outline-secondary" (click)="limpiarFiltros()">Limpiar</button>
+    </div>
+  </div>
+
+  <div *ngIf="loading" class="loading-container">
+    <div class="spinner-border" role="status">
+      <span class="visually-hidden">Cargando...</span>
+    </div>
+    <p>Cargando historial de compras...</p>
+  </div>
+
+  <div *ngIf="error" class="alert alert-danger">
+    {{ error }}
+  </div>
+
+  <div *ngIf="!loading && !error" class="compras-list-container">
+    <div *ngIf="compras.length === 0" class="no-compras">
+      <h3>No hay compras registradas</h3>
+      <p>No se encontraron compras en el sistema para mostrar.</p>
+    </div>
+
+    <div *ngIf="compras.length > 0" class="compras-list">
+      <div *ngFor="let compra of compras" class="compra-card">
+        <div class="compra-header">
+          <div class="compra-info">
+            <h3 class="compra-id">Compra #{{ compra.id }}</h3>
+            <span class="compra-fecha">{{ compra.fecha | date:'dd/MM/yyyy HH:mm' }}</span>
+          </div>
+          <div class="compra-total">
+            <span class="label">Total:</span>
+            <span class="total-valor">{{ compra.total | currency:'EUR':'symbol':'1.2-2' }}</span>
+          </div>
+        </div>
+
+        <div class="compra-usuario">
+          <span class="label">Usuario:</span>
+          <span class="valor">{{ compra.usuario }}</span>
+        </div>
+
+        <div class="compra-detalles">
+          <h4>Artículos</h4>
+          <table class="detalles-tabla">
+            <thead>
+              <tr>
+                <th>Artículo</th>
+                <th>Cantidad</th>
+                <th>Precio Unitario</th>
+                <th>Subtotal</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let detalle of compra.detalles">
+                <td class="articulo-info">
+                  <div class="articulo-nombre">{{ detalle.nombreArticulo }}</div>
+                  <div class="articulo-codigo">{{ detalle.codigoBarrasArticulo }}</div>
+                </td>
+                <td class="articulo-cantidad">{{ detalle.cantidad }}</td>
+                <td class="articulo-precio">{{ detalle.precioUnitario | currency:'EUR':'symbol':'1.2-2' }}</td>
+                <td class="articulo-subtotal">{{ detalle.subtotal | currency:'EUR':'symbol':'1.2-2' }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="compra-acciones">
+          <button class="btn btn-danger" (click)="anularCompra(compra.id)">Anular Compra</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

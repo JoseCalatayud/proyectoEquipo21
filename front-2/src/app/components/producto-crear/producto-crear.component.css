@@ -1,0 +1,267 @@
+.producto-crear-container {
+  padding: 20px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.producto-header {
+  display: flex;
+  background-color: #1836b2;
+  color: white;
+  padding: 1rem 1rem;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px;
+  text-align: center;
+}
+
+.spinner-border {
+  width: 3rem;
+  height: 3rem;
+  margin-bottom: 1rem;
+}
+
+.producto-form {
+  background-color: #86c7edbc;
+  padding: 50px;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: 500;
+}
+
+.form-control {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+}
+
+.form-control.is-invalid {
+  border-color: #dc3545;
+}
+
+.invalid-feedback {
+  color: #dc3545;
+  font-size: 14px;
+  margin-top: 5px;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 30px;
+}
+
+.btn {
+  background-color: #1837b2b7;
+  color: white;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.3s;
+}
+
+.btn-primary {
+  background-color: #007bff;
+  color: white;
+  border: none;
+}
+
+.btn-primary:hover {
+  background-color: #0069d9;
+}
+
+.btn-primary:disabled {
+  background-color: #8bb8f1;
+  cursor: not-allowed;
+}
+
+.btn-outline-secondary {
+  background-color: transparent;
+  border: 1px solid #6c757d;
+  color: #6c757d;
+}
+
+.btn-secondary {
+  background-color: #a066cb;
+  color: white;
+}
+
+.btn-secondary:hover {
+  background-color: #5a6268;
+}
+
+.input-group {
+  display: flex;
+}
+
+.input-group-prepend {
+  display: flex;
+}
+
+.input-group-text {
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+  background-color: #e9ecef;
+  border: 1px solid #ced4da;
+  border-right: none;
+  border-radius: 4px 0 0 4px;
+}
+
+.input-group .form-control {
+  border-radius: 0 4px 4px 0;
+}
+
+.alert-danger {
+  background-color: #f8d7da;
+  color: #721c24;
+  padding: 12px;
+  border-radius: 4px;
+  margin-bottom: 20px;
+  border: 1px solid #f5c6cb;
+}
+
+.spinner-border-sm {
+  width: 1rem;
+  height: 1rem;
+  border-width: 0.2em;
+  margin-right: 8px;
+}
+
+@media (max-width: 576px) {
+  .form-actions {
+    flex-direction: column;
+  }
+
+  .btn {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+}
+
+.producto-detalle-container {
+  padding: 20px;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.producto-card {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+
+.producto-contenido {
+  display: flex;
+  flex-direction: column;
+}
+
+@media (min-width: 768px) {
+  .producto-contenido {
+    flex-direction: row;
+  }
+}
+
+.producto-imagen {
+  flex: 0 0 300px;
+  height: 300px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f8f9fa;
+}
+
+.producto-imagen img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.producto-info {
+  flex: 1;
+  padding: 20px;
+}
+
+.producto-info h2 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  color: #343a40;
+  border-bottom: 1px solid #dee2e6;
+  padding-bottom: 10px;
+}
+
+.detalle-item {
+  margin-bottom: 15px;
+  display: flex;
+}
+
+.label {
+  font-weight: bold;
+  min-width: 180px;
+  color: #495057;
+}
+
+.valor {
+  color: #212529;
+}
+
+.precio {
+  color: #28a745;
+  font-weight: bold;
+}
+
+.stock-bajo {
+  color: #dc3545;
+}
+
+.estado .valor.activo {
+  color: #28a745;
+  font-weight: bold;
+}
+
+.estado .valor.inactivo {
+  color: #dc3545;
+  font-weight: bold;
+}
+
+.descripcion-container {
+  margin-top: 20px;
+  padding-top: 15px;
+  border-top: 1px solid #dee2e6;
+}
+
+.descripcion-container h3 {
+  margin-top: 0;
+  margin-bottom: 10px;
+  font-size: 1.2rem;
+  color: #495057;
+}
+
+.descripcion {
+  line-height: 1.6;
+  color: #212529;
+  white-space: pre-line;
+}

@@ -1,0 +1,217 @@
+/* src/app/components/compras-historial/compras-historial.component.css */
+.compras-historial-container {
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.compras-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.botones-header {
+  display: flex;
+  gap: 10px;
+}
+
+.filtros-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  background-color: #f8f9fa;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.filtro-fecha {
+  flex: 1;
+  min-width: 200px;
+}
+
+.filtro-botones {
+  display: flex;
+  gap: 10px;
+  align-items: flex-end;
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px;
+  text-align: center;
+}
+
+.spinner-border {
+  width: 3rem;
+  height: 3rem;
+  margin-bottom: 1rem;
+}
+
+.no-compras {
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  padding: 30px;
+  text-align: center;
+}
+
+.compra-card {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  margin-bottom: 20px;
+  overflow: hidden;
+}
+
+.compra-header {
+  background-color: #f8f9fa;
+  padding: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.compra-id {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.compra-fecha {
+  font-size: 0.9rem;
+  color: #6c757d;
+}
+
+.compra-total {
+  text-align: right;
+}
+
+.compra-total .valor {
+  font-weight: bold;
+  font-size: 1.2rem;
+  color: #28a745;
+}
+
+.compra-usuario {
+  padding: 10px 15px;
+  background-color: #e9ecef;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.label {
+  font-weight: bold;
+  color: #495057;
+  margin-right: 5px;
+}
+
+.compra-detalles {
+  padding: 15px;
+}
+
+.compra-detalles h4 {
+  margin-top: 0;
+  margin-bottom: 15px;
+  font-size: 1.1rem;
+  color: #343a40;
+}
+
+.detalles-tabla {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.detalles-tabla th,
+.detalles-tabla td {
+  padding: 10px;
+  text-align: left;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.detalles-tabla th {
+  background-color: #f8f9fa;
+  font-weight: 600;
+  color: #495057;
+}
+
+.articulo-nombre {
+  font-weight: 500;
+}
+
+.articulo-codigo {
+  font-size: 0.85rem;
+  color: #6c757d;
+}
+
+.articulo-cantidad {
+  text-align: center;
+}
+
+.articulo-precio, .articulo-subtotal {
+  text-align: right;
+  font-weight: 500;
+}
+
+.compra-acciones {
+  padding: 15px;
+  border-top: 1px solid #dee2e6;
+  text-align: right;
+}
+
+.btn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.3s;
+}
+
+.btn-primary {
+  background-color: #007bff;
+  color: white;
+}
+
+.btn-secondary {
+  background-color: #6c757d;
+  color: white;
+}
+
+.btn-outline-secondary {
+  background-color: transparent;
+  border: 1px solid #6c757d;
+  color: #6c757d;
+}
+
+.btn-danger {
+  background-color: #dc3545;
+  color: white;
+}
+
+.alert-danger {
+  background-color: #f8d7da;
+  color: #721c24;
+  padding: 12px;
+  border-radius: 4px;
+  margin-bottom: 20px;
+  border: 1px solid #f5c6cb;
+}
+
+@media (max-width: 768px) {
+  .compra-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .compra-total {
+    margin-top: 10px;
+    text-align: left;
+  }
+
+  .filtros-container {
+    flex-direction: column;
+  }
+}

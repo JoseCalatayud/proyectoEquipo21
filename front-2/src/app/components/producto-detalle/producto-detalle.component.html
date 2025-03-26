@@ -1,0 +1,67 @@
+<div class="producto-detalle-container">
+  <header class="producto-header">
+    <h1>Detalles del Producto</h1>
+    <button class="btn btn-secondary" (click)="volver()">Volver a la Lista</button>
+  </header>
+
+  <!-- Indicador de carga -->
+  <div *ngIf="loading" class="loading-container">
+    <div class="spinner-border" role="status">
+      <span class="visually-hidden">Cargando...</span>
+    </div>
+    <p>Cargando detalles del producto...</p>
+  </div>
+
+  <!-- Mensaje de error -->
+  <div *ngIf="error" class="alert alert-danger">
+    {{ error }}
+  </div>
+
+  <!-- Detalles del producto -->
+  <div *ngIf="!loading && !error && producto" class="producto-card">
+    <div class="producto-contenido">
+      <div class="producto-imagen">
+        <img [src]="producto.fotografia || 'assets/no-image.png'" alt="{{ producto.nombre }}">
+      </div>
+
+      <div class="producto-info">
+        <h2>{{ producto.nombre }}</h2>
+
+        <div class="detalle-item">
+          <span class="label">Código de Barras:</span>
+          <span class="valor">{{ producto.codigoBarras }}</span>
+        </div>
+
+        <div class="detalle-item">
+          <span class="label">Familia:</span>
+          <span class="valor">{{ producto.familia }}</span>
+        </div>
+
+        <div class="detalle-item">
+          <span class="label">Precio:</span>
+          <span class="valor precio">{{ producto.precioVenta | currency:'EUR':'symbol':'1.2-2' }}</span>
+        </div>
+
+        <div class="detalle-item">
+          <span class="label">Stock Disponible:</span>
+          <span class="valor stock" [ngClass]="{'stock-bajo': producto.stock < 10}">
+            {{ producto.stock }} unidades
+          </span>
+        </div>
+
+        
+        <div class="detalle-item estado">
+          <span class="label">Estado:</span>
+          <span class="valor" [ngClass]="{'activo': !producto.borrado, 'inactivo': producto.borrado}">
+            {{ producto.borrado ? 'Desactivado' : 'Activo' }}
+          </span>
+        </div>
+
+        <div class="descripcion-container">
+          <h3>Descripción:</h3>
+          <p class="descripcion">{{ producto.descripcion }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

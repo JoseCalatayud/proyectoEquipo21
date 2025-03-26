@@ -1,0 +1,25 @@
+<!-- src/app/components/compras-menu/compras-menu.component.html -->
+<div class="menu-container">
+  <header class="menu-header">
+    <h1>Gestión de Compras</h1>
+    <button class="btn btn-secondary" routerLink="/dashboard">Volver al Dashboard</button>
+  </header>
+
+  <div class="menu-content">
+    <h2>Seleccione una opción</h2>
+
+    <div class="menu-cards">
+      <div class="menu-card" routerLink="/compras/productos">
+        <div class="icon">🛍️</div>
+        <h3>Realizar Compra</h3>
+        <p>Seleccionar productos para adquirir</p>
+      </div>
+
+      <div class="menu-card" routerLink="/compras/historial">
+        <div class="icon">📋</div>
+        <h3>Historial de Compras</h3>
+        <p>Ver las compras realizadas anteriormente</p>
+      </div>
+    </div>
+  </div>
+</div>

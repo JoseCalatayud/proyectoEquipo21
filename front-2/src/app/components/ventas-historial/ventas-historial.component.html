@@ -1,0 +1,97 @@
+<!-- src/app/components/ventas-historial/ventas-historial.component.html -->
+<div class="ventas-historial-container">
+  <header class="ventas-header">
+    <h1>Historial de Ventas</h1>
+    <button class="btn btn-secondary" routerLink="/dashboard">Volver al Dashboard</button>
+  </header>
+
+  <div class="filtros-container">
+    <div class="filtro-fecha">
+      <label for="fechaInicio">Desde:</label>
+      <input
+        type="date"
+        id="fechaInicio"
+        class="form-control"
+        [(ngModel)]="filtroFechaInicio"
+      >
+    </div>
+    <div class="filtro-fecha">
+      <label for="fechaFin">Hasta:</label>
+      <input
+        type="date"
+        id="fechaFin"
+        class="form-control"
+        [(ngModel)]="filtroFechaFin"
+      >
+    </div>
+    <div class="filtro-botones">
+      <button class="btn btn-primary" (click)="filtrarPorFechas()">Filtrar</button>
+      <button class="btn btn-outline-secondary" (click)="limpiarFiltros()">Limpiar</button>
+    </div>
+  </div>
+
+  <div *ngIf="loading" class="loading-container">
+    <div class="spinner-border" role="status">
+      <span class="visually-hidden">Cargando...</span>
+    </div>
+    <p>Cargando historial de ventas...</p>
+  </div>
+
+  <div *ngIf="error" class="alert alert-danger">
+    {{ error }}
+  </div>
+
+  <div *ngIf="!loading && !error" class="ventas-list-container">
+    <div *ngIf="ventas.length === 0" class="no-ventas">
+      <h3>No hay ventas registradas</h3>
+      <p>No se encontraron ventas en el sistema para mostrar.</p>
+    </div>
+
+    <div *ngIf="ventas.length > 0" class="ventas-list">
+      <div *ngFor="let venta of ventas" class="venta-card">
+        <div class="venta-header">
+          <div class="venta-info">
+            <h3 class="venta-id">Venta #{{ venta.id }}</h3>
+            <span class="venta-fecha">{{ venta.fecha | date:'dd/MM/yyyy HH:mm' }}</span>
+          </div>
+          <div class="venta-total">
+            <span class="label">Total:</span>
+            <span class="total-valor">{{ venta.total | currency:'EUR':'symbol':'1.2-2' }}</span>
+          </div>
+        </div>
+
+        <div class="venta-usuario" *ngIf="isAdmin">
+          <span class="label">Usuario:</span>
+          <span class="valor">{{ venta.usuario.username }}</span>
+        </div>
+
+        <div class="venta-detalles">
+          <h4>Artículos</h4>
+          <table class="detalles-tabla">
+            <thead>
+              <tr>
+                <th>Artículo</th>
+                <th>Cantidad</th>
+                <th>Subtotal</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let detalle of venta.detalles">
+                <td class="articulo-info">
+                  <div class="articulo-nombre">{{ detalle.nombreArticulo }}</div>
+                  <div class="articulo-codigo">{{ detalle.codigoBarrasArticulo }}</div>
+                </td>
+                <td class="articulo-cantidad">{{ detalle.cantidad }}</td>
+                <td class="articulo-subtotal">{{ detalle.subtotal | currency:'EUR':'symbol':'1.2-2' }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="venta-acciones" *ngIf="isAdmin">
+          <button class="btn btn-danger" (click)="anularVenta(venta.id)">Anular Venta</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

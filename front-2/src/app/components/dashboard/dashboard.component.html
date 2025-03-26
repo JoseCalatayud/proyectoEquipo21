@@ -1,0 +1,36 @@
+<div class="dashboard-container">
+  <header class="dashboard-header">
+    <h1>Sistema de Gestión</h1>
+    <div class="user-info">
+      <span>Bienvenido, {{username}}</span>
+      <button class="logout-btn" (click)="logout()">Cerrar Sesión</button>
+    </div>
+  </header>
+
+  <div class="dashboard-content">
+    <h2>Panel de Control</h2>
+
+    <div class="menu-cards">
+      <!-- Todos los usuarios pueden ver Productos -->
+      <div class="menu-card" [routerLink]="['/productos']">
+        <div class="icon">📦</div>
+        <h3>Productos</h3>
+        <p>Gestionar inventario de productos</p>
+      </div>
+      <!-- Todos los usuarios pueden ver Ventas -->
+
+      <div class="menu-card" [routerLink]="['/ventas']">
+        <div class="icon">🛒</div>
+        <h3>Ventas</h3>
+        <p>Realizar y consultar ventas</p>
+      </div>
+
+      <!-- Solo los administradores pueden ver Compras -->
+      <div class="menu-card" *ngIf="isAdmin" [routerLink]="['/compras']">
+        <div class="icon">📋</div>
+        <h3>Compras</h3>
+        <p>Gestionar compras de productos</p>
+      </div>
+    </div>
+  </div>
+</div>

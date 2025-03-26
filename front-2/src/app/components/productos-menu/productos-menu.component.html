@@ -1,0 +1,29 @@
+<div class="productos-menu">
+  <header class="menu-header">
+    <h1>Gestión de Productos</h1>
+    <div class="user-info">
+      <span>Usuario: {{username}}</span>
+      <button class="back-btn" [routerLink]="['/dashboard']">Volver al Panel</button>
+    </div>
+  </header>
+
+  <div class="menu-content">
+    <h2>Seleccione una opción</h2>
+
+    <div class="menu-cards">
+      <!-- Todos los usuarios pueden listar productos -->
+      <div class="menu-card" [routerLink]="['/productos/listar']">
+        <div class="icon">📋</div>
+        <h3>Listar Productos</h3>
+        <p>Ver y buscar todos los productos disponibles</p>
+      </div>
+
+      <!-- Solo los administradores pueden crear productos -->
+      <div class="menu-card" *ngIf="isAdmin" [routerLink]="['/productos/crear']">
+        <div class="icon">➕</div>
+        <h3>Crear Producto</h3>
+        <p>Añadir un nuevo producto al inventario</p>
+      </div>
+    </div>
+  </div>
+</div>

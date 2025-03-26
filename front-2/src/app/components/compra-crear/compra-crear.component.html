@@ -1,0 +1,149 @@
+<!-- src/app/components/compra-crear/compra-crear.component.html -->
+<div class="compra-crear-container">
+  <header class="compra-header">
+    <h1>Realizar Compra</h1>
+    <button class="btn btn-secondary" (click)="volverAlMenu()">
+      <i class="fa fa-arrow-left"></i> Volver al Menú
+    </button>
+  </header>
+
+  <div *ngIf="error" class="alert alert-danger">
+    {{ error }}
+  </div>
+
+  <div *ngIf="exito" class="alert alert-success">
+    <i class="fa fa-check-circle"></i> ¡Compra realizada con éxito!
+    <div class="alert-buttons">
+      <button class="btn btn-primary" (click)="nuevaCompra()">Realizar otra compra</button>
+      <button class="btn btn-secondary" (click)="volverAlMenu()">Volver al menú</button>
+    </div>
+  </div>
+
+  <div *ngIf="!exito" class="compra-content">
+    <div class="row">
+      <!-- Lista de productos -->
+      <div class="col-md-6">
+        <div class="card">
+          <div class="card-header">
+            <h3>Productos Disponibles</h3>
+            <div class="search-box">
+              <input
+                type="text"
+                class="form-control"
+                placeholder="Buscar por nombre o código"
+                [(ngModel)]="filtroNombre"
+                (input)="filtrarProductos()"
+              >
+            </div>
+          </div>
+          <div class="card-body">
+            <div *ngIf="loadingProductos" class="loading-spinner">
+              <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Cargando...</span>
+              </div>
+              <p>Cargando productos...</p>
+            </div>
+
+            <div *ngIf="!loadingProductos && productosFiltrados.length === 0" class="no-productos">
+              <p>No se encontraron productos</p>
+            </div>
+
+            <div *ngIf="!loadingProductos && productosFiltrados.length > 0" class="productos-lista">
+              <div *ngFor="let producto of productosFiltrados" class="producto-item">
+                <div class="producto-info">
+                  <h4>{{ producto.nombre }}</h4>
+                  <p class="codigo">{{ producto.codigoBarras }}</p>
+                  <div class="producto-detalles">
+                    <span class="familia">{{ producto.familia }}</span>
+                    <span class="precio">{{ producto.precioVenta | currency:'EUR':'symbol':'1.2-2' }}</span>
+                    <span class="stock" [ngClass]="{'stock-bajo': producto.stock < 10}">
+                      Stock: {{ producto.stock }}
+                    </span>
+                  </div>
+                </div>
+                <button
+                  class="btn btn-primary btn-sm"
+                  (click)="agregarDetalle(producto)"
+                >
+                  Agregar
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Detalles de la compra -->
+      <div class="col-md-6">
+        <div class="card">
+          <div class="card-header">
+            <h3>Detalle de Compra</h3>
+          </div>
+          <div class="card-body">
+            <div *ngIf="detallesCompra.length === 0" class="compra-vacia">
+              <p>No hay productos en la compra</p>
+              <p class="help-text">Agrega productos desde la lista de la izquierda</p>
+            </div>
+
+            <div *ngIf="detallesCompra.length > 0" class="compra-detalles">
+              <div *ngFor="let detalle of detallesCompra; let i = index" class="detalle-item">
+                <div class="detalle-info">
+                  <h4>{{ detalle.producto.nombre }}</h4>
+                  <p class="codigo">{{ detalle.producto.codigoBarras }}</p>
+                </div>
+                <div class="detalle-controles">
+                  <div class="control-grupo">
+                    <label for="cantidad{{i}}">Cantidad:</label>
+                    <input
+                      type="number"
+                      id="cantidad{{i}}"
+                      class="form-control"
+                      [(ngModel)]="detalle.cantidad"
+                      min="1"
+                      (change)="actualizarCantidad(i)"
+                    >
+                  </div>
+                  <div class="control-grupo">
+                    <label for="precio{{i}}">Precio €:</label>
+                    <input
+                      type="number"
+                      id="precio{{i}}"
+                      class="form-control"
+                      [(ngModel)]="detalle.precioUnitario"
+                      min="0.01"
+                      step="0.01"
+                      (change)="actualizarPrecio(i)"
+                    >
+                  </div>
+                  <div class="detalle-subtotal">
+                    <span>Subtotal: {{ detalle.subtotal | currency:'EUR':'symbol':'1.2-2' }}</span>
+                  </div>
+                  <button
+                    class="btn btn-danger btn-sm"
+                    (click)="eliminarDetalle(i)"
+                  >
+                    <i class="fa fa-trash"></i>
+                  </button>
+                </div>
+              </div>
+
+              <div class="compra-total">
+                <span class="total-label">TOTAL:</span>
+                <span class="total-valor">{{ totalCompra | currency:'EUR':'symbol':'1.2-2' }}</span>
+              </div>
+
+              <button
+                class="btn btn-success btn-block"
+                (click)="realizarCompra()"
+                [disabled]="loading || detallesCompra.length === 0"
+              >
+                <span *ngIf="loading" class="spinner-border spinner-border-sm mr-2"></span>
+                <i *ngIf="!loading" class="fa fa-check-circle"></i> Realizar Compra
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,105 @@
+<!-- src/app/components/carrito-compra/carrito-compra.component.html -->
+<div class="carrito-container">
+  <header class="carrito-header">
+    <h1>Carrito de compras</h1>
+    <div class="botones-header">
+      <button class="btn btn-secondary" (click)="continuarComprando()">
+        <i class="fa fa-arrow-left"></i> Seguir seleccionando productos
+      </button>
+      <button class="btn btn-danger" [disabled]="items.length === 0" (click)="vaciarCarrito()">
+        <i class="fa fa-trash"></i> Vaciar carrito
+      </button>
+    </div>
+  </header>
+
+  <div *ngIf="error" class="alert alert-danger">
+    {{ error }}
+  </div>
+
+  <div *ngIf="compraRealizada" class="alert alert-success">
+    <i class="fa fa-check-circle"></i> ¡Compra registrada con éxito!
+    <button class="btn btn-primary ml-3" (click)="volverAlDashboard()">Volver al Dashboard</button>
+  </div>
+
+  <div class="carrito-content" *ngIf="!compraRealizada">
+    <div *ngIf="items.length === 0" class="carrito-vacio">
+      <div class="icono-vacio">🛒</div>
+      <h2>El carrito está vacío</h2>
+      <p>Agrega productos para realizar una compra</p>
+      <button class="btn btn-primary" (click)="continuarComprando()">Ir a productos</button>
+    </div>
+
+    <div *ngIf="items.length > 0" class="carrito-lleno">
+      <table class="tabla-productos">
+        <thead>
+          <tr>
+            <th>Producto</th>
+            <th>Cantidad</th>
+            <th>Precio unitario</th>
+            <th>Subtotal</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of items">
+            <td class="producto-info">
+              <div class="producto-imagen">
+                <img [src]="item.producto.fotografia || 'assets/no-image.png'" alt="{{ item.producto.nombre }}">
+              </div>
+              <div class="producto-detalles">
+                <h3>{{ item.producto.nombre }}</h3>
+                <p class="codigo">{{ item.producto.codigoBarras }}</p>
+              </div>
+            </td>
+            <td class="cantidad">
+              <input
+                type="number"
+                min="1"
+                [value]="item.cantidad"
+                (change)="actualizarCantidad(item, $event)"
+                class="control-input"
+              >
+            </td>
+            <td class="precio">
+              <div class="input-group">
+                <span class="input-group-text">€</span>
+                <input
+                  type="number"
+                  min="0.01"
+                  step="0.01"
+                  [value]="item.precioUnitario"
+                  (change)="actualizarPrecioUnitario(item, $event)"
+                  class="control-input"
+                >
+              </div>
+            </td>
+            <td class="subtotal">{{ item.subtotal | currency:'EUR':'symbol':'1.2-2' }}</td>
+            <td class="acciones">
+              <button class="btn btn-danger btn-sm" (click)="eliminarProducto(item.producto.id)">
+                <i class="fa fa-trash"></i> Eliminar
+              </button>
+            </td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr>
+            <td colspan="3" class="total-label">TOTAL</td>
+            <td class="total-valor">{{ total | currency:'EUR':'symbol':'1.2-2' }}</td>
+            <td></td>
+          </tr>
+        </tfoot>
+      </table>
+
+      <div class="boton-finalizar">
+        <button
+          class="btn btn-success btn-block"
+          [disabled]="loading"
+          (click)="finalizarCompra()"
+        >
+          <span *ngIf="loading" class="spinner-border spinner-border-sm mr-2"></span>
+          <i *ngIf="!loading" class="fa fa-check-circle"></i> Finalizar compra
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

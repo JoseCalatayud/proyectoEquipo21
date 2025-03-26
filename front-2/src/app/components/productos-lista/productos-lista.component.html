@@ -1,0 +1,121 @@
+<!-- src/app/components/productos-lista/productos-lista.component.html -->
+<div class="productos-container">
+  <header class="productos-header">
+    <h1>Lista de Productos</h1>
+    <button class="btn btn-secondary" (click)="volver()">Volver</button>
+  </header>
+
+  <!-- Mostrar el carrito flotante solo en contexto de ventas -->
+  <div *ngIf="esContextoVentas" class="carrito-flotante" (click)="irAlCarrito()">
+    <div class="carrito-icono">🛒</div>
+    <span class="carrito-contador">{{ carritoService.getTotalItems() }}</span>
+  </div>
+
+  <!-- Filtros -->
+  <div class="filtros-container">
+    <div class="filtro">
+      <label for="filtroNombre">Buscar por nombre:</label>
+      <input
+        type="text"
+        id="filtroNombre"
+        class="form-control"
+        [(ngModel)]="filtroNombre"
+        (input)="filtrarProductos()"
+        placeholder="Nombre del producto"
+      >
+    </div>
+
+    <div class="filtro">
+      <label for="filtroFamilia">Filtrar por familia:</label>
+      <select
+        id="filtroFamilia"
+        class="form-control"
+        [(ngModel)]="filtroFamilia"
+        (change)="filtrarProductos()"
+      >
+        <option value="">Todas las familias</option>
+        <option *ngFor="let familia of familias" [value]="familia">
+          {{ familia }}
+        </option>
+      </select>
+    </div>
+
+    <button class="btn btn-outline-secondary" (click)="limpiarFiltros()">
+      Limpiar filtros
+    </button>
+  </div>
+
+  <!-- Indicador de carga -->
+  <div *ngIf="loading" class="loading-container">
+    <div class="spinner-border" role="status">
+      <span class="visually-hidden">Cargando...</span>
+    </div>
+    <p>Cargando productos...</p>
+  </div>
+
+  <!-- Mensaje de error -->
+  <div *ngIf="error" class="alert alert-danger">
+    {{ error }}
+  </div>
+
+  <!-- Lista de productos -->
+  <div *ngIf="!loading && !error" class="productos-grid">
+    <div *ngIf="productosFiltrados.length === 0" class="no-productos">
+      No se encontraron productos que coincidan con los criterios de búsqueda.
+    </div>
+
+    <div *ngFor="let producto of productosFiltrados" class="producto-card">
+      <div class="producto-imagen">
+        <img [src]="producto.fotografia || 'assets/no-image.png'" alt="{{ producto.nombre }}">
+      </div>
+
+      <div class="producto-contenido">
+        <h3>{{ producto.nombre }}</h3>
+        <p class="codigo">Código: {{ producto.codigoBarras }}</p>
+        <p class="descripcion">{{ producto.descripcion }}</p>
+
+        <div class="producto-detalles">
+          <span class="familia">{{ producto.familia }}</span>
+          <span class="precio">{{ producto.precioVenta | currency:'EUR':'symbol':'1.2-2' }}</span>
+          <span class="stock" [ngClass]="{'stock-bajo': producto.stock < 10}">
+            Stock: {{ producto.stock }}
+          </span>
+        </div>
+
+        <div class="acciones">
+          <button class="btn btn-primary btn-sm" [routerLink]="['/productos/detalle', producto.id]">Ver detalles</button>
+          <button *ngIf="isAdmin" class="btn btn-secondary btn-sm" [routerLink]="['/productos/editar', producto.id]">Editar</button>
+          <button *ngIf="isAdmin" class="btn btn-danger btn-sm" (click)="toggleEstadoProducto(producto)">
+            {{ producto.borrado ? 'Activar' : 'Desactivar' }}
+          </button>
+        </div>
+
+        <!-- Mostrar controles de carrito solo en contexto de ventas -->
+        <div class="controles-carrito" *ngIf="esContextoVentas && producto.stock > 0">
+          <div class="control-cantidad">
+            <label for="cantidad-{{producto.id}}">Cantidad:</label>
+            <input
+              type="number"
+              id="cantidad-{{producto.id}}"
+              [(ngModel)]="cantidadSeleccionada[producto.id]"
+              min="1"
+              [max]="producto.stock"
+              class="form-control input-cantidad"
+            >
+          </div>
+          <button
+            class="btn btn-success btn-sm"
+            (click)="agregarAlCarrito(producto)"
+            [disabled]="producto.stock < 1 || cantidadSeleccionada[producto.id] < 1"
+          >
+            <i class="fa fa-shopping-cart"></i> Agregar al carrito
+          </button>
+        </div>
+
+        <div class="agotado" *ngIf="esContextoVentas && producto.stock <= 0">
+          <span class="badge badge-danger">Agotado</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
