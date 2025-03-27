@@ -82,7 +82,9 @@ h2 {
 .user-info {
   display: flex;
   align-items: center;
+  gap: 15px; /* Espaciado entre el texto y el botón */
 }
+
 
 .logout-btn {
   background-color: #fff;
