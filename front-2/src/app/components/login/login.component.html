@@ -1,7 +1,11 @@
 <!-- src/app/components/login/login.component.html -->
 <div class="login-container">
   <div class="login-card">
+    <div class="logo-container">
+      <img src="LogoSTOQO.png" alt="Logo" class="logo" />
+    </div>
     <h2>Iniciar sesión</h2>
+
 
     <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
       <div class="form-group">
@@ -44,4 +48,4 @@
       </div>
     </form>
   </div>
-</div>
+
