@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment.prod';
 
 export interface DetalleVenta {
   idArticulo: number;
@@ -33,22 +34,22 @@ export class VentaService {
   constructor(private http: HttpClient) { }
 
   obtenerHistorialVentas(): Observable<Venta[]> {
-    return this.http.get<Venta[]>('/api/ventas/listar');
+    return this.http.get<Venta[]>(`${environment.apiUrl}/ventas/listar`);
   }
 
   obtenerVentaPorId(id: number): Observable<Venta> {
-    return this.http.get<Venta>(`/api/ventas/${id}`);
+    return this.http.get<Venta>(`${environment.apiUrl}/ventas/${id}`);
   }
 
   crearVenta(detalles: { codigoBarras: string, cantidad: number }[]): Observable<Venta> {
-    return this.http.post<Venta>('/api/ventas/crear', { detalles });
+    return this.http.post<Venta>(`${environment.apiUrl}/ventas/crear`, { detalles });
   }
 
   anularVenta(id: number): Observable<any> {
-    return this.http.delete<any>(`/api/ventas/${id}`);
+    return this.http.delete<any>(`${environment.apiUrl}/ventas/${id}`);
   }
 
   buscarVentasPorFechas(fechaInicio: string, fechaFin: string): Observable<Venta[]> {
-    return this.http.get<Venta[]>(`/api/ventas/fechas?fechaInicio=${fechaInicio}&fechaFin=${fechaFin}`);
+    return this.http.get<Venta[]>(`${environment.apiUrl}/ventas/fechas?fechaInicio=${fechaInicio}&fechaFin=${fechaFin}`);
   }
 }

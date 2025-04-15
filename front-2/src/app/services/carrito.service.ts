@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { Producto } from './producto.service';
 import { HttpClient } from '@angular/common/http';
+import { environment } from '../../environments/environment.prod';
 
 export interface ItemCarrito {
   producto: Producto;
@@ -83,6 +84,6 @@ export class CarritoService {
       }))
     };
 
-    return this.http.post('/api/ventas/crear', venta);
+    return this.http.post(`${environment.apiUrl}/ventas/crear`, venta);
   }
 }

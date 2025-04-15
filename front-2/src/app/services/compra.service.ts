@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment.prod';
 
 export interface DetalleCompra {
   idArticulo: number;
@@ -39,22 +40,22 @@ export class CompraService {
   constructor(private http: HttpClient) { }
 
   obtenerHistorialCompras(): Observable<Compra[]> {
-    return this.http.get<Compra[]>('/api/compras');
+    return this.http.get<Compra[]>(`${environment.apiUrl}/compras`);
   }
 
   obtenerCompraPorId(id: number): Observable<Compra> {
-    return this.http.get<Compra>(`/api/compras/${id}`);
+    return this.http.get<Compra>(`${environment.apiUrl}/compras/${id}`);
   }
 
   crearCompra(compraRequest: CompraRequest): Observable<Compra> {
-    return this.http.post<Compra>('/api/compras', compraRequest);
+    return this.http.post<Compra>(`${environment.apiUrl}/compras`, compraRequest);
   }
 
   anularCompra(id: number): Observable<any> {
-    return this.http.delete<any>(`/api/compras/${id}`);
+    return this.http.delete<any>(`${environment.apiUrl}/compras/${id}`);
   }
 
   buscarComprasPorFechas(fechaInicio: string, fechaFin: string): Observable<Compra[]> {
-    return this.http.get<Compra[]>(`/api/compras/fechas?fechaInicio=${fechaInicio}&fechaFin=${fechaFin}`);
+    return this.http.get<Compra[]>(`${environment.apiUrl}/compras/fechas?fechaInicio=${fechaInicio}&fechaFin=${fechaFin}`);
   }
 }
